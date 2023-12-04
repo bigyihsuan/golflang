@@ -1,3 +1,7 @@
+use std::collections::{HashMap, VecDeque};
+
+use crate::{eval::Eval, tree::node::Node};
+
 use self::{builtinfunc::BuiltinFunc, run::Run};
 
 pub mod builtinfunc;
@@ -8,6 +12,7 @@ pub enum Obj {
     None,
     String(String),
     List(Vec<Obj>),
+    Bool(bool),
     BuiltinFunc(BuiltinFunc),
 }
 
@@ -24,7 +29,20 @@ impl Obj {
                     .join(",")
             ),
             Obj::BuiltinFunc(f) => f.name,
+            Obj::Bool(b) => b.to_string(),
         }
+    }
+}
+
+impl Eval for Obj {
+    fn eval(
+        &self,
+        _builtins: &HashMap<String, Obj>,
+        _queue: &mut VecDeque<Node>,
+        stack: &mut Vec<Obj>,
+    ) {
+        let out = self.run(stack);
+        stack.push(out)
     }
 }
 
@@ -34,14 +52,18 @@ impl Run for Obj {
             Obj::BuiltinFunc(f) => f.run(stack),
             _ => self.clone(),
         };
-        match out {
-            Obj::None => out,
-            Obj::String(_) => out,
-            Obj::List(_) => out,
-            _ => {
-                stack.push(out.clone());
-                out
-            }
+        out
+    }
+}
+
+impl Into<bool> for Obj {
+    fn into(self) -> bool {
+        match self {
+            Obj::None => false,
+            Obj::String(s) => s != "",
+            Obj::List(l) => l.len() > 0,
+            Obj::BuiltinFunc(_) => true,
+            Obj::Bool(b) => b,
         }
     }
 }

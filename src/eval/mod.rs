@@ -67,7 +67,6 @@ impl Builtin for Evaluator {
     fn join(stack: &mut Vec<Obj>) -> Obj {
         let b = stack.pop().unwrap();
         let a = stack.pop().unwrap();
-        println!("run join({a:?},{b:?}");
         let out = match (a.clone(), b.clone()) {
             (Obj::List(eles), Obj::String(sep)) => Obj::String(
                 eles.into_iter()
@@ -90,7 +89,6 @@ impl Builtin for Evaluator {
     fn zip(stack: &mut Vec<Obj>) -> Obj {
         let b = stack.pop().unwrap();
         let a = stack.pop().unwrap();
-        println!("run zip({a:?},{b:?})");
         let out = match (a, b) {
             (Obj::List(l), Obj::List(r)) => {
                 Obj::List(l.into_iter().interleave(r.into_iter()).collect())
@@ -127,4 +125,13 @@ impl Builtin for Evaluator {
             }
         }
     }
+}
+
+pub trait Eval {
+    fn eval(
+        &self,
+        builtins: &HashMap<String, Obj>,
+        queue: &mut VecDeque<Node>,
+        stack: &mut Vec<Obj>,
+    );
 }

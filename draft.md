@@ -7,7 +7,7 @@ once inner functions have finished, run itself
 
 <https://codegolf.stackexchange.com/questions/267180/just-another-traffic-jam>
 
-```powershell
+```ruby
 f := \a,b => join zip chunkSame a chunkSame b "" ;
 # trace
 f :=                  # definition
@@ -21,3 +21,56 @@ f :=                  # definition
         ""            # literal, stop
 ;                     # end declaration stmt
 ```
+
+collections first, functions later
+haystack then needle
+everything is prefix
+everything slurps from the node queue as needed
+if exprs
+loops as list comprehensions
+steal `to` and `til` from noulith
+
+<https://codegolf.stackexchange.com/questions/259255/implement-the-three-way-comparison-operator-on-numbers>
+
+```ruby
+cmp := \a,b => if < a b then -1 else if > a b then 1 else 0 ;
+```
+
+<https://codegolf.stackexchange.com/questions/58615/1-2-fizz-4-buzz>
+
+```ruby
+# comprehensions
+fizzbuzz := \n => for range 1 til n yield if % n 15 then "fizzbuzz" else if % n 3 then "fizz" else if % n 5 then "buzz" else string n ;
+# functional
+fizzbuzz := \n => map range 1 til n \k => if % n 15 then "fizzbuzz" else if % n 3 then "fizz" else if % n 5 then "buzz" else string n ;
+```
+
+above nested lambda should work as-is. note single trailing semicolon ending all lambdas
+
+no curry
+
+```powershell
+add := + ; # DOES NOT CURRY! would instead alias `+` to `add`
+add 1 2 ;  # returns 3, same as + 1 2
+```
+
+## syntactic constructions
+
+- `for`
+  - `for NAME in COLLECTION`
+  - `for COLLECTION`
+- `if cond then ... else ...`
+- `name := ... ;`
+- `\name, ... => ...`
+- `yield ...`
+- `return ...`
+
+## builtins
+
+- join
+- zip
+- chunkSame
+- cmp ops: `<`, `<=`, `>`, `>=`, `==`, `!=`
+- arithmetic: `+`, `-`, `*`, `/`, `%`, `**` (exp)
+- bitwise: `<<`, `l>>` (logical), `a>>` (arithmetic), `&`, `|`, `^` (not)
+- logical: `and`, `or`, `not`
