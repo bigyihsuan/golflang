@@ -42,6 +42,9 @@ impl Eval for Obj {
         stack: &mut Vec<Obj>,
     ) {
         let out = self.run(stack);
+        if let Obj::None = out {
+            return;
+        }
         stack.push(out)
     }
 }

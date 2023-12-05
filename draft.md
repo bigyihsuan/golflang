@@ -54,23 +54,37 @@ add := + ; # DOES NOT CURRY! would instead alias `+` to `add`
 add 1 2 ;  # returns 3, same as + 1 2
 ```
 
+## types
+
+dynamic, loose typing
+
+- int: positive literals only (use unary `neg`)
+- dec: positive floats only (use unary `neg`)
+- str: any character, with escapes. double quotes only
+- list: heterogeneous lists
+- map: heterogenous maps
+- func: code. lambdas, builtins, etc
+
 ## syntactic constructions
 
-- `for`
-  - `for NAME in COLLECTION`
-  - `for COLLECTION`
+- `range START to/til END (every INCREMENT)`: returns a List. `to` for exclusive end, `til` for inclusive end. optional increment
+- `for`: infinite loop
+  - `for COLLECTION then CODE`: run `CODE` for each element in collection
+  - `for NAME in COLLECTION then CODE`: run `CODE` for each element in collection, assign the element to `NAME` for each run
 - `if cond then ... else ...`
 - `name := ... ;`
 - `\name, ... => ...`
 - `yield ...`
 - `return ...`
+- quotes: turns everything into a func. surround in single quotes: `'CODE'`
 
 ## builtins
 
 - join
 - zip
 - chunkSame
+- enumerate
 - cmp ops: `<`, `<=`, `>`, `>=`, `==`, `!=`
-- arithmetic: `+`, `-`, `*`, `/`, `%`, `**` (exp)
-- bitwise: `<<`, `l>>` (logical), `a>>` (arithmetic), `&`, `|`, `^` (not)
+- arithmetic: `+`, `-`, `*`, `/`, `%`, `**` (exp), `neg`
+- bitwise: `<<`, `l>>` (logical), `a>>` (arithmetic), `&`, `|`, `^` (bitwise not)
 - logical: `and`, `or`, `not`

@@ -9,7 +9,11 @@ use crate::{
 pub enum Node {
     BuiltinFunc(String),
     Obj(Obj),
-    If(If),
+    If {
+        cond: Box<Node>,
+        when_true: Box<Node>,
+        when_false: Option<Box<Node>>,
+    },
 }
 
 impl Eval for Node {
@@ -32,31 +36,19 @@ impl Eval for Node {
             Node::Obj(o) => {
                 o.eval(builtins, queue, stack);
             }
-            Node::If(i) => i.eval(builtins, queue, stack),
+            Node::If {
+                cond,
+                when_true,
+                when_false,
+            } => {
+                cond.eval(builtins, queue, stack);
+                let cond = stack.pop().unwrap().into();
+                if cond {
+                    when_true.eval(builtins, queue, stack);
+                } else if let Some(when_false) = &when_false {
+                    when_false.eval(builtins, queue, stack);
+                }
+            }
         };
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct If {
-    pub cond: Box<Node>,
-    pub when_true: Box<Node>,
-    pub when_false: Option<Box<Node>>,
-}
-
-impl Eval for If {
-    fn eval(
-        &self,
-        builtins: &HashMap<String, Obj>,
-        queue: &mut VecDeque<Node>,
-        stack: &mut Vec<Obj>,
-    ) {
-        self.cond.eval(builtins, queue, stack);
-        let cond = stack.pop().unwrap().into();
-        if cond {
-            self.when_true.eval(builtins, queue, stack);
-        } else if let Some(when_false) = &self.when_false {
-            when_false.eval(builtins, queue, stack);
-        }
     }
 }
