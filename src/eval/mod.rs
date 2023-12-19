@@ -28,10 +28,21 @@ impl Evaluator {
     }
     pub fn eval(&mut self) {
         while self.queue.len() > 0 {
-            let node = self.queue.pop_front().unwrap();
-            node.eval(&self.builtins, &mut self.queue, &mut self.stack);
+            println!("stack {:?}", self.stack);
+            println!("queue {:?}", self.queue);
+            let node = self.queue.pop_front();
+            if let Some(node) = node {
+                let out = node.eval(&self.builtins, &mut self.queue, &mut self.stack);
+                if let Some(val) = out {
+                    if let Obj::None = val {
+                        continue;
+                    } else {
+                        self.stack.push(val);
+                    }
+                }
+            }
         }
-        println!("{:?}", self.stack)
+        println!("{:?}", self.stack);
     }
     fn init_builtins() -> HashMap<String, Obj> {
         HashMap::from([
@@ -64,65 +75,43 @@ impl Evaluator {
 }
 
 impl Builtin for Evaluator {
-    fn join(stack: &mut Vec<Obj>) -> Obj {
+    fn join(stack: &mut Vec<Obj>) -> Option<Obj> {
         let b = stack.pop().unwrap();
         let a = stack.pop().unwrap();
-        let out = match (a.clone(), b.clone()) {
-            (Obj::List(eles), Obj::String(sep)) => Obj::String(
+        match (a.clone(), b.clone()) {
+            (Obj::List(eles), Obj::String(sep)) => Some(Obj::String(
                 eles.into_iter()
                     .map(|ele| ele.string())
                     .collect::<Vec<String>>()
                     .join(&sep),
-            ),
-            (Obj::String(_), _) => a,
-            (_, _) => Obj::None,
-        };
-        match out {
-            Obj::None => out,
-            _ => {
-                stack.push(out.clone());
-                out
-            }
+            )),
+            (Obj::String(_), _) => Some(a),
+            (_, _) => None,
         }
     }
 
-    fn zip(stack: &mut Vec<Obj>) -> Obj {
+    fn zip(stack: &mut Vec<Obj>) -> Option<Obj> {
         let b = stack.pop().unwrap();
         let a = stack.pop().unwrap();
-        let out = match (a, b) {
+        match (a, b) {
             (Obj::List(l), Obj::List(r)) => {
-                Obj::List(l.into_iter().interleave(r.into_iter()).collect())
+                Some(Obj::List(l.into_iter().interleave(r.into_iter()).collect()))
             }
-            (_, _) => Obj::List(Vec::new()),
-        };
-        match out {
-            Obj::None => out,
-            _ => {
-                stack.push(out.clone());
-                out
-            }
+            (_, _) => Some(Obj::List(Vec::new())),
         }
     }
 
-    fn chunk_same(stack: &mut Vec<Obj>) -> Obj {
+    fn chunk_same(stack: &mut Vec<Obj>) -> Option<Obj> {
         let a = stack.pop().unwrap();
-        println!("run chunk_same({a:?})");
-        let out = match a {
-            Obj::String(s) => Obj::List(
+        match a {
+            Obj::String(s) => Some(Obj::List(
                 s.chars()
                     .dedup_with_count()
                     .map(|(count, c)| c.to_string().repeat(count))
                     .map(|e| Obj::String(e))
                     .collect(),
-            ),
-            _ => Obj::None,
-        };
-        match out {
-            Obj::None => out,
-            _ => {
-                stack.push(out.clone());
-                out
-            }
+            )),
+            _ => None,
         }
     }
 }
@@ -133,5 +122,5 @@ pub trait Eval {
         builtins: &HashMap<String, Obj>,
         queue: &mut VecDeque<Node>,
         stack: &mut Vec<Obj>,
-    );
+    ) -> Option<Obj>;
 }

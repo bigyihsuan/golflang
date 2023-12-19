@@ -2,10 +2,9 @@ use std::collections::{HashMap, VecDeque};
 
 use crate::{eval::Eval, tree::node::Node};
 
-use self::{builtinfunc::BuiltinFunc, run::Run};
+use self::builtinfunc::BuiltinFunc;
 
 pub mod builtinfunc;
-pub mod run;
 
 #[derive(Debug, Clone)]
 pub enum Obj {
@@ -19,7 +18,7 @@ pub enum Obj {
 impl Obj {
     pub fn string(self) -> String {
         match self {
-            Obj::None => "None".to_owned(),
+            Obj::None => "None".into(),
             Obj::String(s) => s,
             Obj::List(l) => format!(
                 "[{}]",
@@ -40,22 +39,11 @@ impl Eval for Obj {
         _builtins: &HashMap<String, Obj>,
         _queue: &mut VecDeque<Node>,
         stack: &mut Vec<Obj>,
-    ) {
-        let out = self.run(stack);
-        if let Obj::None = out {
-            return;
+    ) -> Option<Obj> {
+        match self {
+            Obj::BuiltinFunc(f) => (f.code)(stack),
+            _ => Some(self.clone()),
         }
-        stack.push(out)
-    }
-}
-
-impl Run for Obj {
-    fn run(&self, stack: &mut Vec<Obj>) -> Obj {
-        let out = match self {
-            Obj::BuiltinFunc(f) => f.run(stack),
-            _ => self.clone(),
-        };
-        out
     }
 }
 
