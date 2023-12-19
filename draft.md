@@ -61,6 +61,7 @@ dynamic, loose typing
 - int: positive literals only (use unary `neg`)
 - dec: positive floats only (use unary `neg`)
 - str: any character, with escapes. double quotes only
+- bool
 - list: heterogeneous lists
 - map: heterogenous maps
 - func: code. lambdas, builtins, etc
@@ -82,7 +83,7 @@ dynamic, loose typing
 
 - join
 - zip
-- chunkSame
+- nChunks, chunkN, chunkSame
 - enumerate
 - cmp ops: `<`, `<=`, `>`, `>=`, `==`, `!=`
 - arithmetic: `+`, `-`, `*`, `/`, `%`, `**` (exp), `neg`
