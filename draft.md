@@ -22,7 +22,7 @@ f :=                  # definition
 ;                     # end declaration stmt
 ```
 
-collections first, functions later
+collections first arg, functions later
 haystack then needle
 everything is prefix
 everything slurps from the node queue as needed
@@ -58,34 +58,37 @@ add 1 2 ;  # returns 3, same as + 1 2
 
 dynamic, loose typing
 
-- int: positive literals only (use unary `neg`)
-- dec: positive floats only (use unary `neg`)
-- str: any character, with escapes. double quotes only
-- bool
-- list: heterogeneous lists
-- map: heterogenous maps
-- func: code. lambdas, builtins, etc
+- [ ] int: positive literals only (use unary `neg`)
+- [ ] dec: positive floats only (use unary `neg`)
+- [ ] str: any character, with escapes. double quotes only
+- [ ] bool
+- [ ] list: heterogeneous lists
+- [ ] map: heterogenous maps
+- [ ] func: code. lambdas, builtins, etc
 
 ## syntactic constructions
 
-- `range START to/til END (every INCREMENT)`: returns a List. `to` for exclusive end, `til` for inclusive end. optional increment
-- `for`: infinite loop
+- [ ] `range START to/til END (every INCREMENT)`: returns a List. `to` for exclusive end, `til` for inclusive end. optional increment
+- [ ] `for`: infinite loop
   - `for COLLECTION then CODE`: run `CODE` for each element in collection
   - `for NAME in COLLECTION then CODE`: run `CODE` for each element in collection, assign the element to `NAME` for each run
-- `if cond then ... else ...`
-- `name := ... ;`
-- `\name, ... => ...`
-- `yield ...`
-- `return ...`
-- quotes: turns everything into a func. surround in single quotes: `'CODE'`
+- [x] `if cond then ... else ...`
+- [ ] `name := ... ;`
+- [ ] `\name, ... => ...`
+- [ ] `yield ...`
+- [ ] `return ...`
+- [ ] quotes: turns everything into a func. surround in single quotes: `'CODE'`
 
 ## builtins
 
-- join
-- zip
-- nChunks, chunkN, chunkSame
-- enumerate
-- cmp ops: `<`, `<=`, `>`, `>=`, `==`, `!=`
-- arithmetic: `+`, `-`, `*`, `/`, `%`, `**` (exp), `neg`
-- bitwise: `<<`, `l>>` (logical), `a>>` (arithmetic), `&`, `|`, `^` (bitwise not)
-- logical: `and`, `or`, `not`
+- [ ] join
+- [ ] zip
+- [ ] chunking:
+  - [ ] nChunks
+  - [ ] chunkN
+  - [x] chunkSame
+- [ ] enumerate
+- [ ] cmp ops: `<`, `<=`, `>`, `>=`, `==`, `!=`
+- [ ] arithmetic: `+`, `-`, `*`, `/`, `%`, `**` (exp), `neg`
+- [ ] bitwise: `<<`, `l>>` (logical), `a>>` (arithmetic), `&`, `|`, `^` (bitwise not)
+- [ ] logical: `and`, `or`, `not`

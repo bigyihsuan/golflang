@@ -11,10 +11,14 @@ use self::builtin::Builtin;
 
 pub mod builtin;
 
+pub type BuiltinMap = HashMap<String, Obj>;
+pub type AliasMap = HashMap<String, Box<Node>>;
+
 pub struct Evaluator {
-    builtins: HashMap<String, Obj>,
+    builtins: BuiltinMap,
     queue: VecDeque<Node>,
     stack: Vec<Obj>,
+    aliases: AliasMap,
 }
 
 impl Evaluator {
@@ -23,6 +27,7 @@ impl Evaluator {
             builtins: Self::init_builtins(),
             queue: VecDeque::from(nodes.to_vec()),
             stack: Vec::new(),
+            aliases: HashMap::new(),
         };
         e
     }
@@ -32,7 +37,12 @@ impl Evaluator {
             println!("queue {:?}", self.queue);
             let node = self.queue.pop_front();
             if let Some(node) = node {
-                let out = node.eval(&self.builtins, &mut self.queue, &mut self.stack);
+                let out = node.eval(
+                    &self.builtins,
+                    &mut self.queue,
+                    &mut self.stack,
+                    &mut self.aliases,
+                );
                 if let Some(val) = out {
                     if let Obj::None = val {
                         continue;
@@ -44,10 +54,11 @@ impl Evaluator {
         }
         println!("{:?}", self.stack);
     }
-    fn init_builtins() -> HashMap<String, Obj> {
-        HashMap::from([
+    fn init_builtins() -> BuiltinMap {
+        let mut builtins = BuiltinMap::new();
+        [
             (
-                "join".into(),
+                "join",
                 Obj::BuiltinFunc(BuiltinFunc {
                     name: "join".to_owned(),
                     arity: 2,
@@ -55,7 +66,7 @@ impl Evaluator {
                 }),
             ),
             (
-                "zip".into(),
+                "zip",
                 Obj::BuiltinFunc(BuiltinFunc {
                     name: "zip".into(),
                     arity: 2,
@@ -63,14 +74,27 @@ impl Evaluator {
                 }),
             ),
             (
-                "chunkSame".into(),
+                "chunkSame",
                 Obj::BuiltinFunc(BuiltinFunc {
                     name: "chunkSame".into(),
                     arity: 1,
                     code: Self::chunk_same,
                 }),
             ),
-        ])
+            (
+                "+",
+                Obj::BuiltinFunc(BuiltinFunc {
+                    name: "+".into(),
+                    arity: 2,
+                    code: Self::plus,
+                }),
+            ),
+        ]
+        .iter()
+        .for_each(|(n, f)| {
+            builtins.insert(n.to_string(), f.clone());
+        });
+        builtins
     }
 }
 
@@ -114,13 +138,23 @@ impl Builtin for Evaluator {
             _ => None,
         }
     }
+
+    fn plus(stack: &mut Vec<Obj>) -> Option<Obj> {
+        let b = stack.pop().unwrap();
+        let a = stack.pop().unwrap();
+        match (a, b) {
+            (Obj::Int(a), Obj::Int(b)) => Some(Obj::Int(a + b)),
+            (_, _) => None,
+        }
+    }
 }
 
 pub trait Eval {
     fn eval(
         &self,
-        builtins: &HashMap<String, Obj>,
+        builtins: &BuiltinMap,
         queue: &mut VecDeque<Node>,
         stack: &mut Vec<Obj>,
+        aliases: &mut AliasMap,
     ) -> Option<Obj>;
 }

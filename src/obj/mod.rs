@@ -1,6 +1,9 @@
-use std::collections::{HashMap, VecDeque};
+use std::collections::VecDeque;
 
-use crate::{eval::Eval, tree::node::Node};
+use crate::{
+    eval::{AliasMap, BuiltinMap, Eval},
+    tree::node::Node,
+};
 
 use self::builtinfunc::BuiltinFunc;
 
@@ -12,7 +15,9 @@ pub enum Obj {
     String(String),
     List(Vec<Obj>),
     Bool(bool),
+    Int(i64),
     BuiltinFunc(BuiltinFunc),
+    Alias { name: String, func: Box<Node> },
 }
 
 impl Obj {
@@ -29,6 +34,8 @@ impl Obj {
             ),
             Obj::BuiltinFunc(f) => f.name,
             Obj::Bool(b) => b.to_string(),
+            Obj::Int(i) => i.to_string(),
+            Obj::Alias { name, func } => format!("{name}:={func:?}"),
         }
     }
 }
@@ -36,9 +43,10 @@ impl Obj {
 impl Eval for Obj {
     fn eval(
         &self,
-        _builtins: &HashMap<String, Obj>,
+        _builtins: &BuiltinMap,
         _queue: &mut VecDeque<Node>,
         stack: &mut Vec<Obj>,
+        _aliases: &mut AliasMap,
     ) -> Option<Obj> {
         match self {
             Obj::BuiltinFunc(f) => (f.code)(stack),
@@ -55,6 +63,8 @@ impl Into<bool> for Obj {
             Obj::List(l) => l.len() > 0,
             Obj::BuiltinFunc(_) => true,
             Obj::Bool(b) => b,
+            Obj::Int(i) => i != 0,
+            Obj::Alias { .. } => true,
         }
     }
 }
