@@ -1,7 +1,5 @@
 use std::collections::{HashMap, VecDeque};
 
-use itertools::Itertools;
-
 use crate::{
     obj::{builtinfunc::BuiltinFunc, Obj},
     tree::node::Node,
@@ -37,12 +35,7 @@ impl Evaluator {
             println!("queue {:?}", self.queue);
             let node = self.queue.pop_front();
             if let Some(node) = node {
-                let out = node.eval(
-                    &self.builtins,
-                    &mut self.queue,
-                    &mut self.stack,
-                    &mut self.aliases,
-                );
+                let out = self.node(&node);
                 if let Some(val) = out {
                     if let Obj::None = val {
                         continue;
@@ -62,7 +55,7 @@ impl Evaluator {
                 Obj::BuiltinFunc(BuiltinFunc {
                     name: "join".to_owned(),
                     arity: 2,
-                    code: Self::join,
+                    code: Builtin::join,
                 }),
             ),
             (
@@ -70,7 +63,7 @@ impl Evaluator {
                 Obj::BuiltinFunc(BuiltinFunc {
                     name: "zip".into(),
                     arity: 2,
-                    code: Self::zip,
+                    code: Builtin::zip,
                 }),
             ),
             (
@@ -78,7 +71,7 @@ impl Evaluator {
                 Obj::BuiltinFunc(BuiltinFunc {
                     name: "chunkSame".into(),
                     arity: 1,
-                    code: Self::chunk_same,
+                    code: Builtin::chunk_same,
                 }),
             ),
             (
@@ -86,7 +79,7 @@ impl Evaluator {
                 Obj::BuiltinFunc(BuiltinFunc {
                     name: "+".into(),
                     arity: 2,
-                    code: Self::plus,
+                    code: Builtin::plus,
                 }),
             ),
         ]
@@ -96,65 +89,111 @@ impl Evaluator {
         });
         builtins
     }
-}
 
-impl Builtin for Evaluator {
-    fn join(stack: &mut Vec<Obj>) -> Option<Obj> {
-        let b = stack.pop().unwrap();
-        let a = stack.pop().unwrap();
-        match (a.clone(), b.clone()) {
-            (Obj::List(eles), Obj::String(sep)) => Some(Obj::String(
-                eles.into_iter()
-                    .map(|ele| ele.string())
-                    .collect::<Vec<String>>()
-                    .join(&sep),
-            )),
-            (Obj::String(_), _) => Some(a),
-            (_, _) => None,
-        }
+    pub fn get_builtin(&self, name: &str) -> Option<Obj> {
+        self.builtins.get(name).map(|obj| obj.clone())
     }
 
-    fn zip(stack: &mut Vec<Obj>) -> Option<Obj> {
-        let b = stack.pop().unwrap();
-        let a = stack.pop().unwrap();
-        match (a, b) {
-            (Obj::List(l), Obj::List(r)) => {
-                Some(Obj::List(l.into_iter().interleave(r.into_iter()).collect()))
-            }
-            (_, _) => Some(Obj::List(Vec::new())),
-        }
+    pub fn get_alias(&self, name: &str) -> Option<Box<Node>> {
+        self.aliases.get(name).map(|node| node.clone())
     }
 
-    fn chunk_same(stack: &mut Vec<Obj>) -> Option<Obj> {
-        let a = stack.pop().unwrap();
-        match a {
-            Obj::String(s) => Some(Obj::List(
-                s.chars()
-                    .dedup_with_count()
-                    .map(|(count, c)| c.to_string().repeat(count))
-                    .map(|e| Obj::String(e))
-                    .collect(),
-            )),
-            _ => None,
-        }
+    pub fn set_alias(&mut self, name: &str, func: &Box<Node>) -> Option<Obj> {
+        self.aliases
+            .insert(name.to_owned(), func.clone())
+            .map(|_| Obj::Alias {
+                name: name.to_owned(),
+                func: func.clone(),
+            })
     }
 
-    fn plus(stack: &mut Vec<Obj>) -> Option<Obj> {
-        let b = stack.pop().unwrap();
-        let a = stack.pop().unwrap();
-        match (a, b) {
-            (Obj::Int(a), Obj::Int(b)) => Some(Obj::Int(a + b)),
-            (_, _) => None,
-        }
+    pub fn next_node(&mut self) -> Option<Node> {
+        self.queue.pop_front()
+    }
+
+    pub fn push_value(&mut self, value: Obj) {
+        self.stack.push(value)
     }
 }
 
 pub trait Eval {
-    fn eval(
-        &self,
-        builtins: &BuiltinMap,
-        queue: &mut VecDeque<Node>,
-        stack: &mut Vec<Obj>,
-        aliases: &mut AliasMap,
-    ) -> Option<Obj>;
+    fn eval(&self, e: &mut Evaluator) -> Option<Obj>;
+}
+pub trait EvalNodes {
+    fn node(&mut self, node: &Node) -> Option<Obj>;
+    fn obj(&mut self, obj: &Obj) -> Option<Obj>;
+}
+
+impl EvalNodes for Evaluator {
+    fn node(&mut self, node: &Node) -> Option<Obj> {
+        match node {
+            Node::Call(name) => {
+                println!("evaling call {name}");
+                let f = self.get_builtin(name);
+                if let Some(Obj::BuiltinFunc(f)) = f {
+                    println!("    calling builtin {}", name.clone());
+                    println!(
+                        "    dequeuing {} {}",
+                        f.arity,
+                        if f.arity == 1 { "node" } else { "nodes" }
+                    );
+                    for _ in 0..f.arity {
+                        let out = self.next_node();
+                        if let Some(out) = out {
+                            let out = self.node(&out)?;
+                            self.push_value(out)
+                        }
+                    }
+                    return (f.code)(self);
+                }
+
+                let f = self.get_alias(name);
+                if let Some(f) = f {
+                    println!("    calling alias {}", name.clone());
+                    return self.node(&f);
+                }
+                None
+            }
+            Node::Obj(o) => {
+                println!("evaling object");
+                self.obj(&o)
+            }
+            Node::If {
+                cond,
+                when_true,
+                when_false,
+            } => {
+                println!("evaling if");
+                let cond = self.node(cond);
+                if let Some(cond) = cond {
+                    let cond = cond.into();
+                    if cond {
+                        println!("    evaling when_true");
+                        self.node(when_true)
+                    } else if let Some(when_false) = &when_false {
+                        println!("    evaling when_false");
+                        self.node(when_false)
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            }
+            Node::Alias { name, func } => {
+                println!("evaling alias");
+                self.set_alias(name, func)
+            } // node => {
+              //     println!("TODO: unknown node: {node:?}");
+              //     None
+              // }
+        }
+    }
+
+    fn obj(&mut self, obj: &Obj) -> Option<Obj> {
+        match obj {
+            Obj::BuiltinFunc(f) => (f.code)(self),
+            _ => Some(obj.clone()),
+        }
+    }
 }

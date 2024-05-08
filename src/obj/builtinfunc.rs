@@ -1,6 +1,8 @@
+use crate::eval::Evaluator;
+
 use super::Obj;
 
-pub type Func = fn(stack: &mut Vec<Obj>) -> Option<Obj>;
+pub type Func = fn(&mut Evaluator) -> Option<Obj>;
 
 #[derive(Debug, Clone)]
 pub struct BuiltinFunc {

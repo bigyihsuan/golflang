@@ -1,9 +1,4 @@
-use std::collections::VecDeque;
-
-use crate::{
-    eval::{AliasMap, BuiltinMap, Eval},
-    tree::node::Node,
-};
+use crate::tree::node::Node;
 
 use self::builtinfunc::BuiltinFunc;
 
@@ -36,21 +31,6 @@ impl Obj {
             Obj::Bool(b) => b.to_string(),
             Obj::Int(i) => i.to_string(),
             Obj::Alias { name, func } => format!("{name}:={func:?}"),
-        }
-    }
-}
-
-impl Eval for Obj {
-    fn eval(
-        &self,
-        _builtins: &BuiltinMap,
-        _queue: &mut VecDeque<Node>,
-        stack: &mut Vec<Obj>,
-        _aliases: &mut AliasMap,
-    ) -> Option<Obj> {
-        match self {
-            Obj::BuiltinFunc(f) => (f.code)(stack),
-            _ => Some(self.clone()),
         }
     }
 }
