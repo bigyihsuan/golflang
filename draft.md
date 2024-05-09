@@ -60,18 +60,21 @@ dynamic, loose typing
 
 - [ ] int: positive literals only (use unary `neg`)
 - [ ] dec: positive floats only (use unary `neg`)
-- [ ] str: any character, with escapes. double quotes only
+- [ ] str: any character, with escapes. double quotes only `"abc"`
 - [ ] bool
-- [ ] list: heterogeneous lists
-- [ ] map: heterogenous maps
-- [ ] func: code. lambdas, builtins, etc
+- [ ] list: heterogeneous lists `[a,b,c]`
+- [ ] map: heterogenous maps `{a:1,b:2,c:3}`
+- [ ] quote: code `(code code code)`
+- [ ] func: lambdas. `\arg, ... => code`
 
 ## syntactic constructions
 
 - [ ] `range START to/til END (every INCREMENT)`: returns a List. `to` for exclusive end, `til` for inclusive end. optional increment
-- [ ] `for`: infinite loop
-  - `for COLLECTION then CODE`: run `CODE` for each element in collection
-  - `for NAME in COLLECTION then CODE`: run `CODE` for each element in collection, assign the element to `NAME` for each run
+- [ ] loops
+  - [ ] `loop CODE`: infinite loop
+  - [ ] `while CONDITION CODE`
+  - [ ] `for COLLECTION then CODE`: run `CODE` for each element in collection
+  - [ ] `for NAME in COLLECTION then CODE`: run `CODE` for each element in collection, assign the element to `NAME` for each run
 - [x] `if cond then ... else ...`
 - [ ] `name := ... ;`
 - [ ] `\name, ... => ...`
@@ -81,8 +84,8 @@ dynamic, loose typing
 
 ## builtins
 
-- [ ] join
-- [ ] zip
+- [x] join
+- [x] zip
 - [ ] chunking:
   - [ ] nChunks
   - [ ] chunkN

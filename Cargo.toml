@@ -7,4 +7,10 @@ edition = "2021"
 
 [dependencies]
 itertools = "0.12.0"
+line-col = "0.2.1"
+logos = "0.14.0"
+num-traits = "0.2.19"
+parse_int = "0.6.0"
+peg = "0.8.3"
 regex = "1.10.2"
+snailquote = "0.3.1"
