@@ -5,10 +5,12 @@ use snailquote::unescape;
 
 use crate::prelude::LexError;
 
-#[derive(Logos, Debug, Clone)]
+#[derive(Logos, Debug, Clone, Default)]
 #[logos(skip r"[ \t\n\f]+")]
 #[logos(error = LexError)]
 pub enum Token<'source> {
+    #[default]
+    EmptyToken,
     #[regex(r"[a-zA-Z]+")]
     Ident(&'source str),
     #[regex("[0-9]+", |lex| parse_int::parse::<i64>(lex.slice()))]

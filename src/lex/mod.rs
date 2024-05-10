@@ -1,15 +1,14 @@
 use std::fmt::Display;
 
-use itertools::any;
 use line_col::LineColLookup;
 use logos::{Logos, Source, Span};
 
 use self::token::Token;
-use crate::prelude::{LexError, SyntaxError};
+use crate::prelude::LexError;
 
 pub mod token;
 
-pub type TokenList<'source> = Vec<(Result<Token<'source>, LexError>, Span)>;
+pub type TokenList<'source> = Vec<(Token<'source>, Span)>;
 
 pub struct TokenStream<'source> {
     filename: Option<std::path::PathBuf>,
@@ -19,7 +18,7 @@ pub struct TokenStream<'source> {
 }
 
 impl<'source> TokenStream<'source> {
-    pub fn new(filename: Option<std::path::PathBuf>, input: &'source str) -> Result<Self, SyntaxError> {
+    pub fn new(filename: Option<std::path::PathBuf>, input: &'source str) -> Result<Self, LexError> {
         let mut lexer = Token::lexer(input);
         let mut tokens = TokenList::new();
 
@@ -27,21 +26,22 @@ impl<'source> TokenStream<'source> {
             let span = lexer.span();
             if let Err(err) = token {
                 if let LexError::UnknownTokenDefault = err {
-                    tokens.push((
-                        Err(LexError::UnknownToken(
-                            lexer
-                                .source()
-                                .slice(span.clone())
-                                .unwrap_or("range outside of source")
-                                .to_string(),
-                        )),
-                        span,
-                    ));
+                    return Err(LexError::UnknownToken {
+                        token: lexer
+                            .source()
+                            .slice(span.clone())
+                            .unwrap_or("range outside of source")
+                            .to_string(),
+                        span: span,
+                    });
                 } else {
-                    tokens.push((Err(err), span));
+                    return Err(err);
                 }
             } else {
-                tokens.push((token, span));
+                match token {
+                    Ok(token) => tokens.push((token, span)),
+                    Err(err) => return Err(err),
+                }
             }
         }
 
@@ -57,7 +57,7 @@ impl<'source> TokenStream<'source> {
         Ok(token_stream)
     }
 
-    pub fn tokens(&self) -> &Vec<(Result<Token, LexError>, Span)> {
+    pub fn tokens(&self) -> &TokenList {
         &self.tokens
     }
 }
@@ -76,13 +76,13 @@ impl<'source> peg::Parse for TokenStream<'source> {
     fn position_repr<'input>(&'input self, pos: usize) -> Self::PositionRepr {
         let (token, linecol) = match self.tokens.get(pos) {
             Some((token, span)) => (token.clone(), self.linecol_lookup.get(span.start)),
-            None => (Err(LexError::UnknownTokenDefault), self.linecol_lookup.get(self.size)),
+            None => (Token::default(), self.linecol_lookup.get(self.size)),
         };
 
         Self::PositionRepr {
             filename: self.filename.clone(),
             linecol,
-            token,
+            token: Some(token),
         }
     }
 }
@@ -92,7 +92,7 @@ impl<'source, 'input> peg::ParseElem<'input> for TokenStream<'source> {
 
     fn parse_elem(&'input self, pos: usize) -> peg::RuleResult<Self::Element> {
         match self.tokens.get(pos) {
-            Some((Ok(token), _)) => peg::RuleResult::Matched(pos + 1, token),
+            Some((token, _)) => peg::RuleResult::Matched(pos + 1, token),
             _ => peg::RuleResult::Failed,
         }
     }
@@ -101,14 +101,14 @@ impl<'source, 'input> peg::ParseElem<'input> for TokenStream<'source> {
 impl<'source> peg::ParseLiteral for TokenStream<'source> {
     fn parse_string_literal(&self, pos: usize, name: &str) -> peg::RuleResult<()> {
         match self.tokens.get(pos) {
-            Some((Ok(Token::Ident(id)), _)) if id == &name => peg::RuleResult::Matched(pos + 1, ()),
+            Some((Token::Ident(id), _)) if id == &name => peg::RuleResult::Matched(pos + 1, ()),
             _ => peg::RuleResult::Failed,
         }
     }
 }
 
 impl<'source, 'input> peg::ParseSlice<'input> for TokenStream<'source> {
-    type Slice = Vec<&'input Result<Token<'input>, LexError>>;
+    type Slice = Vec<&'input Token<'input>>;
 
     fn parse_slice(&'input self, start_pos: usize, end_pos: usize) -> Self::Slice {
         self.tokens[start_pos..end_pos]
@@ -122,7 +122,7 @@ impl<'source, 'input> peg::ParseSlice<'input> for TokenStream<'source> {
 pub struct TokenLocation<'source> {
     pub filename: Option<std::path::PathBuf>,
     pub linecol: (usize, usize),
-    pub token: Result<Token<'source>, LexError>,
+    pub token: Option<Token<'source>>,
 }
 
 impl<'source> Display for TokenLocation<'source> {

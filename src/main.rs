@@ -11,7 +11,7 @@ use logos::{Logos, Source};
 use obj::Obj;
 use tree::node::Node;
 
-use crate::prelude::LexError;
+use crate::{lex::TokenStream, prelude::LexError};
 
 fn main() {
     // let queue = [
@@ -60,30 +60,32 @@ fn main() {
 
     let code = "f := \\a,b => join zip chunkSame a chunkSame b \"\" ;";
     println!("{code}");
-    let mut lexer = Token::lexer(code);
-    while let Some(token) = lexer.next() {
-        match token {
-            Ok(token) => println!("{token}"),
-            Err(err) => match err {
-                LexError::UnknownTokenDefault => println!("err: {:?}", lexer.source().slice(lexer.span()).unwrap()),
-                _ => println!("err: {err}"),
-            },
-        }
+
+    let token_stream = TokenStream::new(None, code);
+    if let Err(err) = token_stream {
+        println!("{err}");
+        return;
+    }
+    let token_stream = token_stream.unwrap();
+    let mut token_iter = token_stream.tokens().iter();
+
+    while let Some(token) = token_iter.next() {
+        println!("{token:?}");
     }
     println!();
 
     let code = "cmp := \\a,b => if < a b then -1 else if > a b then 1 else 0 ;";
     println!("{code}");
-    let mut lexer = Token::lexer(code);
-    while let Some(token) = lexer.next() {
-        match token {
-            Ok(token) => println!("{token}"),
-            Err(err) => match err {
-                LexError::UnknownTokenDefault => {
-                    println!("unknown token: {:?}", lexer.source().slice(lexer.span()).unwrap())
-                }
-                _ => println!("err: {err}"),
-            },
-        }
+
+    let token_stream = TokenStream::new(None, code);
+    if let Err(err) = token_stream {
+        println!("{err}");
+        return;
+    }
+    let token_stream = token_stream.unwrap();
+    let mut token_iter = token_stream.tokens().iter();
+
+    while let Some(token) = token_iter.next() {
+        println!("{token:?}");
     }
 }

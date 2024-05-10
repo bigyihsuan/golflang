@@ -2,6 +2,7 @@ use std::{fmt::Display, num::ParseIntError};
 
 use itertools::Itertools;
 
+use logos::Span;
 use num_traits::ParseFloatError;
 use snailquote::UnescapeError;
 
@@ -92,19 +93,22 @@ impl<'source> From<ParseError<'source>> for SyntaxError {
 
 #[derive(Debug, Default, PartialEq, Clone)]
 pub enum LexError {
-    #[default]
-    UnknownTokenDefault,
-    UnknownToken(String),
+    UnknownToken {
+        token: String,
+        span: Span,
+    },
     InvalidInt(String),
     InvalidFloat(String),
     InvalidEscape(String),
+    #[default]
+    UnknownTokenDefault,
 }
 
 impl Display for LexError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::UnknownTokenDefault => write!(f, "unknown token"),
-            Self::UnknownToken(err) => write!(f, "unknown token: {err}"),
+            Self::UnknownToken { token, span } => write!(f, "unknown token: `{token}` at {span:?}"),
             Self::InvalidInt(err) => write!(f, "invalid int: {err}"),
             Self::InvalidFloat(err) => write!(f, "invalid float: {err}"),
             Self::InvalidEscape(err) => write!(f, "invalid string escape: {err}"),
