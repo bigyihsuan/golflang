@@ -4,6 +4,11 @@ import "strconv"
 
 type Bool bool
 
+func ZeroBool() Bool {
+	var b Bool
+	return b
+}
+
 // AsBool implements Object.
 func (b Bool) AsBool() bool {
 	return bool(b)

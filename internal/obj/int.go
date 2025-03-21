@@ -4,6 +4,11 @@ import "strconv"
 
 type Int int64
 
+func ZeroInt() Int {
+	var i Int
+	return i
+}
+
 // AsBool implements Object.
 func (i Int) AsBool() bool {
 	return i != 0

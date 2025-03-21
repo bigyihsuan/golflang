@@ -6,6 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBool_ZeroBool(t *testing.T) {
+	assert.Equal(t, Bool(false), ZeroBool())
+}
+
 func TestBool_AsBool(t *testing.T) {
 	ts := []struct {
 		desc string

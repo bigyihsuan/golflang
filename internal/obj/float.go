@@ -6,6 +6,11 @@ import (
 
 type Float float64
 
+func ZeroFloat() Float {
+	var f Float
+	return f
+}
+
 // AsBool implements Object.
 func (f Float) AsBool() bool {
 	return f != 0.0

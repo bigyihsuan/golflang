@@ -6,6 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestFloat_ZeroFloat(t *testing.T) {
+	assert.Equal(t, Float(0.0), ZeroFloat())
+}
+
 func TestFloat_AsBool(t *testing.T) {
 	ts := []struct {
 		desc string
