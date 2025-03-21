@@ -27,9 +27,7 @@ type Object interface {
 /* === force implementation of Object === */
 
 var _ Object = Int(0)
-
 var _ Object = Float(0.0)
-
 var _ Object = Bool(false)
 
 // var _ Object = String("")

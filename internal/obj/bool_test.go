@@ -1,0 +1,51 @@
+package obj
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestBool_AsBool(t *testing.T) {
+	ts := []struct {
+		desc string
+		v    Bool
+		exp  bool
+	}{
+		{"falsey false", Bool(false), false},
+		{"truthy true", Bool(true), true},
+	}
+
+	for _, test := range ts {
+		act := test.v.AsBool()
+		assert.Equal(t, test.exp, act, test.desc)
+	}
+}
+
+func TestBool_Equal(t *testing.T) {
+	ts := []struct {
+		desc string
+		l    Bool
+		r    Object
+		exp  bool
+	}{
+		{"bool to bool true", Bool(false), Bool(false), true},
+		{"bool to bool false", Bool(false), Bool(true), false},
+		{"bool to else false", Bool(false), Int(123), false},
+	}
+
+	for _, test := range ts {
+		act := test.l.Equal(test.r)
+		assert.Equal(t, test.exp, act, test.desc)
+	}
+}
+
+func TestBool_Kind(t *testing.T) {
+	v := Bool(false)
+	assert.Equal(t, KindBool, v.Kind(), "bool should have KindBool")
+}
+
+func TestBool_String(t *testing.T) {
+	v := Bool(true)
+	assert.Equal(t, v.String(), "true")
+}
