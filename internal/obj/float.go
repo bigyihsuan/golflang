@@ -2,6 +2,7 @@ package obj
 
 import (
 	"fmt"
+	"math"
 )
 
 type Float float64
@@ -13,7 +14,7 @@ func ZeroFloat() Float {
 
 // AsBool implements Object.
 func (f Float) AsBool() bool {
-	return f != 0.0
+	return !math.IsNaN(float64(f)) && f != 0.0
 }
 
 // Equal implements Object.

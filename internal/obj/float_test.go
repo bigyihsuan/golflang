@@ -1,6 +1,7 @@
 package obj
 
 import (
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,6 +18,7 @@ func TestFloat_AsBool(t *testing.T) {
 		exp  bool
 	}{
 		{"falsey zero", Float(0), false},
+		{"falsey NaN", Float(math.NaN()), false},
 		{"truthy non-zero positive", Float(5.6), true},
 		{"truthy non-zero negative", Float(-5.6), true},
 	}
