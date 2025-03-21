@@ -18,7 +18,7 @@ impl Builtin for Evaluator {
         match (a.clone(), b.clone()) {
             (Obj::List(eles), Obj::String(sep)) => Some(Obj::String(
                 eles.into_iter()
-                    .map(|ele| ele.string())
+                    .map(|ele| ele.to_string())
                     .collect::<Vec<String>>()
                     .join(&sep),
             )),
@@ -31,9 +31,7 @@ impl Builtin for Evaluator {
         let b = self.stack.pop().unwrap();
         let a = self.stack.pop().unwrap();
         match (a, b) {
-            (Obj::List(l), Obj::List(r)) => {
-                Some(Obj::List(l.into_iter().interleave(r.into_iter()).collect()))
-            }
+            (Obj::List(l), Obj::List(r)) => Some(Obj::List(l.into_iter().interleave(r.into_iter()).collect())),
             (_, _) => Some(Obj::List(Vec::new())),
         }
     }

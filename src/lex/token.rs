@@ -13,6 +13,7 @@ pub enum Token<'source> {
     EmptyToken,
     #[regex(r"[a-zA-Z]+")]
     Ident(&'source str),
+    // literals
     #[regex("[0-9]+", |lex| parse_int::parse::<i64>(lex.slice()))]
     Int(i64),
     #[regex("[0-9]+\\.[0-9]+", |lex| parse_int::parse::<f64>(lex.slice()))]
@@ -23,7 +24,6 @@ pub enum Token<'source> {
     False(bool),
     #[regex("\"(?:[^\"]|\\\\\")*\"", unescape_callback)]
     String(String),
-
     // keywords
     #[token("if")]
     If,
@@ -31,17 +31,91 @@ pub enum Token<'source> {
     Then,
     #[token("else")]
     Else,
-
+    #[token("loop")]
+    Loop,
+    #[token("while")]
+    While,
+    #[token("for")]
+    For,
+    #[token("foreach")]
+    ForEach,
+    #[token("in")]
+    In,
+    #[token("end")]
+    End,
+    #[token("yield")]
+    Yield,
+    #[token("return")]
+    Return,
+    #[token("from")]
+    From,
+    #[token("get")]
+    Get,
+    #[token("range")]
+    Range,
+    #[token("to")]
+    To,
+    #[token("til")]
+    Til,
+    #[token("every")]
+    Every,
     // single symbols
     #[token(r"\")]
     Backslash,
+    #[token(r":")]
+    Colon,
     #[token(r";")]
     Semicolon,
     #[token(r",")]
     Comma,
-    // multi symbols
+    #[token("+")]
+    Plus,
+    #[token("-")]
+    Minus,
+    #[token("*")]
+    Star,
+    #[token("/")]
+    Slash,
+    #[token("%")]
+    Percent,
+    #[token("**")]
+    DoubleStar,
+    #[token("_")]
+    Underscore,
+    #[token("<")]
+    Lt,
+    #[token(">")]
+    Gt,
+    #[token("<=")]
+    LtEq,
+    #[token(">=")]
+    GtEq,
+    #[token("==")]
+    EqEq,
+    #[token("!=")]
+    BangEq,
+    #[token("<<")]
+    DoubleLT,
+    #[token("l>>")]
+    DoubleGtL,
+    #[token("a>>")]
+    DoubleGtA,
+    #[token("&")]
+    Ampersand,
+    #[token("|")]
+    Pipe,
+    #[token("^")]
+    Caret,
+    #[token("[")]
+    LBracket,
+    #[token("]")]
+    RBracket,
+    #[token("{")]
+    LCurly,
+    #[token("}")]
+    RCurly,
     #[token(r":=")]
-    Assign,
+    ColonEq,
     #[token(r"=>")]
     FatArrow,
 }
@@ -55,7 +129,7 @@ impl<'source> Display for Token<'source> {
 impl<'source> PartialEq for Token<'source> {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            // (Self::Ident(l0), Self::Ident(r0)) => l0 == r0,
+            (Self::Ident(l0), Self::Ident(r0)) => l0 == r0,
             _ => core::mem::discriminant(self) == core::mem::discriminant(other),
         }
     }

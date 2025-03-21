@@ -2,7 +2,7 @@ use std::collections::{HashMap, VecDeque};
 
 use crate::{
     obj::{builtinfunc::BuiltinFunc, Obj},
-    tree::node::Node,
+    tree::node::Expr,
 };
 
 use self::builtin::Builtin;
@@ -10,17 +10,18 @@ use self::builtin::Builtin;
 pub mod builtin;
 
 pub type BuiltinMap = HashMap<String, Obj>;
-pub type AliasMap = HashMap<String, Box<Node>>;
+pub type AliasMap = HashMap<String, Expr>;
+pub type NodeQueue = VecDeque<Expr>;
 
 pub struct Evaluator {
     builtins: BuiltinMap,
-    queue: VecDeque<Node>,
+    queue: NodeQueue,
     stack: Vec<Obj>,
     aliases: AliasMap,
 }
 
 impl Evaluator {
-    pub fn new(nodes: &[Node]) -> Self {
+    pub fn new(nodes: &[Expr]) -> Self {
         let e = Self {
             builtins: Self::init_builtins(),
             queue: VecDeque::from(nodes.to_vec()),
@@ -29,23 +30,26 @@ impl Evaluator {
         };
         e
     }
-    pub fn eval(&mut self) {
+    pub fn eval(&mut self) -> Result<(), ()> {
         while self.queue.len() > 0 {
             println!("stack {:?}", self.stack);
             println!("queue {:?}", self.queue);
             let node = self.queue.pop_front();
             if let Some(node) = node {
-                let out = self.node(&node);
+                let out = self.expr(&node);
                 if let Some(val) = out {
                     if let Obj::None = val {
                         continue;
                     } else {
                         self.stack.push(val);
                     }
+                } else {
+                    return Err(());
                 }
             }
         }
         println!("{:?}", self.stack);
+        Ok(())
     }
     fn init_builtins() -> BuiltinMap {
         let mut builtins = BuiltinMap::new();
@@ -94,18 +98,18 @@ impl Evaluator {
         self.builtins.get(name).map(|obj| obj.clone())
     }
 
-    pub fn get_alias(&self, name: &str) -> Option<Box<Node>> {
+    pub fn get_alias(&self, name: &str) -> Option<Expr> {
         self.aliases.get(name).map(|node| node.clone())
     }
 
-    pub fn set_alias(&mut self, name: &str, func: &Box<Node>) -> Option<Obj> {
+    pub fn set_alias(&mut self, name: &str, func: &Expr) -> Option<Obj> {
         self.aliases.insert(name.to_owned(), func.clone()).map(|_| Obj::Alias {
             name: name.to_owned(),
-            func: func.clone(),
+            func: Box::new(func.clone()),
         })
     }
 
-    pub fn next_node(&mut self) -> Option<Node> {
+    pub fn next_node(&mut self) -> Option<Expr> {
         self.queue.pop_front()
     }
 
@@ -118,33 +122,36 @@ pub trait Eval {
     fn eval(&self, e: &mut Evaluator) -> Option<Obj>;
 }
 pub trait EvalNodes {
-    fn node(&mut self, node: &Node) -> Option<Obj>;
+    fn expr(&mut self, expr: &Expr) -> Option<Obj>;
     fn call(&mut self, name: &str) -> Option<Obj>;
     fn obj(&mut self, obj: &Obj) -> Option<Obj>;
-    fn r#if(&mut self, cond: &Node, when_true: &Node, when_false: &Option<Box<Node>>) -> Option<Obj>;
-    fn alias(&mut self, name: &str, func: &Box<Node>) -> Option<Obj>;
+    fn r#if(&mut self, cond: &Expr, when_true: &Expr, when_false: &Option<Box<Expr>>) -> Option<Obj>;
+    fn alias(&mut self, name: &str, func: &Expr) -> Option<Obj>;
 }
 
 impl EvalNodes for Evaluator {
-    fn node(&mut self, node: &Node) -> Option<Obj> {
+    fn expr(&mut self, node: &Expr) -> Option<Obj> {
         match node {
-            Node::Call(name) => self.call(name),
-            Node::Obj(o) => self.obj(&o),
-            Node::If {
+            Expr::Call(name) => self.call(name),
+            Expr::Literal(o) => self.obj(&o),
+            Expr::If {
                 cond,
                 when_true,
                 when_false,
             } => self.r#if(cond, when_true, when_false),
-            Node::Alias { name, func } => self.alias(name, func),
-            // node => {
-            //     println!("TODO: unknown node: {node:?}");
-            //     None
-            // }
+            Expr::Alias { name, func } => self.alias(name, func),
+            node => {
+                println!("TODO: unknown node: {node:?}");
+                None
+            }
         }
     }
 
     fn call(&mut self, name: &str) -> Option<Obj> {
         println!("evaling call {name}");
+        println!("stack {:?}", self.stack);
+        println!("queue {:?}", self.queue);
+
         let f = self.get_builtin(name);
         if let Some(Obj::BuiltinFunc(f)) = f {
             println!("    calling builtin {}", name);
@@ -156,7 +163,7 @@ impl EvalNodes for Evaluator {
             for _ in 0..f.arity {
                 let out = self.next_node();
                 if let Some(out) = out {
-                    let out = self.node(&out)?;
+                    let out = self.expr(&out)?;
                     self.push_value(out)
                 }
             }
@@ -166,7 +173,7 @@ impl EvalNodes for Evaluator {
         let f = self.get_alias(name);
         if let Some(f) = f {
             println!("    calling alias {}", name);
-            return self.node(&f);
+            return self.expr(&f);
         }
         None
     }
@@ -179,17 +186,17 @@ impl EvalNodes for Evaluator {
         }
     }
 
-    fn r#if(&mut self, cond: &Node, when_true: &Node, when_false: &Option<Box<Node>>) -> Option<Obj> {
+    fn r#if(&mut self, cond: &Expr, when_true: &Expr, when_false: &Option<Box<Expr>>) -> Option<Obj> {
         println!("evaling if");
-        let cond = self.node(cond);
+        let cond = self.expr(cond);
         if let Some(cond) = cond {
             let cond = cond.into();
             if cond {
                 println!("    evaling when_true");
-                self.node(when_true)
+                self.expr(when_true)
             } else if let Some(when_false) = &when_false {
                 println!("    evaling when_false");
-                self.node(when_false)
+                self.expr(when_false)
             } else {
                 None
             }
@@ -198,7 +205,7 @@ impl EvalNodes for Evaluator {
         }
     }
 
-    fn alias(&mut self, name: &str, func: &Box<Node>) -> Option<Obj> {
+    fn alias(&mut self, name: &str, func: &Expr) -> Option<Obj> {
         println!("evaling alias");
         self.set_alias(name, func)
     }

@@ -40,9 +40,22 @@ cmp := \a,b => if < a b then -1 else if > a b then 1 else 0 ;
 
 ```ruby
 # comprehensions
-fizzbuzz := \n => for range 1 til n yield if % n 15 then "fizzbuzz" else if % n 3 then "fizz" else if % n 5 then "buzz" else string n ;
+fizzbuzz := \n => for range 1 til n then yield if % n 15 then "fizzbuzz" else if % n 3 then "fizz" else if % n 5 then "buzz" else string n ;
 # functional
 fizzbuzz := \n => map range 1 til n \k => if % n 15 then "fizzbuzz" else if % n 3 then "fizz" else if % n 5 then "buzz" else string n ;
+```
+
+<https://codegolf.stackexchange.com/questions/270235/swap-letter-cases>
+
+```ruby
+\s => cat for c in s then yield if isLower c then toUpper c else toLower c;
+\s => cat map s \c => if isLower c then toUpper c else toLower c
+```
+
+<https://codegolf.stackexchange.com/questions/119690/the-forbidden-built-in>
+
+```ruby
+\l => chunkN l 3
 ```
 
 above nested lambda should work as-is. note single trailing semicolon ending all lambdas
@@ -58,40 +71,41 @@ add 1 2 ;  # returns 3, same as + 1 2
 
 dynamic, loose typing
 
-- [ ] int: positive literals only (use unary `neg`)
-- [ ] dec: positive floats only (use unary `neg`)
+- [ ] int: positive literals only (use unary neg `_`)
+- [ ] dec: positive floats only (use unary neg `_`)
 - [ ] str: any character, with escapes. double quotes only `"abc"`
 - [ ] bool
 - [ ] list: heterogeneous lists `[a,b,c]`
 - [ ] map: heterogenous maps `{a:1,b:2,c:3}`
-- [ ] quote: code `(code code code)`
 - [ ] func: lambdas. `\arg, ... => code`
 
 ## syntactic constructions
 
+- [ ] statements are separated by semicolons `;`
+  - [ ] alias: `name := ... ;`
 - [ ] `range START to/til END (every INCREMENT)`: returns a List. `to` for exclusive end, `til` for inclusive end. optional increment
 - [ ] loops
-  - [ ] `loop CODE`: infinite loop
-  - [ ] `while CONDITION CODE`
-  - [ ] `for COLLECTION then CODE`: run `CODE` for each element in collection
-  - [ ] `for NAME in COLLECTION then CODE`: run `CODE` for each element in collection, assign the element to `NAME` for each run
-- [x] `if cond then ... else ...`
-- [ ] `name := ... ;`
-- [ ] `\name, ... => ...`
+  - [ ] `loop CODE end`: infinite loop
+  - [ ] `while CONDITION then CODE end`
+  - [ ] `for COLLECTION then CODE end`: run `CODE` for each element in collection
+  - [ ] `foreach NAME in COLLECTION then CODE end`: run `CODE` for each element in collection, assign the element to `NAME` for each run
+- [x] `if cond then ... (else ...) end`: if-the-else-end are exprs
+- [ ] `\name, ... => ... end`
+- [ ] `from COLLECTION get KEY`
 - [ ] `yield ...`
-- [ ] `return ...`
-- [ ] quotes: turns everything into a func. surround in single quotes: `'CODE'`
+- [ ] `return ...`: early return only. last expr of a block is auto-returned
+- [ ] quotes: turns everything within into a single func. surround in single quotes: `'CODE'`
 
 ## builtins
 
 - [x] join
 - [x] zip
 - [ ] chunking:
-  - [ ] nChunks
-  - [ ] chunkN
-  - [x] chunkSame
+  - [ ] nChunks: 2-adic, collection and chunk count. returns a list containing that many chunks.  
+  - [ ] chunkN: 2-adic, collection and chunk size. returns a list containing chunks of given size. remainder elements are placed into the last chunk.
+  - [x] chunkSame: 1-adic, collection. returns a list of elements where each element is a collection of identical consecutive elements.
 - [ ] enumerate
 - [ ] cmp ops: `<`, `<=`, `>`, `>=`, `==`, `!=`
-- [ ] arithmetic: `+`, `-`, `*`, `/`, `%`, `**` (exp), `neg`
-- [ ] bitwise: `<<`, `l>>` (logical), `a>>` (arithmetic), `&`, `|`, `^` (bitwise not)
+- [ ] arithmetic (prefer float): `+`, `-`, `*`, `/`, `%`, `**` (exp), `_` (unary negation)
+- [ ] bitwise (int only): `<<`, `l>>` (logical), `a>>` (arithmetic), `&`, `|`, `^` (bitwise not)
 - [ ] logical: `and`, `or`, `not`
