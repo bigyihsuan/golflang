@@ -45,7 +45,7 @@ func TestString_Equal(t *testing.T) {
 }
 
 func TestString_Kind(t *testing.T) {
-	v := String("")
+	v := ZeroString()
 	assert.Equal(t, KindString, v.Kind(), "str should have KindString")
 }
 

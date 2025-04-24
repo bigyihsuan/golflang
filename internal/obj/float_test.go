@@ -50,7 +50,7 @@ func TestFloat_Equal(t *testing.T) {
 }
 
 func TestFloat_Kind(t *testing.T) {
-	v := Float(0.0)
+	v := ZeroFloat()
 	assert.Equal(t, KindFloat, v.Kind(), "float should have KindFloat")
 }
 

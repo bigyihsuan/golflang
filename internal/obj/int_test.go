@@ -48,7 +48,7 @@ func TestInt_Equal(t *testing.T) {
 }
 
 func TestInt_Kind(t *testing.T) {
-	v := Int(0)
+	v := ZeroInt()
 	assert.Equal(t, KindInt, v.Kind(), "int should have KindInt")
 }
 
