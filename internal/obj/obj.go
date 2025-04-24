@@ -16,7 +16,7 @@ const (
 )
 
 // Obj is an interface for all values in golflang.
-// Any values musst implement this interface.
+// Any values must implement this interface.
 type Obj interface {
 	Kind() ObjKind // the kind of this object
 	String() string
@@ -30,8 +30,8 @@ var _ Obj = Int(0)
 var _ Obj = Float(0.0)
 var _ Obj = Bool(false)
 var _ Obj = String("")
+var _ Obj = List([]Obj{})
 
-// var _ Obj = List([]Obj{})
 // var _ Obj = Map(make(map[Obj]Obj))
 // var _ Obj = BuiltinFunc()
 // var _ Obj = Alias()
