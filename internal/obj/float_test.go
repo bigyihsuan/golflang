@@ -11,7 +11,7 @@ func TestFloat_ZeroFloat(t *testing.T) {
 	assert.Equal(t, Float(0.0), ZeroFloat())
 }
 
-func TestFloat_AsBool(t *testing.T) {
+func TestFloat_Bool(t *testing.T) {
 	ts := []struct {
 		desc string
 		v    Float
@@ -24,7 +24,7 @@ func TestFloat_AsBool(t *testing.T) {
 	}
 
 	for _, test := range ts {
-		act := test.v.AsBool()
+		act := test.v.Bool()
 		assert.Equal(t, test.exp, act, test.desc)
 	}
 }

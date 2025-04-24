@@ -20,7 +20,7 @@ const (
 type Obj interface {
 	Kind() ObjKind // the kind of this object
 	String() string
-	AsBool() bool
+	Bool() bool
 	Equal(o Obj) bool
 }
 

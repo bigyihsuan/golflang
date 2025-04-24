@@ -9,8 +9,8 @@ func ZeroBool() Bool {
 	return b
 }
 
-// AsBool implements Object.
-func (b Bool) AsBool() bool {
+// Bool implements Object.
+func (b Bool) Bool() bool {
 	return bool(b)
 }
 

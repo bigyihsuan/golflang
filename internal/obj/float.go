@@ -12,8 +12,8 @@ func ZeroFloat() Float {
 	return f
 }
 
-// AsBool implements Object.
-func (f Float) AsBool() bool {
+// Bool implements Object.
+func (f Float) Bool() bool {
 	return !math.IsNaN(float64(f)) && f != 0.0
 }
 

@@ -10,7 +10,7 @@ func TestBool_ZeroBool(t *testing.T) {
 	assert.Equal(t, Bool(false), ZeroBool())
 }
 
-func TestBool_AsBool(t *testing.T) {
+func TestBool_Bool(t *testing.T) {
 	ts := []struct {
 		desc string
 		v    Bool
@@ -21,7 +21,7 @@ func TestBool_AsBool(t *testing.T) {
 	}
 
 	for _, test := range ts {
-		act := test.v.AsBool()
+		act := test.v.Bool()
 		assert.Equal(t, test.exp, act, test.desc)
 	}
 }

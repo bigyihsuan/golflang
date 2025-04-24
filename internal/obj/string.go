@@ -6,8 +6,8 @@ func ZeroString() String {
 	return String("")
 }
 
-// AsBool implements Obj.
-func (s String) AsBool() bool {
+// Bool implements Obj.
+func (s String) Bool() bool {
 	return s != ""
 }
 

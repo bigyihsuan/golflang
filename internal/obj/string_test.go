@@ -10,7 +10,7 @@ func TestZeroString(t *testing.T) {
 	assert.Equal(t, String(""), ZeroString())
 }
 
-func TestString_AsBool(t *testing.T) {
+func TestString_Bool(t *testing.T) {
 	ts := []struct {
 		desc string
 		v    String
@@ -21,7 +21,7 @@ func TestString_AsBool(t *testing.T) {
 	}
 
 	for _, test := range ts {
-		act := test.v.AsBool()
+		act := test.v.Bool()
 		assert.Equal(t, test.exp, act, test.desc)
 	}
 }
