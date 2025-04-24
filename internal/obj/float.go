@@ -34,6 +34,11 @@ func (f Float) Kind() ObjKind {
 	return KindFloat
 }
 
+// Repr implements Obj.
+func (f Float) Repr() string {
+	return f.String()
+}
+
 // String implements Object.
 func (f Float) String() string {
 	return fmt.Sprint(float64(f))

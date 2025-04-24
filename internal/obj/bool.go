@@ -29,6 +29,11 @@ func (b Bool) Kind() ObjKind {
 	return KindBool
 }
 
+// Repr implements Obj.
+func (b Bool) Repr() string {
+	return b.String()
+}
+
 // String implements Object.
 func (b Bool) String() string {
 	return strconv.FormatBool(bool(b))

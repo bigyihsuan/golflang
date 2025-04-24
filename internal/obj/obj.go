@@ -18,10 +18,11 @@ const (
 // Obj is an interface for all values in golflang.
 // Any values must implement this interface.
 type Obj interface {
-	Kind() ObjKind // the kind of this object
-	String() string
 	Bool() bool
 	Equal(o Obj) bool
+	Kind() ObjKind  // the kind of this object
+	Repr() string   // debug representation of this object
+	String() string // stringified representation of this object, for printing
 }
 
 /* === force implementation of Object === */

@@ -51,6 +51,11 @@ func TestList_Kind(t *testing.T) {
 	assert.Equal(t, KindList, v.Kind(), "list should have KindList")
 }
 
+func TestList_Repr(t *testing.T) {
+	v := List{Int(1), Float(2.2), String("333"), List{Int(4), Int(4), Int(4), Int(4)}}
+	assert.Equal(t, v.Repr(), "[1,2.2,`333`,[4,4,4,4]]")
+}
+
 func TestList_String(t *testing.T) {
 	v := List{Int(1), Float(2.2), String("333"), List{Int(4), Int(4), Int(4), Int(4)}}
 	assert.Equal(t, v.String(), "[1,2.2,333,[4,4,4,4]]")

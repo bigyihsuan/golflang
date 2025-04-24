@@ -52,6 +52,11 @@ func TestInt_Kind(t *testing.T) {
 	assert.Equal(t, KindInt, v.Kind(), "int should have KindInt")
 }
 
+func TestInt_Repr(t *testing.T) {
+	v := Int(123456)
+	assert.Equal(t, v.Repr(), "123456")
+}
+
 func TestInt_String(t *testing.T) {
 	v := Int(123456)
 	assert.Equal(t, v.String(), "123456")

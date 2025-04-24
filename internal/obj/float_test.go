@@ -54,6 +54,11 @@ func TestFloat_Kind(t *testing.T) {
 	assert.Equal(t, KindFloat, v.Kind(), "float should have KindFloat")
 }
 
+func TestFloat_Repr(t *testing.T) {
+	v := Float(123.456)
+	assert.Equal(t, v.Repr(), "123.456")
+}
+
 func TestFloat_String(t *testing.T) {
 	v := Float(123.456)
 	assert.Equal(t, v.String(), "123.456")

@@ -1,5 +1,7 @@
 package obj
 
+import "fmt"
+
 type String string
 
 func ZeroString() String {
@@ -24,6 +26,11 @@ func (s String) Equal(o Obj) bool {
 // Kind implements Obj.
 func (s String) Kind() ObjKind {
 	return KindString
+}
+
+// Repr implements Obj.
+func (s String) Repr() string {
+	return fmt.Sprintf("`%s`", s)
 }
 
 // String implements Obj.

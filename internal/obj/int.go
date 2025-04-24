@@ -31,6 +31,11 @@ func (i Int) Kind() ObjKind {
 	return KindInt
 }
 
+// Repr implements Obj.
+func (i Int) Repr() string {
+	return i.String()
+}
+
 // String implements Object.
 func (i Int) String() string {
 	return strconv.FormatInt(int64(i), 10)

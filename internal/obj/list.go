@@ -34,6 +34,11 @@ func (l List) Kind() ObjKind {
 	return KindList
 }
 
+// Repr implements Obj.
+func (l List) Repr() string {
+	return fmt.Sprintf("[%s]", strings.Join(slice.Map(l, func(o Obj) string { return o.Repr() }), ","))
+}
+
 // String implements Obj.
 func (l List) String() string {
 	return fmt.Sprintf("[%s]", strings.Join(slice.Map(l, func(o Obj) string { return o.String() }), ","))
