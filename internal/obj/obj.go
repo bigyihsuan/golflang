@@ -12,7 +12,7 @@ const (
 	KindList
 	KindMap
 	KindBuiltinFunc
-	KindAlias
+	KindIdent
 )
 
 // Obj is an interface for all values in golflang.
@@ -35,4 +35,4 @@ var _ Obj = ZeroList()
 var _ Obj = ZeroMap()
 
 // var _ Obj = BuiltinFunc()
-// var _ Obj = Alias()
+// var _ Obj = Ident()
