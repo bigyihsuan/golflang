@@ -1,7 +1,7 @@
 package obj
 
 import (
-	"bigyihsuan/golflang/internal/slice"
+	"bigyihsuan/golflang/internal/util"
 	"fmt"
 	"slices"
 	"strings"
@@ -22,8 +22,7 @@ func (l List) Bool() bool {
 func (l List) Equal(o Obj) bool {
 	switch o.Kind() {
 	case KindList:
-		o := o.(List)
-		return slices.EqualFunc(l, o, func(l, r Obj) bool { return l.Equal(r) })
+		return slices.EqualFunc(l, o.(List), func(l, r Obj) bool { return l.Equal(r) })
 	default:
 		return false
 	}
@@ -36,10 +35,10 @@ func (l List) Kind() ObjKind {
 
 // Repr implements Obj.
 func (l List) Repr() string {
-	return fmt.Sprintf("[%s]", strings.Join(slice.Map(l, func(o Obj) string { return o.Repr() }), ","))
+	return fmt.Sprintf("[%s]", strings.Join(util.SliceMap(l, func(o Obj) string { return o.Repr() }), ","))
 }
 
 // String implements Obj.
 func (l List) String() string {
-	return fmt.Sprintf("[%s]", strings.Join(slice.Map(l, func(o Obj) string { return o.String() }), ","))
+	return fmt.Sprintf("[%s]", strings.Join(util.SliceMap(l, func(o Obj) string { return o.String() }), ","))
 }

@@ -27,12 +27,12 @@ type Obj interface {
 
 /* === force implementation of Object === */
 
-var _ Obj = Int(0)
-var _ Obj = Float(0.0)
-var _ Obj = Bool(false)
-var _ Obj = String("")
-var _ Obj = List([]Obj{})
+var _ Obj = ZeroInt()
+var _ Obj = ZeroFloat()
+var _ Obj = ZeroBool()
+var _ Obj = ZeroString()
+var _ Obj = ZeroList()
+var _ Obj = ZeroMap()
 
-// var _ Obj = Map(make(map[Obj]Obj))
 // var _ Obj = BuiltinFunc()
 // var _ Obj = Alias()
