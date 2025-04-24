@@ -18,7 +18,7 @@ func (f Float) AsBool() bool {
 }
 
 // Equal implements Object.
-func (f Float) Equal(o Object) bool {
+func (f Float) Equal(o Obj) bool {
 	switch o.Kind() {
 	case KindFloat:
 		return f == o.(Float)
@@ -30,7 +30,7 @@ func (f Float) Equal(o Object) bool {
 }
 
 // Kind implements Object.
-func (f Float) Kind() ObjectKind {
+func (f Float) Kind() ObjKind {
 	return KindFloat
 }
 

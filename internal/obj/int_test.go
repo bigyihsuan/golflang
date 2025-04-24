@@ -31,7 +31,7 @@ func TestInt_Equal(t *testing.T) {
 	ts := []struct {
 		desc string
 		l    Int
-		r    Object
+		r    Obj
 		exp  bool
 	}{
 		{"int to int true", Int(123), Int(123), true},

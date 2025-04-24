@@ -1,10 +1,10 @@
 package obj
 
-// ObjectKind helps determine what kind of object it is
-type ObjectKind uint
+// ObjKind helps determine what kind of object it is
+type ObjKind uint
 
 const (
-	KindNone ObjectKind = iota
+	KindNone ObjKind = iota
 	KindInt
 	KindFloat
 	KindBool
@@ -15,20 +15,20 @@ const (
 	KindAlias
 )
 
-// Object is an interface for all values in golflang.
+// Obj is an interface for all values in golflang.
 // Any values musst implement this interface.
-type Object interface {
-	Kind() ObjectKind // the kind of this object
+type Obj interface {
+	Kind() ObjKind // the kind of this object
 	String() string
 	AsBool() bool
-	Equal(o Object) bool
+	Equal(o Obj) bool
 }
 
 /* === force implementation of Object === */
 
-var _ Object = Int(0)
-var _ Object = Float(0.0)
-var _ Object = Bool(false)
+var _ Obj = Int(0)
+var _ Obj = Float(0.0)
+var _ Obj = Bool(false)
 
 // var _ Object = String("")
 // var _ Object = List([]Object{})

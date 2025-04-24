@@ -30,7 +30,7 @@ func TestBool_Equal(t *testing.T) {
 	ts := []struct {
 		desc string
 		l    Bool
-		r    Object
+		r    Obj
 		exp  bool
 	}{
 		{"bool to bool true", Bool(false), Bool(false), true},

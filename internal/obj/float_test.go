@@ -33,7 +33,7 @@ func TestFloat_Equal(t *testing.T) {
 	ts := []struct {
 		desc string
 		l    Float
-		r    Object
+		r    Obj
 		exp  bool
 	}{
 		{"float to float true", Float(123.123), Float(123.123), true},

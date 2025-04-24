@@ -15,7 +15,7 @@ func (i Int) AsBool() bool {
 }
 
 // Equal implements Object.
-func (i Int) Equal(o Object) bool {
+func (i Int) Equal(o Obj) bool {
 	switch o.Kind() {
 	case KindInt:
 		return i == o.(Int)
@@ -27,7 +27,7 @@ func (i Int) Equal(o Object) bool {
 }
 
 // Kind implements Object.
-func (i Int) Kind() ObjectKind {
+func (i Int) Kind() ObjKind {
 	return KindInt
 }
 
