@@ -10,12 +10,24 @@ type GolflangListener interface {
 	// EnterProg is called when entering the prog production.
 	EnterProg(c *ProgContext)
 
-	// EnterExpr is called when entering the expr production.
-	EnterExpr(c *ExprContext)
+	// EnterLiteral is called when entering the literal production.
+	EnterLiteral(c *LiteralContext)
+
+	// EnterLiteralList is called when entering the literalList production.
+	EnterLiteralList(c *LiteralListContext)
+
+	// EnterLiteralMap is called when entering the literalMap production.
+	EnterLiteralMap(c *LiteralMapContext)
 
 	// ExitProg is called when exiting the prog production.
 	ExitProg(c *ProgContext)
 
-	// ExitExpr is called when exiting the expr production.
-	ExitExpr(c *ExprContext)
+	// ExitLiteral is called when exiting the literal production.
+	ExitLiteral(c *LiteralContext)
+
+	// ExitLiteralList is called when exiting the literalList production.
+	ExitLiteralList(c *LiteralListContext)
+
+	// ExitLiteralMap is called when exiting the literalMap production.
+	ExitLiteralMap(c *LiteralMapContext)
 }

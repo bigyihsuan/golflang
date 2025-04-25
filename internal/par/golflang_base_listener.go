@@ -26,8 +26,20 @@ func (s *BaseGolflangListener) EnterProg(ctx *ProgContext) {}
 // ExitProg is called when production prog is exited.
 func (s *BaseGolflangListener) ExitProg(ctx *ProgContext) {}
 
-// EnterExpr is called when production expr is entered.
-func (s *BaseGolflangListener) EnterExpr(ctx *ExprContext) {}
+// EnterLiteral is called when production literal is entered.
+func (s *BaseGolflangListener) EnterLiteral(ctx *LiteralContext) {}
 
-// ExitExpr is called when production expr is exited.
-func (s *BaseGolflangListener) ExitExpr(ctx *ExprContext) {}
+// ExitLiteral is called when production literal is exited.
+func (s *BaseGolflangListener) ExitLiteral(ctx *LiteralContext) {}
+
+// EnterLiteralList is called when production literalList is entered.
+func (s *BaseGolflangListener) EnterLiteralList(ctx *LiteralListContext) {}
+
+// ExitLiteralList is called when production literalList is exited.
+func (s *BaseGolflangListener) ExitLiteralList(ctx *LiteralListContext) {}
+
+// EnterLiteralMap is called when production literalMap is entered.
+func (s *BaseGolflangListener) EnterLiteralMap(ctx *LiteralMapContext) {}
+
+// ExitLiteralMap is called when production literalMap is exited.
+func (s *BaseGolflangListener) ExitLiteralMap(ctx *LiteralMapContext) {}

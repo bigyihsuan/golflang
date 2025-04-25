@@ -11,6 +11,14 @@ func (v *BaseGolflangVisitor) VisitProg(ctx *ProgContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
-func (v *BaseGolflangVisitor) VisitExpr(ctx *ExprContext) interface{} {
+func (v *BaseGolflangVisitor) VisitLiteral(ctx *LiteralContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseGolflangVisitor) VisitLiteralList(ctx *LiteralListContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseGolflangVisitor) VisitLiteralMap(ctx *LiteralMapContext) interface{} {
 	return v.VisitChildren(ctx)
 }

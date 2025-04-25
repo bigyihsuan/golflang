@@ -10,6 +10,12 @@ type GolflangVisitor interface {
 	// Visit a parse tree produced by GolflangParser#prog.
 	VisitProg(ctx *ProgContext) interface{}
 
-	// Visit a parse tree produced by GolflangParser#expr.
-	VisitExpr(ctx *ExprContext) interface{}
+	// Visit a parse tree produced by GolflangParser#literal.
+	VisitLiteral(ctx *LiteralContext) interface{}
+
+	// Visit a parse tree produced by GolflangParser#literalList.
+	VisitLiteralList(ctx *LiteralListContext) interface{}
+
+	// Visit a parse tree produced by GolflangParser#literalMap.
+	VisitLiteralMap(ctx *LiteralMapContext) interface{}
 }

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"bigyihsuan/golflang/internal/par"
 	"flag"
 	"fmt"
+
+	"bigyihsuan/golflang/internal/par"
 
 	"github.com/antlr4-go/antlr/v4"
 )
@@ -14,7 +15,6 @@ var (
 
 func main() {
 	flag.Parse()
-	fmt.Println(*filename)
 
 	fs, err := antlr.NewFileStream(*filename)
 	if err != nil {
@@ -27,9 +27,8 @@ func main() {
 
 	tokenStream := antlr.NewCommonTokenStream(lexer, 0)
 	parser := par.NewGolflangParser(tokenStream)
-	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(false))
 
 	tree := parser.Prog()
 	fmt.Println(tree.ToStringTree(parser.RuleNames, parser))
-
 }
