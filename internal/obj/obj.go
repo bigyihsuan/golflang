@@ -1,3 +1,4 @@
+//go:generate stringer -type=ObjKind
 package obj
 
 // ObjKind helps determine what kind of object it is
