@@ -24,7 +24,10 @@ type Obj interface {
 	Kind() ObjKind  // the kind of this object
 	Repr() string   // debug representation of this object
 	String() string // stringified representation of this object, for printing
+	Hash() Hash     // fmt.Sprintf("%#v") for implementing Map
 }
+
+type Hash string // for implementing Map
 
 /* === force implementation of Object === */
 

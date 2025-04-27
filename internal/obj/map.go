@@ -7,14 +7,15 @@ import (
 	"strings"
 )
 
-type Map map[Obj]Obj
-
-func ZeroMap() Map {
-	return Map(make(map[Obj]Obj))
+type Map struct {
+	m map[Hash]Entry
 }
 
-func MapFromMap(m map[Obj]Obj) Map {
-	return Map(m)
+type Entry struct{ K, V Obj }
+
+func ZeroMap() Map {
+	m := make(map[Hash]Entry)
+	return Map{m}
 }
 
 func MapFromPairs(kvs ...Obj) Map {
@@ -24,22 +25,23 @@ func MapFromPairs(kvs ...Obj) Map {
 	out := ZeroMap()
 	pairs := slices.Chunk(kvs, 2)
 	for pair := range pairs {
-		k, v := pair[0], pair[1]
-		out[k] = v
+		e := Entry{pair[0], pair[1]}
+		out.m[e.K.Hash()] = e
 	}
 	return out
 }
 
 // Bool implements Obj.
 func (m Map) Bool() bool {
-	return len(m) > 0
+	return len(m.m) > 0
 }
 
 // Equal implements Obj.
 func (m Map) Equal(o Obj) bool {
 	switch o.Kind() {
 	case KindMap:
-		return maps.EqualFunc(m, o.(Map), func(l, r Obj) bool { return l.Equal(r) })
+		return maps.EqualFunc(m.m, o.(Map).m,
+			func(e1, e2 Entry) bool { return e1.K.Equal(e2.K) && e1.V.Equal(e2.V) })
 	default:
 		return false
 	}
@@ -53,8 +55,8 @@ func (m Map) Kind() ObjKind {
 // Repr implements Obj.
 func (m Map) Repr() string {
 	vs := []string{}
-	for k, v := range m {
-		vs = append(vs, fmt.Sprintf("%s:%s", k.Repr(), v.Repr()))
+	for _, e := range m.m {
+		vs = append(vs, fmt.Sprintf("%s:%s", e.K.Repr(), e.V.Repr()))
 	}
 	slices.Sort(vs)
 	return fmt.Sprintf("{%s}", strings.Join(vs, ","))
@@ -63,9 +65,31 @@ func (m Map) Repr() string {
 // String implements Obj.
 func (m Map) String() string {
 	vs := []string{}
-	for k, v := range m {
-		vs = append(vs, fmt.Sprintf("%s:%s", k.String(), v.String()))
+	for _, e := range m.m {
+		vs = append(vs, fmt.Sprintf("%s:%s", e.K.String(), e.V.String()))
 	}
 	slices.Sort(vs)
 	return fmt.Sprintf("{%s}", strings.Join(vs, ","))
+}
+
+// Hash implements Obj.
+func (m Map) Hash() Hash {
+	return Hash(fmt.Sprintf("%#v", m))
+}
+
+func (m *Map) Set(k, v Obj) {
+	e := Entry{k, v}
+	m.m[e.K.Hash()] = e
+}
+
+func (m *Map) SetFromEntry(e Entry) {
+	m.m[e.K.Hash()] = e
+}
+
+func (m Map) Get(k Obj) (v Obj, ok bool) {
+	e, ok := m.m[k.Hash()]
+	if ok {
+		return e.V, ok
+	}
+	return nil, false
 }

@@ -37,3 +37,7 @@ func (s Str) Repr() string {
 func (s Str) String() string {
 	return string(s)
 }
+
+func (s Str) Hash() Hash {
+	return Hash(fmt.Sprintf("%#v", s))
+}

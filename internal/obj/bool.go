@@ -1,6 +1,9 @@
 package obj
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 type Bool bool
 
@@ -37,4 +40,8 @@ func (b Bool) Repr() string {
 // String implements Object.
 func (b Bool) String() string {
 	return strconv.FormatBool(bool(b))
+}
+
+func (b Bool) Hash() Hash {
+	return Hash(fmt.Sprintf("%#v", b))
 }

@@ -1,6 +1,9 @@
 package obj
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 type Int int64
 
@@ -39,4 +42,8 @@ func (i Int) Repr() string {
 // String implements Object.
 func (i Int) String() string {
 	return strconv.FormatInt(int64(i), 10)
+}
+
+func (i Int) Hash() Hash {
+	return Hash(fmt.Sprintf("%#v", i))
 }

@@ -43,3 +43,7 @@ func (f Dec) Repr() string {
 func (f Dec) String() string {
 	return fmt.Sprint(float64(f))
 }
+
+func (f Dec) Hash() Hash {
+	return Hash(fmt.Sprintf("%#v", f))
+}

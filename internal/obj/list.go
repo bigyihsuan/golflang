@@ -42,3 +42,7 @@ func (l List) Repr() string {
 func (l List) String() string {
 	return fmt.Sprintf("[%s]", strings.Join(util.SliceMap(l, func(o Obj) string { return o.String() }), ","))
 }
+
+func (l List) Hash() Hash {
+	return Hash(fmt.Sprintf("%#v", l))
+}
