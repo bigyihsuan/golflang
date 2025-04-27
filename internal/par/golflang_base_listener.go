@@ -43,3 +43,15 @@ func (s *BaseGolflangListener) EnterLiteralMap(ctx *LiteralMapContext) {}
 
 // ExitLiteralMap is called when production literalMap is exited.
 func (s *BaseGolflangListener) ExitLiteralMap(ctx *LiteralMapContext) {}
+
+// EnterLiteralMapEntry is called when production literalMapEntry is entered.
+func (s *BaseGolflangListener) EnterLiteralMapEntry(ctx *LiteralMapEntryContext) {}
+
+// ExitLiteralMapEntry is called when production literalMapEntry is exited.
+func (s *BaseGolflangListener) ExitLiteralMapEntry(ctx *LiteralMapEntryContext) {}
+
+// EnterLiteralPrimitive is called when production literalPrimitive is entered.
+func (s *BaseGolflangListener) EnterLiteralPrimitive(ctx *LiteralPrimitiveContext) {}
+
+// ExitLiteralPrimitive is called when production literalPrimitive is exited.
+func (s *BaseGolflangListener) ExitLiteralPrimitive(ctx *LiteralPrimitiveContext) {}

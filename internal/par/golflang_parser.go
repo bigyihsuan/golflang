@@ -32,40 +32,44 @@ var GolflangParserStaticData struct {
 func golflangParserInit() {
 	staticData := &GolflangParserStaticData
 	staticData.LiteralNames = []string{
-		"", "'['", "','", "']'", "'{'", "':'", "'}'", "", "", "", "", "", "'true'",
-		"'false'",
+		"", "", "", "", "", "", "'true'", "'false'", "'\"'", "'('", "')'", "'['",
+		"']'", "'{'", "'}'", "'.'", "','", "':'", "';'",
 	}
 	staticData.SymbolicNames = []string{
-		"", "", "", "", "", "", "", "WHITESPACE", "NEWLINE", "INT", "DEC", "STR",
-		"TRUE", "FALSE",
+		"", "WHITESPACE", "NEWLINE", "INT", "DEC", "STR", "TRUE", "FALSE", "QUOTE",
+		"LPAREN", "RPAREN", "LBRACKET", "RBRACKET", "LBRACE", "RBRACE", "DOT",
+		"COMMA", "COLON", "SEMICOLON",
 	}
 	staticData.RuleNames = []string{
-		"prog", "literal", "literalList", "literalMap",
+		"prog", "literal", "literalList", "literalMap", "literalMapEntry", "literalPrimitive",
 	}
 	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 13, 52, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 1, 0, 5,
-		0, 10, 8, 0, 10, 0, 12, 0, 13, 9, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 3, 1, 24, 8, 1, 1, 2, 1, 2, 1, 2, 3, 2, 29, 8, 2, 5,
-		2, 31, 8, 2, 10, 2, 12, 2, 34, 9, 2, 1, 2, 1, 2, 1, 3, 1, 3, 1, 3, 1, 3,
-		1, 3, 3, 3, 43, 8, 3, 5, 3, 45, 8, 3, 10, 3, 12, 3, 48, 9, 3, 1, 3, 1,
-		3, 1, 3, 0, 0, 4, 0, 2, 4, 6, 0, 0, 58, 0, 11, 1, 0, 0, 0, 2, 23, 1, 0,
-		0, 0, 4, 25, 1, 0, 0, 0, 6, 37, 1, 0, 0, 0, 8, 10, 3, 2, 1, 0, 9, 8, 1,
-		0, 0, 0, 10, 13, 1, 0, 0, 0, 11, 9, 1, 0, 0, 0, 11, 12, 1, 0, 0, 0, 12,
-		14, 1, 0, 0, 0, 13, 11, 1, 0, 0, 0, 14, 15, 5, 0, 0, 1, 15, 1, 1, 0, 0,
-		0, 16, 24, 3, 4, 2, 0, 17, 24, 3, 6, 3, 0, 18, 24, 5, 9, 0, 0, 19, 24,
-		5, 10, 0, 0, 20, 24, 5, 11, 0, 0, 21, 24, 5, 12, 0, 0, 22, 24, 5, 13, 0,
-		0, 23, 16, 1, 0, 0, 0, 23, 17, 1, 0, 0, 0, 23, 18, 1, 0, 0, 0, 23, 19,
-		1, 0, 0, 0, 23, 20, 1, 0, 0, 0, 23, 21, 1, 0, 0, 0, 23, 22, 1, 0, 0, 0,
-		24, 3, 1, 0, 0, 0, 25, 32, 5, 1, 0, 0, 26, 28, 3, 2, 1, 0, 27, 29, 5, 2,
-		0, 0, 28, 27, 1, 0, 0, 0, 28, 29, 1, 0, 0, 0, 29, 31, 1, 0, 0, 0, 30, 26,
-		1, 0, 0, 0, 31, 34, 1, 0, 0, 0, 32, 30, 1, 0, 0, 0, 32, 33, 1, 0, 0, 0,
-		33, 35, 1, 0, 0, 0, 34, 32, 1, 0, 0, 0, 35, 36, 5, 3, 0, 0, 36, 5, 1, 0,
-		0, 0, 37, 46, 5, 4, 0, 0, 38, 39, 3, 2, 1, 0, 39, 40, 5, 5, 0, 0, 40, 42,
-		3, 2, 1, 0, 41, 43, 5, 2, 0, 0, 42, 41, 1, 0, 0, 0, 42, 43, 1, 0, 0, 0,
-		43, 45, 1, 0, 0, 0, 44, 38, 1, 0, 0, 0, 45, 48, 1, 0, 0, 0, 46, 44, 1,
-		0, 0, 0, 46, 47, 1, 0, 0, 0, 47, 49, 1, 0, 0, 0, 48, 46, 1, 0, 0, 0, 49,
-		50, 5, 6, 0, 0, 50, 7, 1, 0, 0, 0, 6, 11, 23, 28, 32, 42, 46,
+		4, 1, 18, 62, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
+		4, 2, 5, 7, 5, 1, 0, 5, 0, 14, 8, 0, 10, 0, 12, 0, 17, 9, 0, 1, 1, 1, 1,
+		1, 1, 3, 1, 22, 8, 1, 1, 2, 1, 2, 3, 2, 26, 8, 2, 1, 2, 1, 2, 5, 2, 30,
+		8, 2, 10, 2, 12, 2, 33, 9, 2, 1, 2, 3, 2, 36, 8, 2, 1, 2, 1, 2, 1, 3, 1,
+		3, 3, 3, 42, 8, 3, 1, 3, 1, 3, 5, 3, 46, 8, 3, 10, 3, 12, 3, 49, 9, 3,
+		1, 3, 3, 3, 52, 8, 3, 1, 3, 1, 3, 1, 4, 1, 4, 1, 4, 1, 4, 1, 5, 1, 5, 1,
+		5, 0, 0, 6, 0, 2, 4, 6, 8, 10, 0, 1, 1, 0, 3, 7, 64, 0, 15, 1, 0, 0, 0,
+		2, 21, 1, 0, 0, 0, 4, 23, 1, 0, 0, 0, 6, 39, 1, 0, 0, 0, 8, 55, 1, 0, 0,
+		0, 10, 59, 1, 0, 0, 0, 12, 14, 3, 2, 1, 0, 13, 12, 1, 0, 0, 0, 14, 17,
+		1, 0, 0, 0, 15, 13, 1, 0, 0, 0, 15, 16, 1, 0, 0, 0, 16, 1, 1, 0, 0, 0,
+		17, 15, 1, 0, 0, 0, 18, 22, 3, 4, 2, 0, 19, 22, 3, 6, 3, 0, 20, 22, 3,
+		10, 5, 0, 21, 18, 1, 0, 0, 0, 21, 19, 1, 0, 0, 0, 21, 20, 1, 0, 0, 0, 22,
+		3, 1, 0, 0, 0, 23, 25, 5, 11, 0, 0, 24, 26, 3, 2, 1, 0, 25, 24, 1, 0, 0,
+		0, 25, 26, 1, 0, 0, 0, 26, 31, 1, 0, 0, 0, 27, 28, 5, 16, 0, 0, 28, 30,
+		3, 2, 1, 0, 29, 27, 1, 0, 0, 0, 30, 33, 1, 0, 0, 0, 31, 29, 1, 0, 0, 0,
+		31, 32, 1, 0, 0, 0, 32, 35, 1, 0, 0, 0, 33, 31, 1, 0, 0, 0, 34, 36, 5,
+		16, 0, 0, 35, 34, 1, 0, 0, 0, 35, 36, 1, 0, 0, 0, 36, 37, 1, 0, 0, 0, 37,
+		38, 5, 12, 0, 0, 38, 5, 1, 0, 0, 0, 39, 41, 5, 13, 0, 0, 40, 42, 3, 8,
+		4, 0, 41, 40, 1, 0, 0, 0, 41, 42, 1, 0, 0, 0, 42, 47, 1, 0, 0, 0, 43, 44,
+		5, 16, 0, 0, 44, 46, 3, 8, 4, 0, 45, 43, 1, 0, 0, 0, 46, 49, 1, 0, 0, 0,
+		47, 45, 1, 0, 0, 0, 47, 48, 1, 0, 0, 0, 48, 51, 1, 0, 0, 0, 49, 47, 1,
+		0, 0, 0, 50, 52, 5, 16, 0, 0, 51, 50, 1, 0, 0, 0, 51, 52, 1, 0, 0, 0, 52,
+		53, 1, 0, 0, 0, 53, 54, 5, 14, 0, 0, 54, 7, 1, 0, 0, 0, 55, 56, 3, 2, 1,
+		0, 56, 57, 5, 17, 0, 0, 57, 58, 3, 2, 1, 0, 58, 9, 1, 0, 0, 0, 59, 60,
+		7, 0, 0, 0, 60, 11, 1, 0, 0, 0, 8, 15, 21, 25, 31, 35, 41, 47, 51,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -104,27 +108,34 @@ func NewGolflangParser(input antlr.TokenStream) *GolflangParser {
 // GolflangParser tokens.
 const (
 	GolflangParserEOF        = antlr.TokenEOF
-	GolflangParserT__0       = 1
-	GolflangParserT__1       = 2
-	GolflangParserT__2       = 3
-	GolflangParserT__3       = 4
-	GolflangParserT__4       = 5
-	GolflangParserT__5       = 6
-	GolflangParserWHITESPACE = 7
-	GolflangParserNEWLINE    = 8
-	GolflangParserINT        = 9
-	GolflangParserDEC        = 10
-	GolflangParserSTR        = 11
-	GolflangParserTRUE       = 12
-	GolflangParserFALSE      = 13
+	GolflangParserWHITESPACE = 1
+	GolflangParserNEWLINE    = 2
+	GolflangParserINT        = 3
+	GolflangParserDEC        = 4
+	GolflangParserSTR        = 5
+	GolflangParserTRUE       = 6
+	GolflangParserFALSE      = 7
+	GolflangParserQUOTE      = 8
+	GolflangParserLPAREN     = 9
+	GolflangParserRPAREN     = 10
+	GolflangParserLBRACKET   = 11
+	GolflangParserRBRACKET   = 12
+	GolflangParserLBRACE     = 13
+	GolflangParserRBRACE     = 14
+	GolflangParserDOT        = 15
+	GolflangParserCOMMA      = 16
+	GolflangParserCOLON      = 17
+	GolflangParserSEMICOLON  = 18
 )
 
 // GolflangParser rules.
 const (
-	GolflangParserRULE_prog        = 0
-	GolflangParserRULE_literal     = 1
-	GolflangParserRULE_literalList = 2
-	GolflangParserRULE_literalMap  = 3
+	GolflangParserRULE_prog             = 0
+	GolflangParserRULE_literal          = 1
+	GolflangParserRULE_literalList      = 2
+	GolflangParserRULE_literalMap       = 3
+	GolflangParserRULE_literalMapEntry  = 4
+	GolflangParserRULE_literalPrimitive = 5
 )
 
 // IProgContext is an interface to support dynamic dispatch.
@@ -135,7 +146,6 @@ type IProgContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	EOF() antlr.TerminalNode
 	AllLiteral() []ILiteralContext
 	Literal(i int) ILiteralContext
 
@@ -174,10 +184,6 @@ func NewProgContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokin
 }
 
 func (s *ProgContext) GetParser() antlr.Parser { return s.parser }
-
-func (s *ProgContext) EOF() antlr.TerminalNode {
-	return s.GetToken(GolflangParserEOF, 0)
-}
 
 func (s *ProgContext) AllLiteral() []ILiteralContext {
 	children := s.GetChildren()
@@ -256,33 +262,25 @@ func (p *GolflangParser) Prog() (localctx IProgContext) {
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(11)
+	p.SetState(15)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
 	}
 	_la = p.GetTokenStream().LA(1)
 
-	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&15890) != 0 {
+	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&10488) != 0 {
 		{
-			p.SetState(8)
+			p.SetState(12)
 			p.Literal()
 		}
 
-		p.SetState(13)
+		p.SetState(17)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
 		}
 		_la = p.GetTokenStream().LA(1)
-	}
-	{
-		p.SetState(14)
-		p.Match(GolflangParserEOF)
-		if p.HasError() {
-			// Recognition error - abort rule
-			goto errorExit
-		}
 	}
 
 errorExit:
@@ -308,11 +306,7 @@ type ILiteralContext interface {
 	// Getter signatures
 	LiteralList() ILiteralListContext
 	LiteralMap() ILiteralMapContext
-	INT() antlr.TerminalNode
-	DEC() antlr.TerminalNode
-	STR() antlr.TerminalNode
-	TRUE() antlr.TerminalNode
-	FALSE() antlr.TerminalNode
+	LiteralPrimitive() ILiteralPrimitiveContext
 
 	// IsLiteralContext differentiates from other interfaces.
 	IsLiteralContext()
@@ -382,24 +376,20 @@ func (s *LiteralContext) LiteralMap() ILiteralMapContext {
 	return t.(ILiteralMapContext)
 }
 
-func (s *LiteralContext) INT() antlr.TerminalNode {
-	return s.GetToken(GolflangParserINT, 0)
-}
+func (s *LiteralContext) LiteralPrimitive() ILiteralPrimitiveContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(ILiteralPrimitiveContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
 
-func (s *LiteralContext) DEC() antlr.TerminalNode {
-	return s.GetToken(GolflangParserDEC, 0)
-}
+	if t == nil {
+		return nil
+	}
 
-func (s *LiteralContext) STR() antlr.TerminalNode {
-	return s.GetToken(GolflangParserSTR, 0)
-}
-
-func (s *LiteralContext) TRUE() antlr.TerminalNode {
-	return s.GetToken(GolflangParserTRUE, 0)
-}
-
-func (s *LiteralContext) FALSE() antlr.TerminalNode {
-	return s.GetToken(GolflangParserFALSE, 0)
+	return t.(ILiteralPrimitiveContext)
 }
 
 func (s *LiteralContext) GetRuleContext() antlr.RuleContext {
@@ -435,80 +425,32 @@ func (s *LiteralContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 func (p *GolflangParser) Literal() (localctx ILiteralContext) {
 	localctx = NewLiteralContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 2, GolflangParserRULE_literal)
-	p.SetState(23)
+	p.SetState(21)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
 	}
 
 	switch p.GetTokenStream().LA(1) {
-	case GolflangParserT__0:
+	case GolflangParserLBRACKET:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(16)
+			p.SetState(18)
 			p.LiteralList()
 		}
 
-	case GolflangParserT__3:
+	case GolflangParserLBRACE:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(17)
+			p.SetState(19)
 			p.LiteralMap()
 		}
 
-	case GolflangParserINT:
+	case GolflangParserINT, GolflangParserDEC, GolflangParserSTR, GolflangParserTRUE, GolflangParserFALSE:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(18)
-			p.Match(GolflangParserINT)
-			if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
-			}
-		}
-
-	case GolflangParserDEC:
-		p.EnterOuterAlt(localctx, 4)
-		{
-			p.SetState(19)
-			p.Match(GolflangParserDEC)
-			if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
-			}
-		}
-
-	case GolflangParserSTR:
-		p.EnterOuterAlt(localctx, 5)
-		{
 			p.SetState(20)
-			p.Match(GolflangParserSTR)
-			if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
-			}
-		}
-
-	case GolflangParserTRUE:
-		p.EnterOuterAlt(localctx, 6)
-		{
-			p.SetState(21)
-			p.Match(GolflangParserTRUE)
-			if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
-			}
-		}
-
-	case GolflangParserFALSE:
-		p.EnterOuterAlt(localctx, 7)
-		{
-			p.SetState(22)
-			p.Match(GolflangParserFALSE)
-			if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
-			}
+			p.LiteralPrimitive()
 		}
 
 	default:
@@ -537,8 +479,12 @@ type ILiteralListContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
+	LBRACKET() antlr.TerminalNode
+	RBRACKET() antlr.TerminalNode
 	AllLiteral() []ILiteralContext
 	Literal(i int) ILiteralContext
+	AllCOMMA() []antlr.TerminalNode
+	COMMA(i int) antlr.TerminalNode
 
 	// IsLiteralListContext differentiates from other interfaces.
 	IsLiteralListContext()
@@ -575,6 +521,14 @@ func NewLiteralListContext(parser antlr.Parser, parent antlr.ParserRuleContext, 
 }
 
 func (s *LiteralListContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *LiteralListContext) LBRACKET() antlr.TerminalNode {
+	return s.GetToken(GolflangParserLBRACKET, 0)
+}
+
+func (s *LiteralListContext) RBRACKET() antlr.TerminalNode {
+	return s.GetToken(GolflangParserRBRACKET, 0)
+}
 
 func (s *LiteralListContext) AllLiteral() []ILiteralContext {
 	children := s.GetChildren()
@@ -617,6 +571,14 @@ func (s *LiteralListContext) Literal(i int) ILiteralContext {
 	return t.(ILiteralContext)
 }
 
+func (s *LiteralListContext) AllCOMMA() []antlr.TerminalNode {
+	return s.GetTokens(GolflangParserCOMMA)
+}
+
+func (s *LiteralListContext) COMMA(i int) antlr.TerminalNode {
+	return s.GetToken(GolflangParserCOMMA, i)
+}
+
 func (s *LiteralListContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
@@ -652,56 +614,87 @@ func (p *GolflangParser) LiteralList() (localctx ILiteralListContext) {
 	p.EnterRule(localctx, 4, GolflangParserRULE_literalList)
 	var _la int
 
+	var _alt int
+
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(25)
-		p.Match(GolflangParserT__0)
+		p.SetState(23)
+		p.Match(GolflangParserLBRACKET)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	p.SetState(32)
+	p.SetState(25)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
 	}
 	_la = p.GetTokenStream().LA(1)
 
-	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&15890) != 0 {
+	if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&10488) != 0 {
 		{
-			p.SetState(26)
+			p.SetState(24)
 			p.Literal()
 		}
-		p.SetState(28)
-		p.GetErrorHandler().Sync(p)
-		if p.HasError() {
-			goto errorExit
-		}
-		_la = p.GetTokenStream().LA(1)
 
-		if _la == GolflangParserT__1 {
+	}
+	p.SetState(31)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 3, p.GetParserRuleContext())
+	if p.HasError() {
+		goto errorExit
+	}
+	for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
+		if _alt == 1 {
 			{
 				p.SetState(27)
-				p.Match(GolflangParserT__1)
+				p.Match(GolflangParserCOMMA)
 				if p.HasError() {
 					// Recognition error - abort rule
 					goto errorExit
 				}
 			}
+			{
+				p.SetState(28)
+				p.Literal()
+			}
 
 		}
-
-		p.SetState(34)
+		p.SetState(33)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
 		}
-		_la = p.GetTokenStream().LA(1)
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 3, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
+	}
+	p.SetState(35)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == GolflangParserCOMMA {
+		{
+			p.SetState(34)
+			p.Match(GolflangParserCOMMA)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
 	}
 	{
-		p.SetState(35)
-		p.Match(GolflangParserT__2)
+		p.SetState(37)
+		p.Match(GolflangParserRBRACKET)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
@@ -729,8 +722,12 @@ type ILiteralMapContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	AllLiteral() []ILiteralContext
-	Literal(i int) ILiteralContext
+	LBRACE() antlr.TerminalNode
+	RBRACE() antlr.TerminalNode
+	AllLiteralMapEntry() []ILiteralMapEntryContext
+	LiteralMapEntry(i int) ILiteralMapEntryContext
+	AllCOMMA() []antlr.TerminalNode
+	COMMA(i int) antlr.TerminalNode
 
 	// IsLiteralMapContext differentiates from other interfaces.
 	IsLiteralMapContext()
@@ -768,20 +765,28 @@ func NewLiteralMapContext(parser antlr.Parser, parent antlr.ParserRuleContext, i
 
 func (s *LiteralMapContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *LiteralMapContext) AllLiteral() []ILiteralContext {
+func (s *LiteralMapContext) LBRACE() antlr.TerminalNode {
+	return s.GetToken(GolflangParserLBRACE, 0)
+}
+
+func (s *LiteralMapContext) RBRACE() antlr.TerminalNode {
+	return s.GetToken(GolflangParserRBRACE, 0)
+}
+
+func (s *LiteralMapContext) AllLiteralMapEntry() []ILiteralMapEntryContext {
 	children := s.GetChildren()
 	len := 0
 	for _, ctx := range children {
-		if _, ok := ctx.(ILiteralContext); ok {
+		if _, ok := ctx.(ILiteralMapEntryContext); ok {
 			len++
 		}
 	}
 
-	tst := make([]ILiteralContext, len)
+	tst := make([]ILiteralMapEntryContext, len)
 	i := 0
 	for _, ctx := range children {
-		if t, ok := ctx.(ILiteralContext); ok {
-			tst[i] = t.(ILiteralContext)
+		if t, ok := ctx.(ILiteralMapEntryContext); ok {
+			tst[i] = t.(ILiteralMapEntryContext)
 			i++
 		}
 	}
@@ -789,11 +794,11 @@ func (s *LiteralMapContext) AllLiteral() []ILiteralContext {
 	return tst
 }
 
-func (s *LiteralMapContext) Literal(i int) ILiteralContext {
+func (s *LiteralMapContext) LiteralMapEntry(i int) ILiteralMapEntryContext {
 	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(ILiteralContext); ok {
+		if _, ok := ctx.(ILiteralMapEntryContext); ok {
 			if j == i {
 				t = ctx.(antlr.RuleContext)
 				break
@@ -806,7 +811,15 @@ func (s *LiteralMapContext) Literal(i int) ILiteralContext {
 		return nil
 	}
 
-	return t.(ILiteralContext)
+	return t.(ILiteralMapEntryContext)
+}
+
+func (s *LiteralMapContext) AllCOMMA() []antlr.TerminalNode {
+	return s.GetTokens(GolflangParserCOMMA)
+}
+
+func (s *LiteralMapContext) COMMA(i int) antlr.TerminalNode {
+	return s.GetToken(GolflangParserCOMMA, i)
 }
 
 func (s *LiteralMapContext) GetRuleContext() antlr.RuleContext {
@@ -844,71 +857,406 @@ func (p *GolflangParser) LiteralMap() (localctx ILiteralMapContext) {
 	p.EnterRule(localctx, 6, GolflangParserRULE_literalMap)
 	var _la int
 
+	var _alt int
+
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(37)
-		p.Match(GolflangParserT__3)
+		p.SetState(39)
+		p.Match(GolflangParserLBRACE)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	p.SetState(46)
+	p.SetState(41)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
 	}
 	_la = p.GetTokenStream().LA(1)
 
-	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&15890) != 0 {
-		{
-			p.SetState(38)
-			p.Literal()
-		}
-		{
-			p.SetState(39)
-			p.Match(GolflangParserT__4)
-			if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
-			}
-		}
+	if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&10488) != 0 {
 		{
 			p.SetState(40)
-			p.Literal()
+			p.LiteralMapEntry()
 		}
-		p.SetState(42)
-		p.GetErrorHandler().Sync(p)
-		if p.HasError() {
-			goto errorExit
-		}
-		_la = p.GetTokenStream().LA(1)
 
-		if _la == GolflangParserT__1 {
+	}
+	p.SetState(47)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 6, p.GetParserRuleContext())
+	if p.HasError() {
+		goto errorExit
+	}
+	for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
+		if _alt == 1 {
 			{
-				p.SetState(41)
-				p.Match(GolflangParserT__1)
+				p.SetState(43)
+				p.Match(GolflangParserCOMMA)
 				if p.HasError() {
 					// Recognition error - abort rule
 					goto errorExit
 				}
 			}
+			{
+				p.SetState(44)
+				p.LiteralMapEntry()
+			}
 
 		}
-
-		p.SetState(48)
+		p.SetState(49)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
 		}
-		_la = p.GetTokenStream().LA(1)
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 6, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
+	}
+	p.SetState(51)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == GolflangParserCOMMA {
+		{
+			p.SetState(50)
+			p.Match(GolflangParserCOMMA)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
 	}
 	{
-		p.SetState(49)
-		p.Match(GolflangParserT__5)
+		p.SetState(53)
+		p.Match(GolflangParserRBRACE)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
+		}
+	}
+
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
+	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
+}
+
+// ILiteralMapEntryContext is an interface to support dynamic dispatch.
+type ILiteralMapEntryContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// GetKey returns the key rule contexts.
+	GetKey() ILiteralContext
+
+	// GetValue returns the value rule contexts.
+	GetValue() ILiteralContext
+
+	// SetKey sets the key rule contexts.
+	SetKey(ILiteralContext)
+
+	// SetValue sets the value rule contexts.
+	SetValue(ILiteralContext)
+
+	// Getter signatures
+	COLON() antlr.TerminalNode
+	AllLiteral() []ILiteralContext
+	Literal(i int) ILiteralContext
+
+	// IsLiteralMapEntryContext differentiates from other interfaces.
+	IsLiteralMapEntryContext()
+}
+
+type LiteralMapEntryContext struct {
+	antlr.BaseParserRuleContext
+	parser antlr.Parser
+	key    ILiteralContext
+	value  ILiteralContext
+}
+
+func NewEmptyLiteralMapEntryContext() *LiteralMapEntryContext {
+	var p = new(LiteralMapEntryContext)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = GolflangParserRULE_literalMapEntry
+	return p
+}
+
+func InitEmptyLiteralMapEntryContext(p *LiteralMapEntryContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = GolflangParserRULE_literalMapEntry
+}
+
+func (*LiteralMapEntryContext) IsLiteralMapEntryContext() {}
+
+func NewLiteralMapEntryContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *LiteralMapEntryContext {
+	var p = new(LiteralMapEntryContext)
+
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = GolflangParserRULE_literalMapEntry
+
+	return p
+}
+
+func (s *LiteralMapEntryContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *LiteralMapEntryContext) GetKey() ILiteralContext { return s.key }
+
+func (s *LiteralMapEntryContext) GetValue() ILiteralContext { return s.value }
+
+func (s *LiteralMapEntryContext) SetKey(v ILiteralContext) { s.key = v }
+
+func (s *LiteralMapEntryContext) SetValue(v ILiteralContext) { s.value = v }
+
+func (s *LiteralMapEntryContext) COLON() antlr.TerminalNode {
+	return s.GetToken(GolflangParserCOLON, 0)
+}
+
+func (s *LiteralMapEntryContext) AllLiteral() []ILiteralContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(ILiteralContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]ILiteralContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(ILiteralContext); ok {
+			tst[i] = t.(ILiteralContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *LiteralMapEntryContext) Literal(i int) ILiteralContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(ILiteralContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(ILiteralContext)
+}
+
+func (s *LiteralMapEntryContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *LiteralMapEntryContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *LiteralMapEntryContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(GolflangListener); ok {
+		listenerT.EnterLiteralMapEntry(s)
+	}
+}
+
+func (s *LiteralMapEntryContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(GolflangListener); ok {
+		listenerT.ExitLiteralMapEntry(s)
+	}
+}
+
+func (s *LiteralMapEntryContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case GolflangVisitor:
+		return t.VisitLiteralMapEntry(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
+func (p *GolflangParser) LiteralMapEntry() (localctx ILiteralMapEntryContext) {
+	localctx = NewLiteralMapEntryContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 8, GolflangParserRULE_literalMapEntry)
+	p.EnterOuterAlt(localctx, 1)
+	{
+		p.SetState(55)
+
+		var _x = p.Literal()
+
+		localctx.(*LiteralMapEntryContext).key = _x
+	}
+	{
+		p.SetState(56)
+		p.Match(GolflangParserCOLON)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
+	}
+	{
+		p.SetState(57)
+
+		var _x = p.Literal()
+
+		localctx.(*LiteralMapEntryContext).value = _x
+	}
+
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
+	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
+}
+
+// ILiteralPrimitiveContext is an interface to support dynamic dispatch.
+type ILiteralPrimitiveContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// Getter signatures
+	INT() antlr.TerminalNode
+	DEC() antlr.TerminalNode
+	STR() antlr.TerminalNode
+	TRUE() antlr.TerminalNode
+	FALSE() antlr.TerminalNode
+
+	// IsLiteralPrimitiveContext differentiates from other interfaces.
+	IsLiteralPrimitiveContext()
+}
+
+type LiteralPrimitiveContext struct {
+	antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptyLiteralPrimitiveContext() *LiteralPrimitiveContext {
+	var p = new(LiteralPrimitiveContext)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = GolflangParserRULE_literalPrimitive
+	return p
+}
+
+func InitEmptyLiteralPrimitiveContext(p *LiteralPrimitiveContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = GolflangParserRULE_literalPrimitive
+}
+
+func (*LiteralPrimitiveContext) IsLiteralPrimitiveContext() {}
+
+func NewLiteralPrimitiveContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *LiteralPrimitiveContext {
+	var p = new(LiteralPrimitiveContext)
+
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = GolflangParserRULE_literalPrimitive
+
+	return p
+}
+
+func (s *LiteralPrimitiveContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *LiteralPrimitiveContext) INT() antlr.TerminalNode {
+	return s.GetToken(GolflangParserINT, 0)
+}
+
+func (s *LiteralPrimitiveContext) DEC() antlr.TerminalNode {
+	return s.GetToken(GolflangParserDEC, 0)
+}
+
+func (s *LiteralPrimitiveContext) STR() antlr.TerminalNode {
+	return s.GetToken(GolflangParserSTR, 0)
+}
+
+func (s *LiteralPrimitiveContext) TRUE() antlr.TerminalNode {
+	return s.GetToken(GolflangParserTRUE, 0)
+}
+
+func (s *LiteralPrimitiveContext) FALSE() antlr.TerminalNode {
+	return s.GetToken(GolflangParserFALSE, 0)
+}
+
+func (s *LiteralPrimitiveContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *LiteralPrimitiveContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *LiteralPrimitiveContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(GolflangListener); ok {
+		listenerT.EnterLiteralPrimitive(s)
+	}
+}
+
+func (s *LiteralPrimitiveContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(GolflangListener); ok {
+		listenerT.ExitLiteralPrimitive(s)
+	}
+}
+
+func (s *LiteralPrimitiveContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case GolflangVisitor:
+		return t.VisitLiteralPrimitive(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
+func (p *GolflangParser) LiteralPrimitive() (localctx ILiteralPrimitiveContext) {
+	localctx = NewLiteralPrimitiveContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 10, GolflangParserRULE_literalPrimitive)
+	var _la int
+
+	p.EnterOuterAlt(localctx, 1)
+	{
+		p.SetState(59)
+		_la = p.GetTokenStream().LA(1)
+
+		if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&248) != 0) {
+			p.GetErrorHandler().RecoverInline(p)
+		} else {
+			p.GetErrorHandler().ReportMatch(p)
+			p.Consume()
 		}
 	}
 

@@ -18,4 +18,10 @@ type GolflangVisitor interface {
 
 	// Visit a parse tree produced by GolflangParser#literalMap.
 	VisitLiteralMap(ctx *LiteralMapContext) interface{}
+
+	// Visit a parse tree produced by GolflangParser#literalMapEntry.
+	VisitLiteralMapEntry(ctx *LiteralMapEntryContext) interface{}
+
+	// Visit a parse tree produced by GolflangParser#literalPrimitive.
+	VisitLiteralPrimitive(ctx *LiteralPrimitiveContext) interface{}
 }

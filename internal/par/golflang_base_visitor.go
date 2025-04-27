@@ -22,3 +22,11 @@ func (v *BaseGolflangVisitor) VisitLiteralList(ctx *LiteralListContext) interfac
 func (v *BaseGolflangVisitor) VisitLiteralMap(ctx *LiteralMapContext) interface{} {
 	return v.VisitChildren(ctx)
 }
+
+func (v *BaseGolflangVisitor) VisitLiteralMapEntry(ctx *LiteralMapEntryContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseGolflangVisitor) VisitLiteralPrimitive(ctx *LiteralPrimitiveContext) interface{} {
+	return v.VisitChildren(ctx)
+}

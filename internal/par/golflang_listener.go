@@ -19,6 +19,12 @@ type GolflangListener interface {
 	// EnterLiteralMap is called when entering the literalMap production.
 	EnterLiteralMap(c *LiteralMapContext)
 
+	// EnterLiteralMapEntry is called when entering the literalMapEntry production.
+	EnterLiteralMapEntry(c *LiteralMapEntryContext)
+
+	// EnterLiteralPrimitive is called when entering the literalPrimitive production.
+	EnterLiteralPrimitive(c *LiteralPrimitiveContext)
+
 	// ExitProg is called when exiting the prog production.
 	ExitProg(c *ProgContext)
 
@@ -30,4 +36,10 @@ type GolflangListener interface {
 
 	// ExitLiteralMap is called when exiting the literalMap production.
 	ExitLiteralMap(c *LiteralMapContext)
+
+	// ExitLiteralMapEntry is called when exiting the literalMapEntry production.
+	ExitLiteralMapEntry(c *LiteralMapEntryContext)
+
+	// ExitLiteralPrimitive is called when exiting the literalPrimitive production.
+	ExitLiteralPrimitive(c *LiteralPrimitiveContext)
 }

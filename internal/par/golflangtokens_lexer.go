@@ -1,4 +1,4 @@
-// Code generated from Golflang.g4 by ANTLR 4.13.2. DO NOT EDIT.
+// Code generated from GolflangTokens.g4 by ANTLR 4.13.2. DO NOT EDIT.
 
 package par
 
@@ -14,14 +14,14 @@ var _ = fmt.Printf
 var _ = sync.Once{}
 var _ = unicode.IsLetter
 
-type GolflangLexer struct {
+type GolflangTokens struct {
 	*antlr.BaseLexer
 	channelNames []string
 	modeNames    []string
 	// TODO: EOF string
 }
 
-var GolflangLexerLexerStaticData struct {
+var GolflangTokensLexerStaticData struct {
 	once                   sync.Once
 	serializedATN          []int32
 	ChannelNames           []string
@@ -34,8 +34,8 @@ var GolflangLexerLexerStaticData struct {
 	decisionToDFA          []*antlr.DFA
 }
 
-func golflanglexerLexerInit() {
-	staticData := &GolflangLexerLexerStaticData
+func golflangtokensLexerInit() {
+	staticData := &GolflangTokensLexerStaticData
 	staticData.ChannelNames = []string{
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN",
 	}
@@ -113,51 +113,51 @@ func golflanglexerLexerInit() {
 	}
 }
 
-// GolflangLexerInit initializes any static state used to implement GolflangLexer. By default the
+// GolflangTokensInit initializes any static state used to implement GolflangTokens. By default the
 // static state used to implement the lexer is lazily initialized during the first call to
-// NewGolflangLexer(). You can call this function if you wish to initialize the static state ahead
+// NewGolflangTokens(). You can call this function if you wish to initialize the static state ahead
 // of time.
-func GolflangLexerInit() {
-	staticData := &GolflangLexerLexerStaticData
-	staticData.once.Do(golflanglexerLexerInit)
+func GolflangTokensInit() {
+	staticData := &GolflangTokensLexerStaticData
+	staticData.once.Do(golflangtokensLexerInit)
 }
 
-// NewGolflangLexer produces a new lexer instance for the optional input antlr.CharStream.
-func NewGolflangLexer(input antlr.CharStream) *GolflangLexer {
-	GolflangLexerInit()
-	l := new(GolflangLexer)
+// NewGolflangTokens produces a new lexer instance for the optional input antlr.CharStream.
+func NewGolflangTokens(input antlr.CharStream) *GolflangTokens {
+	GolflangTokensInit()
+	l := new(GolflangTokens)
 	l.BaseLexer = antlr.NewBaseLexer(input)
-	staticData := &GolflangLexerLexerStaticData
+	staticData := &GolflangTokensLexerStaticData
 	l.Interpreter = antlr.NewLexerATNSimulator(l, staticData.atn, staticData.decisionToDFA, staticData.PredictionContextCache)
 	l.channelNames = staticData.ChannelNames
 	l.modeNames = staticData.ModeNames
 	l.RuleNames = staticData.RuleNames
 	l.LiteralNames = staticData.LiteralNames
 	l.SymbolicNames = staticData.SymbolicNames
-	l.GrammarFileName = "Golflang.g4"
+	l.GrammarFileName = "GolflangTokens.g4"
 	// TODO: l.EOF = antlr.TokenEOF
 
 	return l
 }
 
-// GolflangLexer tokens.
+// GolflangTokens tokens.
 const (
-	GolflangLexerWHITESPACE = 1
-	GolflangLexerNEWLINE    = 2
-	GolflangLexerINT        = 3
-	GolflangLexerDEC        = 4
-	GolflangLexerSTR        = 5
-	GolflangLexerTRUE       = 6
-	GolflangLexerFALSE      = 7
-	GolflangLexerQUOTE      = 8
-	GolflangLexerLPAREN     = 9
-	GolflangLexerRPAREN     = 10
-	GolflangLexerLBRACKET   = 11
-	GolflangLexerRBRACKET   = 12
-	GolflangLexerLBRACE     = 13
-	GolflangLexerRBRACE     = 14
-	GolflangLexerDOT        = 15
-	GolflangLexerCOMMA      = 16
-	GolflangLexerCOLON      = 17
-	GolflangLexerSEMICOLON  = 18
+	GolflangTokensWHITESPACE = 1
+	GolflangTokensNEWLINE    = 2
+	GolflangTokensINT        = 3
+	GolflangTokensDEC        = 4
+	GolflangTokensSTR        = 5
+	GolflangTokensTRUE       = 6
+	GolflangTokensFALSE      = 7
+	GolflangTokensQUOTE      = 8
+	GolflangTokensLPAREN     = 9
+	GolflangTokensRPAREN     = 10
+	GolflangTokensLBRACKET   = 11
+	GolflangTokensRBRACKET   = 12
+	GolflangTokensLBRACE     = 13
+	GolflangTokensRBRACE     = 14
+	GolflangTokensDOT        = 15
+	GolflangTokensCOMMA      = 16
+	GolflangTokensCOLON      = 17
+	GolflangTokensSEMICOLON  = 18
 )
