@@ -8,20 +8,20 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
-	_ = x[KindNone-0]
-	_ = x[KindInt-1]
-	_ = x[KindDec-2]
-	_ = x[KindBool-3]
-	_ = x[KindStr-4]
-	_ = x[KindList-5]
-	_ = x[KindMap-6]
-	_ = x[KindBuiltinFunc-7]
-	_ = x[KindIdent-8]
+	_ = x[ObjKindNone-0]
+	_ = x[ObjKindInt-1]
+	_ = x[ObjKindDec-2]
+	_ = x[ObjKindBool-3]
+	_ = x[ObjKindStr-4]
+	_ = x[ObjKindList-5]
+	_ = x[ObjKindMap-6]
+	_ = x[ObjKindBuiltinFunc-7]
+	_ = x[ObjKindIdent-8]
 }
 
-const _ObjKind_name = "KindNoneKindIntKindFloatKindBoolKindStringKindListKindMapKindBuiltinFuncKindIdent"
+const _ObjKind_name = "ObjKindNoneObjKindIntObjKindDecObjKindBoolObjKindStrObjKindListObjKindMapObjKindBuiltinFuncObjKindIdent"
 
-var _ObjKind_index = [...]uint8{0, 8, 15, 24, 32, 42, 50, 57, 72, 81}
+var _ObjKind_index = [...]uint8{0, 11, 21, 31, 42, 52, 63, 73, 91, 103}
 
 func (i ObjKind) String() string {
 	if i >= ObjKind(len(_ObjKind_index)-1) {

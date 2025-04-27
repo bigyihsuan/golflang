@@ -51,7 +51,7 @@ func TestFloat_Equal(t *testing.T) {
 
 func TestFloat_Kind(t *testing.T) {
 	v := ZeroDec()
-	assert.Equal(t, KindDec, v.Kind(), "float should have KindFloat")
+	assert.Equal(t, ObjKindDec, v.Kind(), "float should have KindFloat")
 }
 
 func TestFloat_Repr(t *testing.T) {

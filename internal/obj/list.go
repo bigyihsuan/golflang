@@ -21,7 +21,7 @@ func (l List) Bool() bool {
 // Equal implements Obj.
 func (l List) Equal(o Obj) bool {
 	switch o.Kind() {
-	case KindList:
+	case ObjKindList:
 		return slices.EqualFunc(l, o.(List), func(l, r Obj) bool { return l.Equal(r) })
 	default:
 		return false
@@ -30,7 +30,7 @@ func (l List) Equal(o Obj) bool {
 
 // Kind implements Obj.
 func (l List) Kind() ObjKind {
-	return KindList
+	return ObjKindList
 }
 
 // Repr implements Obj.

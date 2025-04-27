@@ -5,15 +5,15 @@ package obj
 type ObjKind uint
 
 const (
-	KindNone ObjKind = iota
-	KindInt
-	KindDec
-	KindBool
-	KindStr
-	KindList
-	KindMap
-	KindBuiltinFunc
-	KindIdent
+	ObjKindNone ObjKind = iota
+	ObjKindInt
+	ObjKindDec
+	ObjKindBool
+	ObjKindStr
+	ObjKindList
+	ObjKindMap
+	ObjKindBuiltinFunc
+	ObjKindIdent
 )
 
 // Obj is an interface for all values in golflang.
@@ -39,4 +39,3 @@ var _ Obj = ZeroList()
 var _ Obj = ZeroMap()
 
 // var _ Obj = BuiltinFunc()
-// var _ Obj = Ident()

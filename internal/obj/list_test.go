@@ -48,7 +48,7 @@ func TestList_Equal(t *testing.T) {
 
 func TestList_Kind(t *testing.T) {
 	v := ZeroList()
-	assert.Equal(t, KindList, v.Kind(), "list should have KindList")
+	assert.Equal(t, ObjKindList, v.Kind(), "list should have KindList")
 }
 
 func TestList_Repr(t *testing.T) {

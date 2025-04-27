@@ -58,7 +58,7 @@ func TestMap_Equal(t *testing.T) {
 
 func TestMap_Kind(t *testing.T) {
 	v := ZeroMap()
-	assert.Equal(t, KindMap, v.Kind(), "map should have KindMap")
+	assert.Equal(t, ObjKindMap, v.Kind(), "map should have KindMap")
 }
 
 func TestMap_Repr(t *testing.T) {

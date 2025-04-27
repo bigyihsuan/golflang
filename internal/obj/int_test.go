@@ -49,7 +49,7 @@ func TestInt_Equal(t *testing.T) {
 
 func TestInt_Kind(t *testing.T) {
 	v := ZeroInt()
-	assert.Equal(t, KindInt, v.Kind(), "int should have KindInt")
+	assert.Equal(t, ObjKindInt, v.Kind(), "int should have KindInt")
 }
 
 func TestInt_Repr(t *testing.T) {

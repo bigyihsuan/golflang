@@ -20,9 +20,9 @@ func (f Dec) Bool() bool {
 // Equal implements Object.
 func (f Dec) Equal(o Obj) bool {
 	switch o.Kind() {
-	case KindDec:
+	case ObjKindDec:
 		return f == o.(Dec)
-	case KindInt:
+	case ObjKindInt:
 		return f == Dec(o.(Int))
 	default:
 		return false
@@ -31,7 +31,7 @@ func (f Dec) Equal(o Obj) bool {
 
 // Kind implements Object.
 func (f Dec) Kind() ObjKind {
-	return KindDec
+	return ObjKindDec
 }
 
 // Repr implements Obj.

@@ -16,7 +16,7 @@ func (s Str) Bool() bool {
 // Equal implements Obj.
 func (s Str) Equal(o Obj) bool {
 	switch o.Kind() {
-	case KindStr:
+	case ObjKindStr:
 		return s == o.(Str)
 	default:
 		return false
@@ -25,7 +25,7 @@ func (s Str) Equal(o Obj) bool {
 
 // Kind implements Obj.
 func (s Str) Kind() ObjKind {
-	return KindStr
+	return ObjKindStr
 }
 
 // Repr implements Obj.

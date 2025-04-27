@@ -39,7 +39,7 @@ func (m Map) Bool() bool {
 // Equal implements Obj.
 func (m Map) Equal(o Obj) bool {
 	switch o.Kind() {
-	case KindMap:
+	case ObjKindMap:
 		return maps.EqualFunc(m.m, o.(Map).m,
 			func(e1, e2 Entry) bool { return e1.K.Equal(e2.K) && e1.V.Equal(e2.V) })
 	default:
@@ -49,7 +49,7 @@ func (m Map) Equal(o Obj) bool {
 
 // Kind implements Obj.
 func (m Map) Kind() ObjKind {
-	return KindMap
+	return ObjKindMap
 }
 
 // Repr implements Obj.

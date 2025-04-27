@@ -46,7 +46,7 @@ func TestBool_Equal(t *testing.T) {
 
 func TestBool_Kind(t *testing.T) {
 	v := ZeroBool()
-	assert.Equal(t, KindBool, v.Kind(), "bool should have KindBool")
+	assert.Equal(t, ObjKindBool, v.Kind(), "bool should have KindBool")
 }
 
 func TestBool_Repr(t *testing.T) {
