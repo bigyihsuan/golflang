@@ -22,7 +22,7 @@ func (i Int) Equal(o Obj) bool {
 	switch o.Kind() {
 	case KindInt:
 		return i == o.(Int)
-	case KindFloat:
+	case KindDec:
 		return Dec(i) == o.(Dec)
 	default:
 		return false

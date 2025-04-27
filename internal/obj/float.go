@@ -7,7 +7,7 @@ import (
 
 type Dec float64
 
-func ZeroFloat() Dec {
+func ZeroDec() Dec {
 	var f Dec
 	return f
 }
@@ -20,7 +20,7 @@ func (f Dec) Bool() bool {
 // Equal implements Object.
 func (f Dec) Equal(o Obj) bool {
 	switch o.Kind() {
-	case KindFloat:
+	case KindDec:
 		return f == o.(Dec)
 	case KindInt:
 		return f == Dec(o.(Int))
@@ -31,7 +31,7 @@ func (f Dec) Equal(o Obj) bool {
 
 // Kind implements Object.
 func (f Dec) Kind() ObjKind {
-	return KindFloat
+	return KindDec
 }
 
 // Repr implements Obj.

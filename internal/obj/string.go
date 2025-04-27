@@ -4,7 +4,7 @@ import "fmt"
 
 type Str string
 
-func ZeroString() Str {
+func ZeroStr() Str {
 	return Str("")
 }
 
@@ -16,7 +16,7 @@ func (s Str) Bool() bool {
 // Equal implements Obj.
 func (s Str) Equal(o Obj) bool {
 	switch o.Kind() {
-	case KindString:
+	case KindStr:
 		return s == o.(Str)
 	default:
 		return false
@@ -25,7 +25,7 @@ func (s Str) Equal(o Obj) bool {
 
 // Kind implements Obj.
 func (s Str) Kind() ObjKind {
-	return KindString
+	return KindStr
 }
 
 // Repr implements Obj.

@@ -7,9 +7,9 @@ type ObjKind uint
 const (
 	KindNone ObjKind = iota
 	KindInt
-	KindFloat
+	KindDec
 	KindBool
-	KindString
+	KindStr
 	KindList
 	KindMap
 	KindBuiltinFunc
@@ -32,9 +32,9 @@ type Hash string // for implementing Map
 /* === force implementation of Object === */
 
 var _ Obj = ZeroInt()
-var _ Obj = ZeroFloat()
+var _ Obj = ZeroDec()
 var _ Obj = ZeroBool()
-var _ Obj = ZeroString()
+var _ Obj = ZeroStr()
 var _ Obj = ZeroList()
 var _ Obj = ZeroMap()
 

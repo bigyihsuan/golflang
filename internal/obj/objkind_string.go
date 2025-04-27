@@ -10,9 +10,9 @@ func _() {
 	var x [1]struct{}
 	_ = x[KindNone-0]
 	_ = x[KindInt-1]
-	_ = x[KindFloat-2]
+	_ = x[KindDec-2]
 	_ = x[KindBool-3]
-	_ = x[KindString-4]
+	_ = x[KindStr-4]
 	_ = x[KindList-5]
 	_ = x[KindMap-6]
 	_ = x[KindBuiltinFunc-7]

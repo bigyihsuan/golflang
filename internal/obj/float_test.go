@@ -8,7 +8,7 @@ import (
 )
 
 func TestFloat_ZeroFloat(t *testing.T) {
-	assert.Equal(t, Dec(0.0), ZeroFloat())
+	assert.Equal(t, Dec(0.0), ZeroDec())
 }
 
 func TestFloat_Bool(t *testing.T) {
@@ -50,8 +50,8 @@ func TestFloat_Equal(t *testing.T) {
 }
 
 func TestFloat_Kind(t *testing.T) {
-	v := ZeroFloat()
-	assert.Equal(t, KindFloat, v.Kind(), "float should have KindFloat")
+	v := ZeroDec()
+	assert.Equal(t, KindDec, v.Kind(), "float should have KindFloat")
 }
 
 func TestFloat_Repr(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 )
 
 func TestZeroString(t *testing.T) {
-	assert.Equal(t, Str(""), ZeroString())
+	assert.Equal(t, Str(""), ZeroStr())
 }
 
 func TestString_Bool(t *testing.T) {
@@ -45,8 +45,8 @@ func TestString_Equal(t *testing.T) {
 }
 
 func TestString_Kind(t *testing.T) {
-	v := ZeroString()
-	assert.Equal(t, KindString, v.Kind(), "str should have KindString")
+	v := ZeroStr()
+	assert.Equal(t, KindStr, v.Kind(), "str should have KindString")
 }
 
 func TestString_Repr(t *testing.T) {
