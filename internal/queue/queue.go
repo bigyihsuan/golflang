@@ -1,5 +1,10 @@
 package queue
 
+import (
+	"fmt"
+	"strings"
+)
+
 type Queue[T any] struct {
 	slice []T
 }
@@ -29,4 +34,12 @@ func (q *Queue[T]) Dequeue() (e T, ok bool) {
 	}
 	e, q.slice = q.slice[0], q.slice[1:]
 	return e, true
+}
+
+func (q Queue[T]) String() string {
+	vs := []string{}
+	for _, e := range q.slice {
+		vs = append(vs, fmt.Sprint(e))
+	}
+	return fmt.Sprintf("<%s>", strings.Join(vs, ", "))
 }
