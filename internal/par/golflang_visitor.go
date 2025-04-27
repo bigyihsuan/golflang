@@ -10,6 +10,15 @@ type GolflangVisitor interface {
 	// Visit a parse tree produced by GolflangParser#prog.
 	VisitProg(ctx *ProgContext) interface{}
 
+	// Visit a parse tree produced by GolflangParser#stmt.
+	VisitStmt(ctx *StmtContext) interface{}
+
+	// Visit a parse tree produced by GolflangParser#alias.
+	VisitAlias(ctx *AliasContext) interface{}
+
+	// Visit a parse tree produced by GolflangParser#expr.
+	VisitExpr(ctx *ExprContext) interface{}
+
 	// Visit a parse tree produced by GolflangParser#literal.
 	VisitLiteral(ctx *LiteralContext) interface{}
 

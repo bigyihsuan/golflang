@@ -2,17 +2,19 @@ grammar Golflang;
 
 import GolflangTokens;
 
-prog: literal*;
+prog: stmt*;
+stmt: (alias | expr) SEMICOLON;
+alias: IDENT ASSIGN expr;
+expr: IDENT | literal;
 literal:
 	literalList
 	| literalMap
 	| literalPrimitive
 	;
 
-literalList: LBRACKET literal? (COMMA literal)* COMMA? RBRACKET;
-
+literalList: LBRACKET expr? (COMMA expr)* COMMA? RBRACKET;
 literalMap: LBRACE literalMapEntry? (COMMA literalMapEntry)* COMMA? RBRACE;
-literalMapEntry: key=literal COLON value=literal;
+literalMapEntry: key=expr COLON value=expr;
 literalPrimitive:
 	INT
 	| DEC

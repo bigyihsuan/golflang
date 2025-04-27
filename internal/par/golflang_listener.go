@@ -10,6 +10,15 @@ type GolflangListener interface {
 	// EnterProg is called when entering the prog production.
 	EnterProg(c *ProgContext)
 
+	// EnterStmt is called when entering the stmt production.
+	EnterStmt(c *StmtContext)
+
+	// EnterAlias is called when entering the alias production.
+	EnterAlias(c *AliasContext)
+
+	// EnterExpr is called when entering the expr production.
+	EnterExpr(c *ExprContext)
+
 	// EnterLiteral is called when entering the literal production.
 	EnterLiteral(c *LiteralContext)
 
@@ -27,6 +36,15 @@ type GolflangListener interface {
 
 	// ExitProg is called when exiting the prog production.
 	ExitProg(c *ProgContext)
+
+	// ExitStmt is called when exiting the stmt production.
+	ExitStmt(c *StmtContext)
+
+	// ExitAlias is called when exiting the alias production.
+	ExitAlias(c *AliasContext)
+
+	// ExitExpr is called when exiting the expr production.
+	ExitExpr(c *ExprContext)
 
 	// ExitLiteral is called when exiting the literal production.
 	ExitLiteral(c *LiteralContext)

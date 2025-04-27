@@ -15,10 +15,13 @@ var _ par.GolflangVisitor = &Interpreter{}
 
 type Interpreter struct {
 	antlr.BaseParseTreeVisitor
-	queue  queue.Queue[obj.Obj]
-	lexer  *par.GolflangLexer
-	parser *par.GolflangParser
+	lexer   *par.GolflangLexer
+	parser  *par.GolflangParser
+	queue   queue.Queue[obj.Obj]
+	aliases map[AliasName]obj.Obj
 }
+
+type AliasName string
 
 func New(filename string) (*Interpreter, error) {
 	fs, err := antlr.NewFileStream(filename)
@@ -35,17 +38,19 @@ func New(filename string) (*Interpreter, error) {
 	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(false))
 
 	return &Interpreter{
-		queue:  queue.New[obj.Obj](),
-		lexer:  lexer,
-		parser: parser,
+		queue:   queue.New[obj.Obj](),
+		lexer:   lexer,
+		parser:  parser,
+		aliases: make(map[AliasName]obj.Obj),
 	}, nil
 }
 
 func (g *Interpreter) Parse() error {
-	tree := g.parser.Prog()
-	// fmt.Println(tree.ToStringTree(g.parser.RuleNames, g.parser))
-	fmt.Println(g.Visit(tree))
-	fmt.Println(g.queue)
+	prog := g.parser.Prog()
+	fmt.Println(prog.ToStringTree(g.parser.RuleNames, g.parser))
+	g.Visit(prog)
+	fmt.Printf("queue: %s\n", g.queue)
+	fmt.Printf("aliases: %s\n", g.aliases)
 	return nil
 }
 

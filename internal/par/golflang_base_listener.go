@@ -26,6 +26,24 @@ func (s *BaseGolflangListener) EnterProg(ctx *ProgContext) {}
 // ExitProg is called when production prog is exited.
 func (s *BaseGolflangListener) ExitProg(ctx *ProgContext) {}
 
+// EnterStmt is called when production stmt is entered.
+func (s *BaseGolflangListener) EnterStmt(ctx *StmtContext) {}
+
+// ExitStmt is called when production stmt is exited.
+func (s *BaseGolflangListener) ExitStmt(ctx *StmtContext) {}
+
+// EnterAlias is called when production alias is entered.
+func (s *BaseGolflangListener) EnterAlias(ctx *AliasContext) {}
+
+// ExitAlias is called when production alias is exited.
+func (s *BaseGolflangListener) ExitAlias(ctx *AliasContext) {}
+
+// EnterExpr is called when production expr is entered.
+func (s *BaseGolflangListener) EnterExpr(ctx *ExprContext) {}
+
+// ExitExpr is called when production expr is exited.
+func (s *BaseGolflangListener) ExitExpr(ctx *ExprContext) {}
+
 // EnterLiteral is called when production literal is entered.
 func (s *BaseGolflangListener) EnterLiteral(ctx *LiteralContext) {}
 
