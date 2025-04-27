@@ -7,17 +7,17 @@ import (
 )
 
 func TestZeroString(t *testing.T) {
-	assert.Equal(t, String(""), ZeroString())
+	assert.Equal(t, Str(""), ZeroString())
 }
 
 func TestString_Bool(t *testing.T) {
 	ts := []struct {
 		desc string
-		v    String
+		v    Str
 		exp  bool
 	}{
-		{"falsey empty", String(""), false},
-		{"truthy non-empty", String("hello world"), true},
+		{"falsey empty", Str(""), false},
+		{"truthy non-empty", Str("hello world"), true},
 	}
 
 	for _, test := range ts {
@@ -29,13 +29,13 @@ func TestString_Bool(t *testing.T) {
 func TestString_Equal(t *testing.T) {
 	ts := []struct {
 		desc string
-		l    String
+		l    Str
 		r    Obj
 		exp  bool
 	}{
-		{"string to string true", String("hello"), String("hello"), true},
-		{"string to string false", String("hello"), String("world"), false},
-		{"string to else false", String("hello"), Bool(false), false},
+		{"string to string true", Str("hello"), Str("hello"), true},
+		{"string to string false", Str("hello"), Str("world"), false},
+		{"string to else false", Str("hello"), Bool(false), false},
 	}
 
 	for _, test := range ts {
@@ -50,11 +50,11 @@ func TestString_Kind(t *testing.T) {
 }
 
 func TestString_Repr(t *testing.T) {
-	v := String("hello world")
+	v := Str("hello world")
 	assert.Equal(t, v.Repr(), "`hello world`")
 }
 
 func TestString_String(t *testing.T) {
-	v := String("hello world")
+	v := Str("hello world")
 	assert.Equal(t, v.String(), "hello world")
 }

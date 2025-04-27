@@ -20,7 +20,7 @@ func (i Int) Equal(o Obj) bool {
 	case KindInt:
 		return i == o.(Int)
 	case KindFloat:
-		return Float(i) == o.(Float)
+		return Dec(i) == o.(Dec)
 	default:
 		return false
 	}

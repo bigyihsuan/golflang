@@ -2,38 +2,38 @@ package obj
 
 import "fmt"
 
-type String string
+type Str string
 
-func ZeroString() String {
-	return String("")
+func ZeroString() Str {
+	return Str("")
 }
 
 // Bool implements Obj.
-func (s String) Bool() bool {
+func (s Str) Bool() bool {
 	return s != ""
 }
 
 // Equal implements Obj.
-func (s String) Equal(o Obj) bool {
+func (s Str) Equal(o Obj) bool {
 	switch o.Kind() {
 	case KindString:
-		return s == o.(String)
+		return s == o.(Str)
 	default:
 		return false
 	}
 }
 
 // Kind implements Obj.
-func (s String) Kind() ObjKind {
+func (s Str) Kind() ObjKind {
 	return KindString
 }
 
 // Repr implements Obj.
-func (s String) Repr() string {
+func (s Str) Repr() string {
 	return fmt.Sprintf("`%s`", s)
 }
 
 // String implements Obj.
-func (s String) String() string {
+func (s Str) String() string {
 	return string(s)
 }

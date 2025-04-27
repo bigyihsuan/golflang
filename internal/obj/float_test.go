@@ -8,19 +8,19 @@ import (
 )
 
 func TestFloat_ZeroFloat(t *testing.T) {
-	assert.Equal(t, Float(0.0), ZeroFloat())
+	assert.Equal(t, Dec(0.0), ZeroFloat())
 }
 
 func TestFloat_Bool(t *testing.T) {
 	ts := []struct {
 		desc string
-		v    Float
+		v    Dec
 		exp  bool
 	}{
-		{"falsey zero", Float(0), false},
-		{"falsey NaN", Float(math.NaN()), false},
-		{"truthy non-zero positive", Float(5.6), true},
-		{"truthy non-zero negative", Float(-5.6), true},
+		{"falsey zero", Dec(0), false},
+		{"falsey NaN", Dec(math.NaN()), false},
+		{"truthy non-zero positive", Dec(5.6), true},
+		{"truthy non-zero negative", Dec(-5.6), true},
 	}
 
 	for _, test := range ts {
@@ -32,15 +32,15 @@ func TestFloat_Bool(t *testing.T) {
 func TestFloat_Equal(t *testing.T) {
 	ts := []struct {
 		desc string
-		l    Float
+		l    Dec
 		r    Obj
 		exp  bool
 	}{
-		{"float to float true", Float(123.123), Float(123.123), true},
-		{"float to float false", Float(123.123), Float(-123.123), false},
-		{"float to int true", Float(123), Int(123), true},
-		{"float to int false", Float(123.123), Int(123), false},
-		{"float to else false", Float(123.123), Bool(false), false},
+		{"float to float true", Dec(123.123), Dec(123.123), true},
+		{"float to float false", Dec(123.123), Dec(-123.123), false},
+		{"float to int true", Dec(123), Int(123), true},
+		{"float to int false", Dec(123.123), Int(123), false},
+		{"float to else false", Dec(123.123), Bool(false), false},
 	}
 
 	for _, test := range ts {
@@ -55,11 +55,11 @@ func TestFloat_Kind(t *testing.T) {
 }
 
 func TestFloat_Repr(t *testing.T) {
-	v := Float(123.456)
+	v := Dec(123.456)
 	assert.Equal(t, v.Repr(), "123.456")
 }
 
 func TestFloat_String(t *testing.T) {
-	v := Float(123.456)
+	v := Dec(123.456)
 	assert.Equal(t, v.String(), "123.456")
 }

@@ -36,8 +36,8 @@ func TestInt_Equal(t *testing.T) {
 	}{
 		{"int to int true", Int(123), Int(123), true},
 		{"int to int false", Int(123), Int(-123), false},
-		{"int to float true", Int(123), Float(123), true},
-		{"int to float false", Int(123), Float(123.123), false},
+		{"int to float true", Int(123), Dec(123), true},
+		{"int to float false", Int(123), Dec(123.123), false},
 		{"int to else false", Int(123), Bool(false), false},
 	}
 

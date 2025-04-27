@@ -34,9 +34,9 @@ func TestList_Equal(t *testing.T) {
 		exp  bool
 	}{
 		{"empty to empty truthy", List{}, List{}, true},
-		{"empty to non-empty falsey", List{}, List{String("something")}, false},
-		{"non-empty to non-empty different elements falsey", List{Int(1234)}, List{String("something")}, false},
-		{"non-empty to non-empty same elements truthy", List{String("something")}, List{String("something")}, true},
+		{"empty to non-empty falsey", List{}, List{Str("something")}, false},
+		{"non-empty to non-empty different elements falsey", List{Int(1234)}, List{Str("something")}, false},
+		{"non-empty to non-empty same elements truthy", List{Str("something")}, List{Str("something")}, true},
 		{"list to any falsey", List{}, Int(1234), false},
 	}
 
@@ -52,11 +52,11 @@ func TestList_Kind(t *testing.T) {
 }
 
 func TestList_Repr(t *testing.T) {
-	v := List{Int(1), Float(2.2), String("333"), List{Int(4), Int(4), Int(4), Int(4)}}
+	v := List{Int(1), Dec(2.2), Str("333"), List{Int(4), Int(4), Int(4), Int(4)}}
 	assert.Equal(t, v.Repr(), "[1,2.2,`333`,[4,4,4,4]]")
 }
 
 func TestList_String(t *testing.T) {
-	v := List{Int(1), Float(2.2), String("333"), List{Int(4), Int(4), Int(4), Int(4)}}
+	v := List{Int(1), Dec(2.2), Str("333"), List{Int(4), Int(4), Int(4), Int(4)}}
 	assert.Equal(t, v.String(), "[1,2.2,333,[4,4,4,4]]")
 }

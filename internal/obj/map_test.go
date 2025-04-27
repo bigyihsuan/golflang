@@ -17,7 +17,7 @@ func TestMap_Bool(t *testing.T) {
 		exp  bool
 	}{
 		{"falsey empty", ZeroMap(), false},
-		{"truthy non-empty", MapFromPairs(String("a"), Int(123)), true},
+		{"truthy non-empty", MapFromPairs(Str("a"), Int(123)), true},
 	}
 
 	for _, test := range ts {
@@ -34,17 +34,17 @@ func TestMap_Equal(t *testing.T) {
 		exp  bool
 	}{
 		{"empty to empty truthy", ZeroMap(), ZeroMap(), true},
-		{"empty to non-empty falsey", ZeroMap(), MapFromPairs(Int(123), String("something")), false},
+		{"empty to non-empty falsey", ZeroMap(), MapFromPairs(Int(123), Str("something")), false},
 		{"non-empty to non-empty different elements falsey", MapFromPairs(
-			Int(123), String("something"),
+			Int(123), Str("something"),
 		), MapFromPairs(
-			Float(123.456), String("something"),
+			Dec(123.456), Str("something"),
 		), false},
 		{"non-empty to non-empty same elements truthy", MapFromPairs(
 			Bool(true), List{Int(1), Int(2)},
-			Int(123), String("something"),
+			Int(123), Str("something"),
 		), MapFromPairs(
-			Int(123), String("something"),
+			Int(123), Str("something"),
 			Bool(true), List{Int(1), Int(2)},
 		), true},
 		{"map to any falsey", ZeroMap(), Int(1234), false},
@@ -62,11 +62,11 @@ func TestMap_Kind(t *testing.T) {
 }
 
 func TestMap_Repr(t *testing.T) {
-	v := MapFromPairs(Int(1), Float(2.2), String("333"), List{Int(4), Int(4), Int(4), Int(4)})
+	v := MapFromPairs(Int(1), Dec(2.2), Str("333"), List{Int(4), Int(4), Int(4), Int(4)})
 	assert.Equal(t, v.Repr(), "{1:2.2,`333`:[4,4,4,4]}")
 }
 
 func TestMap_String(t *testing.T) {
-	v := MapFromPairs(Int(1), Float(2.2), String("333"), List{Int(4), Int(4), Int(4), Int(4)})
+	v := MapFromPairs(Int(1), Dec(2.2), Str("333"), List{Int(4), Int(4), Int(4), Int(4)})
 	assert.Equal(t, v.String(), "{1:2.2,333:[4,4,4,4]}")
 }
