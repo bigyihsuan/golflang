@@ -13,6 +13,10 @@ func ZeroList() List {
 	return List{}
 }
 
+func NewList(values ...Obj) List {
+	return List(values)
+}
+
 // Bool implements Obj.
 func (l List) Bool() bool {
 	return len(l) > 0

@@ -7,7 +7,7 @@ import (
 )
 
 func TestMap_ZeroMap(t *testing.T) {
-	assert.Equal(t, Map{m: make(map[Hash]Entry)}, ZeroMap())
+	assert.Equal(t, Map{m: make(map[Hash]MapEntry)}, ZeroMap())
 }
 
 func TestMap_Bool(t *testing.T) {

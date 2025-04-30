@@ -1,107 +1,86 @@
 package interpreter
 
 import (
+	"bigyihsuan/golflang/internal/ast"
 	"bigyihsuan/golflang/internal/obj"
-	"bigyihsuan/golflang/internal/par"
-
-	"github.com/antlr4-go/antlr/v4"
+	"fmt"
 )
 
-// Visit implements par.GolflangVisitor.
-// Subtle: this method shadows the method (BaseParseTreeVisitor).Visit of Interpreter.BaseParseTreeVisitor.
-func (g *Interpreter) Visit(tree antlr.ParseTree) any {
-	switch t := tree.(type) {
-	case *par.ProgContext:
-		return g.VisitProg(t)
+func (g *Interpreter) Visit(node ast.Node) {
+	switch node := node.(type) {
+	case ast.Prog:
+		g.VisitProg(node)
+	case ast.Stmt:
+		g.VisitStmt(node)
+	case ast.Expr:
+		g.VisitExpr(node)
+	default:
+		panic(fmt.Errorf("unknown Node %T: %s", node, node.String()))
 	}
-	return nil
 }
 
-// VisitProg implements par.GolflangVisitor.
-func (g *Interpreter) VisitProg(ctx *par.ProgContext) any {
-	for _, stmt := range ctx.AllStmt() {
-		g.VisitStmt(stmt.(*par.StmtContext))
+func (g *Interpreter) VisitProg(prog ast.Prog) {
+	for _, stmt := range prog.Stmts {
+		g.VisitStmt(stmt)
 	}
-	return nil
 }
 
-// VisitStmt implements par.GolflangVisitor.
-func (g *Interpreter) VisitStmt(stmt *par.StmtContext) any {
-	switch child := stmt.GetChild(0).(type) {
-	case *par.AliasContext:
-		return g.VisitAlias(child)
-	case *par.ExprContext:
-		return g.VisitExpr(child)
+func (g *Interpreter) VisitStmt(stmt ast.Stmt) {
+	switch stmt := stmt.(type) {
+	case ast.Alias:
+		g.VisitAlias(stmt)
+	case ast.Expr:
+		g.VisitExprStmt(stmt)
+	default:
+		panic(fmt.Errorf("unknown Stmt %T: %s", stmt, stmt.String()))
 	}
-	return nil
 }
 
-// VisitAlias implements par.GolflangVisitor.
-func (g *Interpreter) VisitAlias(alias *par.AliasContext) any {
-	ident := AliasName(alias.GetName().GetText())
-	expr := g.VisitExpr(alias.Expr().(*par.ExprContext)).(obj.Obj)
-	g.aliases[ident] = expr
-	return nil
+func (g *Interpreter) VisitAlias(alias ast.Alias) {
+	name := AliasName(g.VisitIdent(alias.Name).String())
+	value := g.VisitExpr(alias.Value)
+	g.aliases[name] = value
 }
 
-func (g *Interpreter) VisitExpr(expr *par.ExprContext) any {
-	switch child := expr.GetChild(0).(type) {
-	case *par.LiteralContext:
-		v := g.VisitLiteral(child).(obj.Obj)
-		g.queue.Enqueue(v)
-		return v
-	case antlr.TerminalNode:
-		return g.aliases[AliasName(child.GetSymbol().GetText())]
+func (g *Interpreter) VisitExprStmt(expr ast.Expr) {
+	value := g.VisitExpr(expr)
+	g.queue.Push(value)
+}
+
+func (g *Interpreter) VisitExpr(expr ast.Expr) obj.Obj {
+	switch expr := expr.(type) {
+	case ast.Lit:
+		return g.VisitLit(expr)
+	case ast.Ident:
+		return g.VisitIdent(expr)
+	default:
+		panic(fmt.Errorf("unknown Expr %T: %s", expr, expr.String()))
 	}
-	return nil
 }
 
-// VisitLiteral implements par.GolflangVisitor.
-func (g *Interpreter) VisitLiteral(ctx *par.LiteralContext) any {
-	switch child := ctx.GetChild(0).(type) {
-	case *par.LiteralPrimitiveContext:
-		return g.VisitLiteralPrimitive(child)
-	case *par.LiteralListContext:
-		return g.VisitLiteralList(child)
-	case *par.LiteralMapContext:
-		return g.VisitLiteralMap(child)
+func (g *Interpreter) VisitLit(lit ast.Lit) obj.Obj {
+	switch lit := lit.(type) {
+	case ast.LiteralPrimitive:
+		return lit.Value
+	case ast.LiteralList:
+		values := []obj.Obj{}
+		for _, e := range lit.Value {
+			values = append(values, g.VisitExpr(e))
+		}
+		return obj.NewList(values...)
+	case ast.LiteralMap:
+		values := []obj.MapEntry{}
+		for _, entry := range lit.Value {
+			k := g.VisitExpr(entry.K)
+			v := g.VisitExpr(entry.V)
+			values = append(values, obj.MapEntry{K: k, V: v})
+		}
+		return obj.MapFromEntries(values...)
+	default:
+		panic(fmt.Errorf("unknown Lit %T: %s", lit, lit.String()))
 	}
-	return nil
 }
 
-// VisitLiteralList implements par.GolflangVisitor.
-func (g *Interpreter) VisitLiteralList(ctx *par.LiteralListContext) any {
-	l := obj.ZeroList()
-	for _, expr := range ctx.AllExpr() {
-		l = append(l, g.VisitExpr(expr.(*par.ExprContext)).(obj.Obj))
-	}
-	return l
-}
-
-// VisitLiteralMap implements par.GolflangVisitor.
-func (g *Interpreter) VisitLiteralMap(ctx *par.LiteralMapContext) any {
-	m := obj.ZeroMap()
-	for _, entry := range ctx.AllLiteralMapEntry() {
-		entry := g.VisitLiteralMapEntry(entry.(*par.LiteralMapEntryContext)).(obj.Entry)
-		m.SetEntry(entry)
-	}
-	return m
-}
-
-// VisitLiteralMapEntry implements par.GolflangVisitor.
-func (g *Interpreter) VisitLiteralMapEntry(ctx *par.LiteralMapEntryContext) any {
-	k := g.VisitExpr(ctx.GetKey().(*par.ExprContext)).(obj.Obj)
-	v := g.VisitExpr(ctx.GetValue().(*par.ExprContext)).(obj.Obj)
-	return obj.Entry{K: k, V: v}
-}
-
-// VisitIdent implements par.GolflangVisitor.
-func (g *Interpreter) VisitIdent(ctx *par.IdentContext) interface{} {
-	panic("unimplemented")
-}
-
-// VisitLiteralPrimitive implements par.GolflangVisitor.
-func (g *Interpreter) VisitLiteralPrimitive(ctx *par.LiteralPrimitiveContext) any {
-	return nil
-	// return g.primitiveLiteral(ctx)
+func (g *Interpreter) VisitIdent(ident ast.Ident) obj.Ident {
+	return obj.Ident(ident)
 }

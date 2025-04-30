@@ -21,7 +21,7 @@ func NewBuilder(parser *par.GolflangParser) *Builder {
 func (g *Builder) Visit(tree antlr.ParseTree) any {
 	switch t := tree.(type) {
 	case *par.ProgContext:
-		return g.VisitProg(t)
+		return g.VisitProg(t).(Prog)
 	}
 	return nil
 }
@@ -64,7 +64,7 @@ func (g *Builder) VisitExpr(expr *par.ExprContext) any {
 }
 
 func (g *Builder) VisitIdent(ident *par.IdentContext) any {
-	return Ident{obj.Ident(ident.GetText())}
+	return Ident(obj.Ident(ident.GetText()))
 }
 
 func (g *Builder) VisitLiteral(ctx *par.LiteralContext) any {

@@ -10,10 +10,11 @@ type LiteralPrimitive struct {
 	Value obj.Obj
 }
 
-func (l LiteralPrimitive) node()          {}
-func (l LiteralPrimitive) stmt()          {}
-func (l LiteralPrimitive) expr()          {}
-func (l LiteralPrimitive) lit()           {}
+func (l LiteralPrimitive) node() {}
+func (l LiteralPrimitive) stmt() {}
+func (l LiteralPrimitive) expr() {}
+func (l LiteralPrimitive) lit()  {}
+
 func (l LiteralPrimitive) String() string { return l.Value.Repr() }
 
 type LiteralList struct {
@@ -24,6 +25,7 @@ func (l LiteralList) node() {}
 func (l LiteralList) stmt() {}
 func (l LiteralList) expr() {}
 func (l LiteralList) lit()  {}
+
 func (l LiteralList) String() string {
 	es := []string{}
 	for _, e := range l.Value {
@@ -40,6 +42,7 @@ func (l LiteralMap) node() {}
 func (l LiteralMap) stmt() {}
 func (l LiteralMap) expr() {}
 func (l LiteralMap) lit()  {}
+
 func (l LiteralMap) String() string {
 	es := []string{}
 	for _, e := range l.Value {

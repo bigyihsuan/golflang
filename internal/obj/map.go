@@ -8,13 +8,13 @@ import (
 )
 
 type Map struct {
-	m map[Hash]Entry
+	m map[Hash]MapEntry
 }
 
-type Entry struct{ K, V Obj }
+type MapEntry struct{ K, V Obj }
 
 func ZeroMap() Map {
-	m := make(map[Hash]Entry)
+	m := make(map[Hash]MapEntry)
 	return Map{m}
 }
 
@@ -25,8 +25,16 @@ func MapFromPairs(kvs ...Obj) Map {
 	out := ZeroMap()
 	pairs := slices.Chunk(kvs, 2)
 	for pair := range pairs {
-		e := Entry{pair[0], pair[1]}
-		out.m[e.K.Hash()] = e
+		k, v := pair[0], pair[1]
+		out.Set(k, v)
+	}
+	return out
+}
+
+func MapFromEntries(entries ...MapEntry) Map {
+	out := ZeroMap()
+	for _, e := range entries {
+		out.SetEntry(e)
 	}
 	return out
 }
@@ -41,7 +49,7 @@ func (m Map) Equal(o Obj) bool {
 	switch o.Kind() {
 	case ObjKindMap:
 		return maps.EqualFunc(m.m, o.(Map).m,
-			func(e1, e2 Entry) bool { return e1.K.Equal(e2.K) && e1.V.Equal(e2.V) })
+			func(e1, e2 MapEntry) bool { return e1.K.Equal(e2.K) && e1.V.Equal(e2.V) })
 	default:
 		return false
 	}
@@ -78,11 +86,11 @@ func (m Map) Hash() Hash {
 }
 
 func (m *Map) Set(k, v Obj) {
-	e := Entry{k, v}
+	e := MapEntry{k, v}
 	m.m[e.K.Hash()] = e
 }
 
-func (m *Map) SetEntry(e Entry) {
+func (m *Map) SetEntry(e MapEntry) {
 	m.m[e.K.Hash()] = e
 }
 

@@ -7,6 +7,7 @@ type Prog struct {
 }
 
 func (p Prog) node() {}
+
 func (p Prog) String() string {
 	s := []string{}
 	for _, stmt := range p.Stmts {

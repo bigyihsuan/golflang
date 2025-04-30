@@ -29,7 +29,7 @@ func TestQueue_Peek_empty(t *testing.T) {
 
 func TestQueue_Enqueue(t *testing.T) {
 	q := New(1, 2, 3)
-	q.Enqueue(4)
+	q.Push(4)
 	exp := New(1, 2, 3, 4)
 	assert.Equal(t, exp, q)
 }

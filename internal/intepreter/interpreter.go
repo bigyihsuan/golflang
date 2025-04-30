@@ -7,14 +7,12 @@ import (
 	"bigyihsuan/golflang/internal/queue"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/antlr4-go/antlr/v4"
 )
 
-var _ par.GolflangVisitor = &Interpreter{}
-
 type Interpreter struct {
-	antlr.BaseParseTreeVisitor
 	lexer      *par.GolflangLexer
 	parser     *par.GolflangParser
 	astBuilder *ast.Builder
@@ -38,25 +36,36 @@ func New(filename string) (*Interpreter, error) {
 	parser := par.NewGolflangParser(tokenStream)
 	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(false))
 
+	astBuilder := ast.NewBuilder(parser)
+
 	return &Interpreter{
 		queue:      queue.New[obj.Obj](),
 		lexer:      lexer,
 		parser:     parser,
-		astBuilder: ast.NewBuilder(parser),
+		astBuilder: astBuilder,
 		aliases:    make(map[AliasName]obj.Obj),
 	}, nil
 }
 
 func (g *Interpreter) Run() error {
-	prog := g.parser.Prog()
-	fmt.Println(prog.ToStringTree(g.parser.RuleNames, g.parser))
+	parseTree := g.parser.Prog()
+	fmt.Println(parseTree.ToStringTree(g.parser.RuleNames, g.parser))
 
-	progAst := g.astBuilder.Visit(prog)
+	ast := g.astBuilder.Visit(parseTree).(ast.Prog)
 
-	fmt.Printf("progAst: %v\n", progAst)
+	fmt.Printf("progAst: %v\n", ast)
 
-	// g.Visit(prog)
-	// fmt.Printf("queue: %s\n", g.queue)
-	// fmt.Printf("aliases: %s\n", g.aliases)
+	g.Visit(ast)
+
+	fmt.Printf("queue: %s\n", g.QueueString())
+	fmt.Printf("aliases: %s\n", g.aliases)
 	return nil
+}
+
+func (g Interpreter) QueueString() string {
+	ss := []string{}
+	for _, e := range g.queue.Elements() {
+		ss = append(ss, e.Repr())
+	}
+	return fmt.Sprintf("<%s>", strings.Join(ss, ", "))
 }
