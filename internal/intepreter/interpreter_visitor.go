@@ -3,6 +3,7 @@ package interpreter
 import (
 	"bigyihsuan/golflang/internal/ast"
 	"bigyihsuan/golflang/internal/obj"
+	"bigyihsuan/golflang/internal/util"
 	"fmt"
 )
 
@@ -32,19 +33,19 @@ func (g *Interpreter) VisitStmt(stmt ast.Stmt) {
 	case ast.Expr:
 		g.VisitExprStmt(stmt)
 	default:
-		panic(fmt.Errorf("unknown Stmt %T: %s", stmt, stmt.String()))
+		panic(fmt.Errorf("%T: unknown Stmt %T: %s", g, stmt, stmt.String()))
 	}
 }
 
 func (g *Interpreter) VisitAlias(alias ast.Alias) {
-	name := AliasName(g.VisitIdent(alias.Name).String())
+	name := g.VisitIdent(alias.Name)
 	value := g.VisitExpr(alias.Value)
-	g.aliases[name] = value
+	g.currentScope.SetAlias(name, value)
 }
 
 func (g *Interpreter) VisitExprStmt(expr ast.Expr) {
 	value := g.VisitExpr(expr)
-	g.queue.Push(value)
+	g.queue.Push(g.EvalObj(value))
 }
 
 func (g *Interpreter) VisitExpr(expr ast.Expr) obj.Obj {
@@ -53,8 +54,34 @@ func (g *Interpreter) VisitExpr(expr ast.Expr) obj.Obj {
 		return g.VisitLit(expr)
 	case ast.Ident:
 		return g.VisitIdent(expr)
+	case ast.Lambda:
+		return g.VisitLambda(expr)
+	case ast.Call:
+		return g.VisitCall(expr)
 	default:
-		panic(fmt.Errorf("unknown Expr %T: %s", expr, expr.String()))
+		panic(fmt.Errorf("%T: unknown Expr %T: %s", g, expr, expr.String()))
+	}
+}
+
+func (g *Interpreter) VisitCall(expr ast.Call) obj.Obj {
+	name := g.VisitIdent(expr.Name)
+	fn := g.GetAlias(name)
+	// set up by pushing arguments to the queue
+	beforeLen := g.queue.Len()
+	for _, arg := range expr.Args {
+		g.Visit(arg)
+	}
+	// move the arguments to the front
+	g.queue.Rotate(beforeLen)
+	return g.EvalObj(fn)
+}
+
+func (g *Interpreter) VisitLambda(expr ast.Lambda) Lambda {
+	args := util.SliceMap(expr.Args, func(i ast.Ident) obj.Ident { return obj.Ident(i) })
+	body := expr.Body
+	return Lambda{
+		Args: args,
+		Body: body,
 	}
 }
 
@@ -77,7 +104,7 @@ func (g *Interpreter) VisitLit(lit ast.Lit) obj.Obj {
 		}
 		return obj.MapFromEntries(values...)
 	default:
-		panic(fmt.Errorf("unknown Lit %T: %s", lit, lit.String()))
+		panic(fmt.Errorf("%T: unknown Lit %T: %s", g, lit, lit.String()))
 	}
 }
 

@@ -23,6 +23,22 @@ func (v *BaseGolflangVisitor) VisitExpr(ctx *ExprContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseGolflangVisitor) VisitCall(ctx *CallContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseGolflangVisitor) VisitExprList(ctx *ExprListContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseGolflangVisitor) VisitLambda(ctx *LambdaContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseGolflangVisitor) VisitIdentList(ctx *IdentListContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseGolflangVisitor) VisitIdent(ctx *IdentContext) interface{} {
 	return v.VisitChildren(ctx)
 }

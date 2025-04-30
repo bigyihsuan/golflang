@@ -33,7 +33,7 @@ func (i Ident) Kind() ObjKind {
 
 // Repr implements Obj.
 func (i Ident) Repr() string {
-	return fmt.Sprintf("ident(%s)", string(i))
+	return string(i)
 }
 
 // String implements Obj.

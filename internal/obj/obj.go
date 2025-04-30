@@ -12,8 +12,8 @@ const (
 	ObjKindStr
 	ObjKindList
 	ObjKindMap
-	ObjKindBuiltinFunc
 	ObjKindIdent
+	ObjKindLambda
 )
 
 // Obj is an interface for all values in golflang.
@@ -37,5 +37,6 @@ var _ Obj = ZeroBool()
 var _ Obj = ZeroStr()
 var _ Obj = ZeroList()
 var _ Obj = ZeroMap()
+var _ Obj = Ident("")
 
 // var _ Obj = BuiltinFunc()

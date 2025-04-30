@@ -31,6 +31,13 @@ func (q *Queue[T]) Dequeue() (e T, ok bool) {
 	return e, true
 }
 
+func (q *Queue[T]) Rotate(n int) {
+	for range n {
+		e, _ := q.Dequeue()
+		q.Push(e)
+	}
+}
+
 func (q Queue[T]) Elements() []T {
 	return q.slice
 }

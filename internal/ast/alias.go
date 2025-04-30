@@ -11,5 +11,5 @@ func (a Alias) node() {}
 func (a Alias) stmt() {}
 
 func (a Alias) String() string {
-	return fmt.Sprintf("(%s := %s)", a.Name.String(), a.Value.String())
+	return fmt.Sprintf("alias(%s := %s)", a.Name.String(), a.Value.String())
 }

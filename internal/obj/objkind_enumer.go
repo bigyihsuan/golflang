@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-const _ObjKindName = "ObjKindNoneObjKindIntObjKindDecObjKindBoolObjKindStrObjKindListObjKindMapObjKindBuiltinFuncObjKindIdent"
+const _ObjKindName = "ObjKindNoneObjKindIntObjKindDecObjKindBoolObjKindStrObjKindListObjKindMapObjKindIdentObjKindLambda"
 
-var _ObjKindIndex = [...]uint8{0, 11, 21, 31, 42, 52, 63, 73, 91, 103}
+var _ObjKindIndex = [...]uint8{0, 11, 21, 31, 42, 52, 63, 73, 85, 98}
 
-const _ObjKindLowerName = "objkindnoneobjkindintobjkinddecobjkindboolobjkindstrobjkindlistobjkindmapobjkindbuiltinfuncobjkindident"
+const _ObjKindLowerName = "objkindnoneobjkindintobjkinddecobjkindboolobjkindstrobjkindlistobjkindmapobjkindidentobjkindlambda"
 
 func (i ObjKind) String() string {
 	if i >= ObjKind(len(_ObjKindIndex)-1) {
@@ -31,31 +31,31 @@ func _ObjKindNoOp() {
 	_ = x[ObjKindStr-(4)]
 	_ = x[ObjKindList-(5)]
 	_ = x[ObjKindMap-(6)]
-	_ = x[ObjKindBuiltinFunc-(7)]
-	_ = x[ObjKindIdent-(8)]
+	_ = x[ObjKindIdent-(7)]
+	_ = x[ObjKindLambda-(8)]
 }
 
-var _ObjKindValues = []ObjKind{ObjKindNone, ObjKindInt, ObjKindDec, ObjKindBool, ObjKindStr, ObjKindList, ObjKindMap, ObjKindBuiltinFunc, ObjKindIdent}
+var _ObjKindValues = []ObjKind{ObjKindNone, ObjKindInt, ObjKindDec, ObjKindBool, ObjKindStr, ObjKindList, ObjKindMap, ObjKindIdent, ObjKindLambda}
 
 var _ObjKindNameToValueMap = map[string]ObjKind{
-	_ObjKindName[0:11]:        ObjKindNone,
-	_ObjKindLowerName[0:11]:   ObjKindNone,
-	_ObjKindName[11:21]:       ObjKindInt,
-	_ObjKindLowerName[11:21]:  ObjKindInt,
-	_ObjKindName[21:31]:       ObjKindDec,
-	_ObjKindLowerName[21:31]:  ObjKindDec,
-	_ObjKindName[31:42]:       ObjKindBool,
-	_ObjKindLowerName[31:42]:  ObjKindBool,
-	_ObjKindName[42:52]:       ObjKindStr,
-	_ObjKindLowerName[42:52]:  ObjKindStr,
-	_ObjKindName[52:63]:       ObjKindList,
-	_ObjKindLowerName[52:63]:  ObjKindList,
-	_ObjKindName[63:73]:       ObjKindMap,
-	_ObjKindLowerName[63:73]:  ObjKindMap,
-	_ObjKindName[73:91]:       ObjKindBuiltinFunc,
-	_ObjKindLowerName[73:91]:  ObjKindBuiltinFunc,
-	_ObjKindName[91:103]:      ObjKindIdent,
-	_ObjKindLowerName[91:103]: ObjKindIdent,
+	_ObjKindName[0:11]:       ObjKindNone,
+	_ObjKindLowerName[0:11]:  ObjKindNone,
+	_ObjKindName[11:21]:      ObjKindInt,
+	_ObjKindLowerName[11:21]: ObjKindInt,
+	_ObjKindName[21:31]:      ObjKindDec,
+	_ObjKindLowerName[21:31]: ObjKindDec,
+	_ObjKindName[31:42]:      ObjKindBool,
+	_ObjKindLowerName[31:42]: ObjKindBool,
+	_ObjKindName[42:52]:      ObjKindStr,
+	_ObjKindLowerName[42:52]: ObjKindStr,
+	_ObjKindName[52:63]:      ObjKindList,
+	_ObjKindLowerName[52:63]: ObjKindList,
+	_ObjKindName[63:73]:      ObjKindMap,
+	_ObjKindLowerName[63:73]: ObjKindMap,
+	_ObjKindName[73:85]:      ObjKindIdent,
+	_ObjKindLowerName[73:85]: ObjKindIdent,
+	_ObjKindName[85:98]:      ObjKindLambda,
+	_ObjKindLowerName[85:98]: ObjKindLambda,
 }
 
 var _ObjKindNames = []string{
@@ -66,8 +66,8 @@ var _ObjKindNames = []string{
 	_ObjKindName[42:52],
 	_ObjKindName[52:63],
 	_ObjKindName[63:73],
-	_ObjKindName[73:91],
-	_ObjKindName[91:103],
+	_ObjKindName[73:85],
+	_ObjKindName[85:98],
 }
 
 // ObjKindString retrieves an enum value from the enum constants string name.

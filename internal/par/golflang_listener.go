@@ -19,6 +19,18 @@ type GolflangListener interface {
 	// EnterExpr is called when entering the expr production.
 	EnterExpr(c *ExprContext)
 
+	// EnterCall is called when entering the call production.
+	EnterCall(c *CallContext)
+
+	// EnterExprList is called when entering the exprList production.
+	EnterExprList(c *ExprListContext)
+
+	// EnterLambda is called when entering the lambda production.
+	EnterLambda(c *LambdaContext)
+
+	// EnterIdentList is called when entering the identList production.
+	EnterIdentList(c *IdentListContext)
+
 	// EnterIdent is called when entering the ident production.
 	EnterIdent(c *IdentContext)
 
@@ -48,6 +60,18 @@ type GolflangListener interface {
 
 	// ExitExpr is called when exiting the expr production.
 	ExitExpr(c *ExprContext)
+
+	// ExitCall is called when exiting the call production.
+	ExitCall(c *CallContext)
+
+	// ExitExprList is called when exiting the exprList production.
+	ExitExprList(c *ExprListContext)
+
+	// ExitLambda is called when exiting the lambda production.
+	ExitLambda(c *LambdaContext)
+
+	// ExitIdentList is called when exiting the identList production.
+	ExitIdentList(c *IdentListContext)
 
 	// ExitIdent is called when exiting the ident production.
 	ExitIdent(c *IdentContext)

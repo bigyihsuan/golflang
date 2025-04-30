@@ -44,6 +44,30 @@ func (s *BaseGolflangListener) EnterExpr(ctx *ExprContext) {}
 // ExitExpr is called when production expr is exited.
 func (s *BaseGolflangListener) ExitExpr(ctx *ExprContext) {}
 
+// EnterCall is called when production call is entered.
+func (s *BaseGolflangListener) EnterCall(ctx *CallContext) {}
+
+// ExitCall is called when production call is exited.
+func (s *BaseGolflangListener) ExitCall(ctx *CallContext) {}
+
+// EnterExprList is called when production exprList is entered.
+func (s *BaseGolflangListener) EnterExprList(ctx *ExprListContext) {}
+
+// ExitExprList is called when production exprList is exited.
+func (s *BaseGolflangListener) ExitExprList(ctx *ExprListContext) {}
+
+// EnterLambda is called when production lambda is entered.
+func (s *BaseGolflangListener) EnterLambda(ctx *LambdaContext) {}
+
+// ExitLambda is called when production lambda is exited.
+func (s *BaseGolflangListener) ExitLambda(ctx *LambdaContext) {}
+
+// EnterIdentList is called when production identList is entered.
+func (s *BaseGolflangListener) EnterIdentList(ctx *IdentListContext) {}
+
+// ExitIdentList is called when production identList is exited.
+func (s *BaseGolflangListener) ExitIdentList(ctx *IdentListContext) {}
+
 // EnterIdent is called when production ident is entered.
 func (s *BaseGolflangListener) EnterIdent(ctx *IdentContext) {}
 

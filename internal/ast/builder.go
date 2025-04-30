@@ -9,8 +9,10 @@ import (
 	"github.com/antlr4-go/antlr/v4"
 )
 
+// var _ par.GolflangVisitor = (*Builder)(nil)
+
 type Builder struct {
-	par.BaseGolflangVisitor
+	// par.BaseGolflangVisitor
 	parser *par.GolflangParser
 }
 
@@ -18,12 +20,17 @@ func NewBuilder(parser *par.GolflangParser) *Builder {
 	return &Builder{parser: parser}
 }
 
+func (g Builder) unknown(kind string, tree antlr.ParseTree) error {
+	return fmt.Errorf("%T: unknown %s %T: %s", g, kind, tree, tree.ToStringTree(g.parser.RuleNames, g.parser))
+}
+
 func (g *Builder) Visit(tree antlr.ParseTree) any {
 	switch t := tree.(type) {
 	case *par.ProgContext:
 		return g.VisitProg(t).(Prog)
+	default:
+		panic(g.unknown("ParseTree", t))
 	}
-	return nil
 }
 
 func (g *Builder) VisitProg(ctx *par.ProgContext) any {
@@ -40,8 +47,9 @@ func (g *Builder) VisitStmt(stmt *par.StmtContext) any {
 		return g.VisitAlias(child)
 	case *par.ExprContext:
 		return g.VisitExpr(child)
+	default:
+		panic(g.unknown("StmtContext", child.(antlr.ParseTree)))
 	}
-	return nil
 }
 
 func (g *Builder) VisitAlias(alias *par.AliasContext) any {
@@ -54,29 +62,73 @@ func (g *Builder) VisitAlias(alias *par.AliasContext) any {
 }
 
 func (g *Builder) VisitExpr(expr *par.ExprContext) any {
-	switch child := expr.GetChild(0).(type) {
+	switch expr := expr.GetChild(0).(type) {
 	case *par.LiteralContext:
-		return g.VisitLiteral(child)
+		return g.VisitLiteral(expr)
 	case *par.IdentContext:
-		return g.VisitIdent(child)
+		return g.VisitIdent(expr)
+	case *par.LambdaContext:
+		return g.VisitLambda(expr)
+	case *par.CallContext:
+		return g.VisitCall(expr)
+	default:
+		panic(g.unknown("ExprContext", expr.(antlr.ParseTree)))
 	}
-	return nil
+}
+
+func (g *Builder) VisitCall(call *par.CallContext) any {
+	name := g.VisitIdent(call.GetName().(*par.IdentContext)).(Ident)
+	args := []Expr{}
+	if call.GetArgs() != nil {
+		args = g.VisitExprList(call.GetArgs().(*par.ExprListContext)).([]Expr)
+	}
+
+	return Call{
+		Name: name,
+		Args: args,
+	}
+}
+
+func (g *Builder) VisitExprList(exprs *par.ExprListContext) any {
+	es := []Expr{}
+	for _, expr := range exprs.AllExpr() {
+		es = append(es, g.VisitExpr(expr.(*par.ExprContext)).(Expr))
+	}
+	return es
+}
+
+func (g *Builder) VisitLambda(lambda *par.LambdaContext) any {
+	args := g.VisitIdentList(lambda.GetArgs().(*par.IdentListContext)).(IdentList)
+	body := g.VisitExpr(lambda.GetBody().(*par.ExprContext)).(Expr)
+	return Lambda{
+		Args: args,
+		Body: body,
+	}
+}
+
+func (g *Builder) VisitIdentList(idents *par.IdentListContext) any {
+	is := IdentList{}
+	for _, ident := range idents.AllIdent() {
+		is = append(is, g.VisitIdent(ident.(*par.IdentContext)).(Ident))
+	}
+	return is
 }
 
 func (g *Builder) VisitIdent(ident *par.IdentContext) any {
 	return Ident(obj.Ident(ident.GetText()))
 }
 
-func (g *Builder) VisitLiteral(ctx *par.LiteralContext) any {
-	switch child := ctx.GetChild(0).(type) {
+func (g *Builder) VisitLiteral(literal *par.LiteralContext) any {
+	switch child := literal.GetChild(0).(type) {
 	case *par.LiteralPrimitiveContext:
 		return g.VisitLiteralPrimitive(child)
 	case *par.LiteralListContext:
 		return g.VisitLiteralList(child)
 	case *par.LiteralMapContext:
 		return g.VisitLiteralMap(child)
+	default:
+		panic(g.unknown("LiteralContext", child.(antlr.ParseTree)))
 	}
-	return nil
 }
 
 func (g *Builder) VisitLiteralList(ctx *par.LiteralListContext) any {
@@ -120,7 +172,7 @@ func (g *Builder) primitiveLiteral(c par.ILiteralPrimitiveContext) obj.Obj {
 	case c.FALSE() != nil:
 		return g.bool(c)
 	default:
-		panic(fmt.Errorf("invalid LiteralPrimitiveContext: %s", c.ToStringTree(g.parser.RuleNames, g.parser)))
+		panic(fmt.Errorf("%T: unknown primitiveLiteral: %s", g, c.ToStringTree(g.parser.RuleNames, g.parser)))
 	}
 }
 
