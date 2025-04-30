@@ -19,6 +19,9 @@ type GolflangListener interface {
 	// EnterExpr is called when entering the expr production.
 	EnterExpr(c *ExprContext)
 
+	// EnterIdent is called when entering the ident production.
+	EnterIdent(c *IdentContext)
+
 	// EnterLiteral is called when entering the literal production.
 	EnterLiteral(c *LiteralContext)
 
@@ -45,6 +48,9 @@ type GolflangListener interface {
 
 	// ExitExpr is called when exiting the expr production.
 	ExitExpr(c *ExprContext)
+
+	// ExitIdent is called when exiting the ident production.
+	ExitIdent(c *IdentContext)
 
 	// ExitLiteral is called when exiting the literal production.
 	ExitLiteral(c *LiteralContext)

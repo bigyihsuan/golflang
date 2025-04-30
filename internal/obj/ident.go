@@ -7,9 +7,8 @@ import "fmt"
 type Ident string
 
 // Bool implements Obj.
-// TODO: true if the identifier has already been declared/defined in this scope.
 func (i Ident) Bool() bool {
-	return false
+	return true
 }
 
 // Equal implements Obj.

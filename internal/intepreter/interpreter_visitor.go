@@ -38,7 +38,7 @@ func (g *Interpreter) VisitStmt(stmt *par.StmtContext) any {
 
 // VisitAlias implements par.GolflangVisitor.
 func (g *Interpreter) VisitAlias(alias *par.AliasContext) any {
-	ident := AliasName(alias.IDENT().GetText())
+	ident := AliasName(alias.GetName().GetText())
 	expr := g.VisitExpr(alias.Expr().(*par.ExprContext)).(obj.Obj)
 	g.aliases[ident] = expr
 	return nil
@@ -83,7 +83,7 @@ func (g *Interpreter) VisitLiteralMap(ctx *par.LiteralMapContext) any {
 	m := obj.ZeroMap()
 	for _, entry := range ctx.AllLiteralMapEntry() {
 		entry := g.VisitLiteralMapEntry(entry.(*par.LiteralMapEntryContext)).(obj.Entry)
-		m.SetFromEntry(entry)
+		m.SetEntry(entry)
 	}
 	return m
 }
@@ -95,25 +95,13 @@ func (g *Interpreter) VisitLiteralMapEntry(ctx *par.LiteralMapEntryContext) any 
 	return obj.Entry{K: k, V: v}
 }
 
+// VisitIdent implements par.GolflangVisitor.
+func (g *Interpreter) VisitIdent(ctx *par.IdentContext) interface{} {
+	panic("unimplemented")
+}
+
 // VisitLiteralPrimitive implements par.GolflangVisitor.
 func (g *Interpreter) VisitLiteralPrimitive(ctx *par.LiteralPrimitiveContext) any {
-	return g.primitiveLiteral(ctx)
-}
-
-// VisitChildren implements par.GolflangVisitor.
-// Subtle: this method shadows the method (BaseParseTreeVisitor).VisitChildren of Interpreter.BaseParseTreeVisitor.
-func (g *Interpreter) VisitChildren(node antlr.RuleNode) any {
-	return g.BaseParseTreeVisitor.VisitChildren(node)
-}
-
-// VisitErrorNode implements par.GolflangVisitor.
-// Subtle: this method shadows the method (BaseParseTreeVisitor).VisitErrorNode of Interpreter.BaseParseTreeVisitor.
-func (g *Interpreter) VisitErrorNode(node antlr.ErrorNode) any {
-	return g.BaseParseTreeVisitor.VisitErrorNode(node)
-}
-
-// VisitTerminal implements par.GolflangVisitor.
-// Subtle: this method shadows the method (BaseParseTreeVisitor).VisitTerminal of Interpreter.BaseParseTreeVisitor.
-func (g *Interpreter) VisitTerminal(node antlr.TerminalNode) any {
-	return g.BaseParseTreeVisitor.VisitTerminal(node)
+	return nil
+	// return g.primitiveLiteral(ctx)
 }

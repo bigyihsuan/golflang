@@ -82,7 +82,7 @@ func (m *Map) Set(k, v Obj) {
 	m.m[e.K.Hash()] = e
 }
 
-func (m *Map) SetFromEntry(e Entry) {
+func (m *Map) SetEntry(e Entry) {
 	m.m[e.K.Hash()] = e
 }
 

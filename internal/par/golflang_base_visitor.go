@@ -23,6 +23,10 @@ func (v *BaseGolflangVisitor) VisitExpr(ctx *ExprContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseGolflangVisitor) VisitIdent(ctx *IdentContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseGolflangVisitor) VisitLiteral(ctx *LiteralContext) interface{} {
 	return v.VisitChildren(ctx)
 }

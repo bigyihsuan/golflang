@@ -55,6 +55,7 @@ fizzbuzz := \n => map range 1 til n \k => if % n 15 then "fizzbuzz" else if % n 
 <https://codegolf.stackexchange.com/questions/119690/the-forbidden-built-in>
 
 ```ruby
+# TODO
 \l => chunkN l 3
 ```
 
@@ -109,3 +110,33 @@ dynamic, loose typing
 - [ ] arithmetic (prefer float): `+`, `-`, `*`, `/`, `%`, `**` (exp), `_` (unary negation)
 - [ ] bitwise (int only): `<<`, `l>>` (logical), `a>>` (arithmetic), `&`, `|`, `^` (bitwise not)
 - [ ] logical: `and`, `or`, `not`
+
+# spec
+
+## general
+
+- all exprs are functions and not immediately executed
+
+## statements
+
+- statements are immediately executed
+
+## functions
+
+- functions dequeue values from the queue until they have enough values for their arguments
+
+## literals
+
+- literals are *functions* that push that value onto the queue
+- they are not evaluated fully: aliases within (`[a,b,c,1,2,3]` where `a,b,c` are aliases) are not resolved until the value is dequeued
+
+## aliases and scopes
+
+- scopes contain aliases
+- aliases have a name and some value (which can be an ident or function)
+- everything is contained in one parent scope
+- making a lambda creates new scopes
+- aliases are scoped
+- new aliases are defined in the current, innermost scope
+- values of aliases may be retrieved from any outer scope
+- scopes are created when a function is run. they are destroyed when the function exits

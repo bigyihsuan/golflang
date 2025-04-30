@@ -1,11 +1,18 @@
 package obj
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Str string
 
 func ZeroStr() Str {
 	return Str("")
+}
+
+func NewStr(s string) Str {
+	return Str(strings.Trim(s, "\""))
 }
 
 // Bool implements Obj.
@@ -30,7 +37,7 @@ func (s Str) Kind() ObjKind {
 
 // Repr implements Obj.
 func (s Str) Repr() string {
-	return fmt.Sprintf("`%s`", s)
+	return fmt.Sprintf("`%s`", strings.ReplaceAll(string(s), "\n", "\\n"))
 }
 
 // String implements Obj.

@@ -4,8 +4,9 @@ import GolflangTokens;
 
 prog: stmt*;
 stmt: (alias | expr) SEMICOLON;
-alias: IDENT ASSIGN expr;
-expr: IDENT | literal;
+alias: name=ident ASSIGN value=expr;
+expr: ident | literal;
+ident: IDENT;
 literal:
 	literalList
 	| literalMap

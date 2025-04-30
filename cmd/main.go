@@ -17,7 +17,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = interpreter.Parse()
+	err = interpreter.Run()
 	if err != nil {
 		panic(err)
 	}
