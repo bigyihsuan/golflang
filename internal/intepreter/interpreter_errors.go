@@ -2,14 +2,6 @@ package interpreter
 
 import "fmt"
 
-type ErrUnknownAlias struct {
-	Name string
-}
-
-func (e ErrUnknownAlias) Error() string {
-	return fmt.Sprintf("unknown alias: %s", e.Name)
-}
-
 type ErrNotEnoughStackValues struct {
 	Want, Need int
 }

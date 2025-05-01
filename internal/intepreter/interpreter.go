@@ -4,6 +4,7 @@ import (
 	"bigyihsuan/golflang/internal/ast"
 	"bigyihsuan/golflang/internal/obj"
 	"bigyihsuan/golflang/internal/par"
+	"bigyihsuan/golflang/internal/scope"
 	"bigyihsuan/golflang/internal/stack"
 	"errors"
 	"fmt"
@@ -18,8 +19,8 @@ type Interpreter struct {
 	astBuilder *ast.Builder
 	stack      stack.Stack[obj.Obj]
 	// aliases    map[obj.Ident]obj.Obj
-	baseScope    Scope  // the base scope for the whole program
-	currentScope *Scope // the current scope
+	baseScope    scope.Scope  // the base scope for the whole program
+	currentScope *scope.Scope // the current scope
 }
 
 type AliasName string
@@ -46,7 +47,7 @@ func New(filename string) (*Interpreter, error) {
 		parser:     parser,
 		astBuilder: astBuilder,
 	}
-	interpreter.baseScope = NewBaseScope()
+	interpreter.baseScope = scope.NewBase()
 	interpreter.currentScope = &interpreter.baseScope
 	return interpreter, nil
 }
@@ -109,11 +110,11 @@ func (g *Interpreter) EvalObj(o obj.Obj) (obj.Obj, error) {
 
 func (g *Interpreter) EvalLambda(lambda Lambda) (obj.Obj, error) {
 	// set up a new scope for this lambda
-	lambdaScope := NewScope(g.currentScope)
+	lambdaScope := scope.New(g.currentScope)
 	g.currentScope = &lambdaScope
 	defer func() {
 		// destroy the lambda scope, and move back to the outer scope
-		g.currentScope = g.currentScope.parent
+		g.currentScope = g.currentScope.Parent
 	}()
 
 	// assign values to arguments
