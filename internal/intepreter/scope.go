@@ -27,9 +27,12 @@ func (s *Scope) SetAlias(name obj.Ident, value obj.Obj) {
 	s.aliases[name] = value
 }
 
-func (s Scope) GetAlias(i obj.Ident) (value obj.Obj) {
-	value, _ = s.getAlias(i)
-	return value
+func (s Scope) GetAlias(i obj.Ident) (value obj.Obj, err error) {
+	value, ok := s.getAlias(i)
+	if !ok {
+		return value, ErrUnknownAlias{i.String()}
+	}
+	return value, nil
 }
 
 func (s Scope) getAlias(name obj.Ident) (value obj.Obj, ok bool) {
@@ -38,7 +41,7 @@ func (s Scope) getAlias(name obj.Ident) (value obj.Obj, ok bool) {
 	} else if value, inParentScope := s.parent.getAlias(name); inParentScope {
 		return value, true
 	} else {
-		panic(fmt.Errorf(InterpreterErrorAliasNotFound, name.String()))
+		return nil, false
 	}
 }
 

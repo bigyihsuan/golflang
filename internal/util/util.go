@@ -1,5 +1,7 @@
 package util
 
+import "iter"
+
 func SliceMap[T, V any](ts []T, fn func(T) V) []V {
 	result := make([]V, len(ts))
 	for i, t := range ts {
@@ -31,4 +33,14 @@ func MapMapKV[K, L comparable, V, W any](m map[K]V, fn func(K, V) (L, W)) map[L]
 		result[l] = w
 	}
 	return result
+}
+
+func Reversed[T any](s []T) iter.Seq[T] {
+	return func(yield func(T) bool) {
+		for i := len(s) - 1; i >= 0; i-- {
+			if !yield(s[i]) {
+				return
+			}
+		}
+	}
 }

@@ -140,3 +140,9 @@ dynamic, loose typing
 - new aliases are defined in the current, innermost scope
 - values of aliases may be retrieved from any outer scope
 - scopes are created when a function is run. they are destroyed when the function exits
+
+## architecture conventions
+
+- the element at top of the stack is `len()-1`
+- arguments are pushed to the stack in reversed order (e.g. `f:=\a,b=>...; 1; 2; f` will call `f(2,1)`)
+- all function calls assume enough arguments are on the stack; it is up to the caller to make sure of that

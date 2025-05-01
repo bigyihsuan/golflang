@@ -37,42 +37,54 @@ func (g *Interpreter) VisitStmt(stmt ast.Stmt) {
 	}
 }
 
-func (g *Interpreter) VisitAlias(alias ast.Alias) {
+func (g *Interpreter) VisitAlias(alias ast.Alias) error {
 	name := g.VisitIdent(alias.Name)
-	value := g.VisitExpr(alias.Value)
+	value, err := g.VisitExpr(alias.Value)
+	if err != nil {
+		return err
+	}
 	g.currentScope.SetAlias(name, value)
+	return nil
 }
 
-func (g *Interpreter) VisitExprStmt(expr ast.Expr) {
-	value := g.VisitExpr(expr)
-	g.queue.Push(g.EvalObj(value))
+func (g *Interpreter) VisitExprStmt(expr ast.Expr) error {
+	value, err := g.VisitExpr(expr)
+	if err != nil {
+		return err
+	}
+	v, err := g.EvalObj(value)
+	if err != nil {
+		return err
+	}
+	g.stack.Push(v)
+	return nil
 }
 
-func (g *Interpreter) VisitExpr(expr ast.Expr) obj.Obj {
+func (g *Interpreter) VisitExpr(expr ast.Expr) (obj.Obj, error) {
 	switch expr := expr.(type) {
 	case ast.Lit:
 		return g.VisitLit(expr)
 	case ast.Ident:
-		return g.VisitIdent(expr)
+		return g.VisitIdent(expr), nil
 	case ast.Lambda:
-		return g.VisitLambda(expr)
+		return g.VisitLambda(expr), nil
 	case ast.Call:
 		return g.VisitCall(expr)
 	default:
-		panic(fmt.Errorf("%T: unknown Expr %T: %s", g, expr, expr.String()))
+		panic(fmt.Errorf("%T: unimplemented Expr %T: %s", g, expr, expr.String()))
 	}
 }
 
-func (g *Interpreter) VisitCall(expr ast.Call) obj.Obj {
+func (g *Interpreter) VisitCall(expr ast.Call) (obj.Obj, error) {
 	name := g.VisitIdent(expr.Name)
-	fn := g.GetAlias(name)
-	// set up by pushing arguments to the queue
-	beforeLen := g.queue.Len()
-	for _, arg := range expr.Args {
+	fn, err := g.currentScope.GetAlias(name)
+	if err != nil {
+		return nil, fmt.Errorf("calling function: %w", err)
+	}
+	// set up by pushing arguments to the stack
+	for arg := range util.Reversed(expr.Args) {
 		g.Visit(arg)
 	}
-	// move the arguments to the front
-	g.queue.Rotate(beforeLen)
 	return g.EvalObj(fn)
 }
 
@@ -85,24 +97,34 @@ func (g *Interpreter) VisitLambda(expr ast.Lambda) Lambda {
 	}
 }
 
-func (g *Interpreter) VisitLit(lit ast.Lit) obj.Obj {
+func (g *Interpreter) VisitLit(lit ast.Lit) (obj.Obj, error) {
 	switch lit := lit.(type) {
 	case ast.LiteralPrimitive:
-		return lit.Value
+		return lit.Value, nil
 	case ast.LiteralList:
 		values := []obj.Obj{}
 		for _, e := range lit.Value {
-			values = append(values, g.VisitExpr(e))
+			v, err := g.VisitExpr(e)
+			if err != nil {
+				return nil, fmt.Errorf("building list: %w", err)
+			}
+			values = append(values, v)
 		}
-		return obj.NewList(values...)
+		return obj.NewList(values...), nil
 	case ast.LiteralMap:
 		values := []obj.MapEntry{}
 		for _, entry := range lit.Value {
-			k := g.VisitExpr(entry.K)
-			v := g.VisitExpr(entry.V)
+			k, err := g.VisitExpr(entry.K)
+			if err != nil {
+				return nil, fmt.Errorf("building map key: %w", err)
+			}
+			v, err := g.VisitExpr(entry.V)
+			if err != nil {
+				return nil, fmt.Errorf("building map value: %w", err)
+			}
 			values = append(values, obj.MapEntry{K: k, V: v})
 		}
-		return obj.MapFromEntries(values...)
+		return obj.MapFromEntries(values...), nil
 	default:
 		panic(fmt.Errorf("%T: unknown Lit %T: %s", g, lit, lit.String()))
 	}

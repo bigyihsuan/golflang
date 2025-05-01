@@ -4,7 +4,7 @@ import (
 	"bigyihsuan/golflang/internal/ast"
 	"bigyihsuan/golflang/internal/obj"
 	"bigyihsuan/golflang/internal/par"
-	"bigyihsuan/golflang/internal/queue"
+	"bigyihsuan/golflang/internal/stack"
 	"errors"
 	"fmt"
 	"strings"
@@ -16,7 +16,7 @@ type Interpreter struct {
 	lexer      *par.GolflangLexer
 	parser     *par.GolflangParser
 	astBuilder *ast.Builder
-	queue      queue.Queue[obj.Obj]
+	stack      stack.Stack[obj.Obj]
 	// aliases    map[obj.Ident]obj.Obj
 	baseScope    Scope  // the base scope for the whole program
 	currentScope *Scope // the current scope
@@ -41,7 +41,7 @@ func New(filename string) (*Interpreter, error) {
 	astBuilder := ast.NewBuilder(parser)
 
 	interpreter := &Interpreter{
-		queue:      queue.New[obj.Obj](),
+		stack:      stack.New[obj.Obj](),
 		lexer:      lexer,
 		parser:     parser,
 		astBuilder: astBuilder,
@@ -62,52 +62,52 @@ func (g *Interpreter) Run() error {
 
 	g.Visit(ast)
 
-	fmt.Printf("queue: %s\n", g.QueueString())
+	fmt.Printf("stack: %s\n", g.QueueString())
 	fmt.Printf("aliases: %s\n", g.baseScope.String())
 	return nil
 }
 
 func (g *Interpreter) Exit() {
-	for g.queue.Len() > 0 {
-		ele := g.DequeueOne()
+	for g.stack.Len() > 0 {
+		ele, _ := g.stack.Pop()
 		fmt.Println(ele)
 	}
 }
 
 func (g Interpreter) QueueString() string {
 	ss := []string{}
-	for _, e := range g.queue.Elements() {
+	for _, e := range g.stack.Elements() {
 		ss = append(ss, e.Repr())
 	}
 	return fmt.Sprintf("<%s>", strings.Join(ss, ", "))
 }
 
-func (g *Interpreter) EvalObj(o obj.Obj) obj.Obj {
+func (g *Interpreter) EvalObj(o obj.Obj) (obj.Obj, error) {
 	switch o.Kind() {
 	case obj.ObjKindNone:
-		return o
+		return o, nil
 	case obj.ObjKindBool:
-		return o
+		return o, nil
 	case obj.ObjKindDec:
-		return o
+		return o, nil
 	case obj.ObjKindInt:
-		return o
+		return o, nil
 	case obj.ObjKindList:
-		return o
+		return o, nil
 	case obj.ObjKindMap:
-		return o
+		return o, nil
 	case obj.ObjKindStr:
-		return o
+		return o, nil
 	case obj.ObjKindIdent:
-		return g.GetAlias(o.(obj.Ident))
+		return g.currentScope.GetAlias(o.(obj.Ident))
 	case obj.ObjKindLambda:
 		return g.EvalLambda(o.(Lambda))
 	default:
-		panic(fmt.Errorf("unexpected obj.ObjKind %s", o.Kind()))
+		panic(fmt.Errorf("unimplemented obj.ObjKind %s", o.Kind()))
 	}
 }
 
-func (g *Interpreter) EvalLambda(lambda Lambda) obj.Obj {
+func (g *Interpreter) EvalLambda(lambda Lambda) (obj.Obj, error) {
 	// set up a new scope for this lambda
 	lambdaScope := NewScope(g.currentScope)
 	g.currentScope = &lambdaScope
@@ -117,39 +117,28 @@ func (g *Interpreter) EvalLambda(lambda Lambda) obj.Obj {
 	}()
 
 	// assign values to arguments
-	values := g.Dequeue(len(lambda.Args))
+	values, ok := g.stack.PopN(len(lambda.Args))
+	if !ok {
+		panic(ErrNotEnoughStackValues{
+			Want: len(lambda.Args),
+			Need: len(lambda.Args) - len(values),
+		})
+	}
+
 	for i, arg := range lambda.Args {
-		g.SetAlias(arg, g.EvalObj(values[i]))
+		v, err := g.EvalObj(values[i])
+		if err != nil {
+			return nil, err
+		}
+		g.currentScope.SetAlias(arg, v)
 	}
 
 	// execute the lambda body
 	g.VisitExprStmt(lambda.Body)
 	// get the return value
-	return g.DequeueOne()
-}
-
-func (g *Interpreter) Push(value obj.Obj) {
-	g.queue.Push(value)
-}
-
-func (g *Interpreter) DequeueOne() obj.Obj {
-	return g.Dequeue(1)[0]
-}
-func (g *Interpreter) Dequeue(n int) (o []obj.Obj) {
-	for i := range n {
-		left := n - i
-		v, ok := g.queue.Dequeue()
-		if !ok {
-			panic(fmt.Errorf(InterpreterErrorNotEnoughValuesOnQueue, left))
-		}
-		o = append(o, v)
+	v, ok := g.stack.Pop()
+	if !ok {
+		return v, ErrNotEnoughStackValues{Want: 1, Need: 1}
 	}
-	return
-}
-
-func (g Interpreter) GetAlias(name obj.Ident) obj.Obj {
-	return g.currentScope.GetAlias(name)
-}
-func (g *Interpreter) SetAlias(name obj.Ident, value obj.Obj) {
-	g.currentScope.SetAlias(name, value)
+	return v, nil
 }
