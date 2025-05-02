@@ -3,37 +3,40 @@ package interpreter
 import (
 	"bigyihsuan/golflang/internal/ast"
 	"bigyihsuan/golflang/internal/obj"
+	"bigyihsuan/golflang/internal/scope"
 	"bigyihsuan/golflang/internal/util"
 	"fmt"
 )
 
-func (g *Interpreter) Visit(node ast.Node) {
+func (g *Interpreter) Visit(node ast.Node) error {
 	switch node := node.(type) {
 	case ast.Prog:
-		g.VisitProg(node)
+		return g.VisitProg(node)
 	case ast.Stmt:
-		g.VisitStmt(node)
-	case ast.Expr:
-		g.VisitExpr(node)
+		return g.VisitStmt(node)
 	default:
 		panic(fmt.Errorf("unknown Node %T: %s", node, node.String()))
 	}
 }
 
-func (g *Interpreter) VisitProg(prog ast.Prog) {
+func (g *Interpreter) VisitProg(prog ast.Prog) error {
 	for _, stmt := range prog.Stmts {
-		g.VisitStmt(stmt)
+		err := g.VisitStmt(stmt)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func (g *Interpreter) VisitStmt(stmt ast.Stmt) {
+func (g *Interpreter) VisitStmt(stmt ast.Stmt) error {
 	switch stmt := stmt.(type) {
 	case ast.Alias:
-		g.VisitAlias(stmt)
+		return g.VisitAlias(stmt)
 	case ast.Expr:
-		g.VisitExprStmt(stmt)
+		return g.VisitExprStmt(stmt)
 	default:
-		panic(fmt.Errorf("%T: unknown Stmt %T: %s", g, stmt, stmt.String()))
+		panic(fmt.Errorf("%T: unimplemented Stmt %T: %s", g, stmt, stmt.String()))
 	}
 }
 
@@ -56,7 +59,9 @@ func (g *Interpreter) VisitExprStmt(expr ast.Expr) error {
 	if err != nil {
 		return err
 	}
-	g.stack.Push(v)
+	if v.Kind() != obj.ObjKindNone {
+		g.stack.Push(v)
+	}
 	return nil
 }
 
@@ -76,16 +81,22 @@ func (g *Interpreter) VisitExpr(expr ast.Expr) (obj.Obj, error) {
 }
 
 func (g *Interpreter) VisitCall(expr ast.Call) (obj.Obj, error) {
-	name := g.VisitIdent(expr.Name)
-	fn, err := g.currentScope.GetAlias(name)
-	if err != nil {
-		return nil, fmt.Errorf("calling function: %w", err)
-	}
 	// set up by pushing arguments to the stack
 	for arg := range util.Reversed(expr.Args) {
 		g.Visit(arg)
 	}
-	return g.EvalObj(fn)
+
+	name := g.VisitIdent(expr.Name)
+	// check for program-defined funcs first
+	if fn, err := g.currentScope.GetAlias(name); err == nil {
+		return g.EvalObj(fn)
+	}
+	// check for builtin
+	f, ok := g.builtins.Get(name)
+	if !ok {
+		return nil, fmt.Errorf("calling function: %w", scope.ErrUnknownAlias{Name: name.String()})
+	}
+	return f(g)
 }
 
 func (g *Interpreter) VisitLambda(expr ast.Lambda) Lambda {
@@ -126,7 +137,7 @@ func (g *Interpreter) VisitLit(lit ast.Lit) (obj.Obj, error) {
 		}
 		return obj.MapFromEntries(values...), nil
 	default:
-		panic(fmt.Errorf("%T: unknown Lit %T: %s", g, lit, lit.String()))
+		panic(fmt.Errorf("%T: unimplemented Lit %T: %s", g, lit, lit.String()))
 	}
 }
 

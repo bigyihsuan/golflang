@@ -14,13 +14,13 @@ import (
 )
 
 type Interpreter struct {
-	lexer      *par.GolflangLexer
-	parser     *par.GolflangParser
-	astBuilder *ast.Builder
-	stack      stack.Stack[obj.Obj]
-	// aliases    map[obj.Ident]obj.Obj
+	lexer        *par.GolflangLexer
+	parser       *par.GolflangParser
+	astBuilder   *ast.Builder
+	stack        stack.Stack[obj.Obj]
 	baseScope    scope.Scope  // the base scope for the whole program
 	currentScope *scope.Scope // the current scope
+	builtins
 }
 
 type AliasName string
@@ -46,6 +46,7 @@ func New(filename string) (*Interpreter, error) {
 		lexer:      lexer,
 		parser:     parser,
 		astBuilder: astBuilder,
+		builtins:   initBuiltins(),
 	}
 	interpreter.baseScope = scope.NewBase()
 	interpreter.currentScope = &interpreter.baseScope
@@ -61,7 +62,10 @@ func (g *Interpreter) Run() error {
 
 	fmt.Printf("progAst: %v\n", ast)
 
-	g.Visit(ast)
+	err := g.Visit(ast)
+	if err != nil {
+		return err
+	}
 
 	fmt.Printf("stack: %s\n", g.QueueString())
 	fmt.Printf("aliases: %s\n", g.baseScope.String())
@@ -135,7 +139,10 @@ func (g *Interpreter) EvalLambda(lambda Lambda) (obj.Obj, error) {
 	}
 
 	// execute the lambda body
-	g.VisitExprStmt(lambda.Body)
+	err := g.VisitExprStmt(lambda.Body)
+	if err != nil {
+		return nil, err
+	}
 	// get the return value
 	v, ok := g.stack.Pop()
 	if !ok {

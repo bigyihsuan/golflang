@@ -30,7 +30,7 @@ func (s *Scope) SetAlias(name obj.Ident, value obj.Obj) {
 func (s Scope) GetAlias(i obj.Ident) (value obj.Obj, err error) {
 	value, ok := s.getAlias(i)
 	if !ok {
-		return value, ErrUnknownAlias{i.String()}
+		return nil, ErrUnknownAlias{i.String()}
 	}
 	return value, nil
 }
@@ -38,11 +38,13 @@ func (s Scope) GetAlias(i obj.Ident) (value obj.Obj, err error) {
 func (s Scope) getAlias(name obj.Ident) (value obj.Obj, ok bool) {
 	if value, inThisScope := s.aliases[name]; inThisScope {
 		return value, true
-	} else if value, inParentScope := s.Parent.getAlias(name); inParentScope {
-		return value, true
-	} else {
-		return nil, false
 	}
+	if s.Parent != nil {
+		if value, inParentScope := s.Parent.getAlias(name); inParentScope {
+			return value, true
+		}
+	}
+	return nil, false
 }
 
 func (s Scope) String() string {
@@ -52,4 +54,12 @@ func (s Scope) String() string {
 	}
 	aliases := fmt.Sprint(s.aliases)
 	return fmt.Sprintf("{%s <- %s}", parent, aliases)
+}
+
+type ErrUnknownAlias struct {
+	Name string
+}
+
+func (e ErrUnknownAlias) Error() string {
+	return fmt.Sprintf("unknown alias: %s", e.Name)
 }

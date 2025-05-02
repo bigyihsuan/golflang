@@ -1,6 +1,8 @@
 //go:generate enumer -type=ObjKind
 package obj
 
+import "fmt"
+
 // ObjKind helps determine what kind of object it is
 type ObjKind uint
 
@@ -31,6 +33,7 @@ type Hash string // for implementing Map
 
 /* === force implementation of Object === */
 
+var _ Obj = none
 var _ Obj = ZeroInt()
 var _ Obj = ZeroDec()
 var _ Obj = ZeroBool()
@@ -39,4 +42,40 @@ var _ Obj = ZeroList()
 var _ Obj = ZeroMap()
 var _ Obj = Ident("")
 
-// var _ Obj = BuiltinFunc()
+type None struct{}
+
+// Bool implements Obj.
+func (n None) Bool() bool {
+	return false
+}
+
+// Equal implements Obj.
+func (n None) Equal(o Obj) bool {
+	return false
+}
+
+// Hash implements Obj.
+func (n None) Hash() Hash {
+	return Hash(fmt.Sprintf("%#v", n))
+}
+
+// Kind implements Obj.
+func (n None) Kind() ObjKind {
+	return ObjKindNone
+}
+
+// Repr implements Obj.
+func (n None) Repr() string {
+	return "none"
+}
+
+// String implements Obj.
+func (n None) String() string {
+	return "none"
+}
+
+var none = None{}
+
+func ZeroNone() None {
+	return none
+}
