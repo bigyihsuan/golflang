@@ -21,12 +21,13 @@ type Interpreter struct {
 	baseScope    scope.Scope  // the base scope for the whole program
 	currentScope *scope.Scope // the current scope
 	builtins
+	debug, dumpStack bool
 }
 
 type AliasName string
 
-func New(filename string) (*Interpreter, error) {
-	fs, err := antlr.NewFileStream(filename)
+func newInterpreter(b builder) (*Interpreter, error) {
+	fs, err := antlr.NewFileStream(b.filename)
 	if err != nil {
 		return nil, fmt.Errorf("making file stream: %w", err)
 	}
@@ -47,6 +48,8 @@ func New(filename string) (*Interpreter, error) {
 		parser:     parser,
 		astBuilder: astBuilder,
 		builtins:   initBuiltins(),
+		debug:      b.debug,
+		dumpStack:  b.dumpStack,
 	}
 	interpreter.baseScope = scope.NewBase()
 	interpreter.currentScope = &interpreter.baseScope
@@ -54,21 +57,30 @@ func New(filename string) (*Interpreter, error) {
 }
 
 func (i *Interpreter) Run() error {
-	defer i.Exit()
+	if i.dumpStack {
+		defer i.Exit()
+	}
+
 	parseTree := i.parser.Prog()
-	fmt.Println(parseTree.ToStringTree(i.parser.RuleNames, i.parser))
+
+	if i.debug {
+		fmt.Println(parseTree.ToStringTree(i.parser.RuleNames, i.parser))
+	}
 
 	ast := i.astBuilder.Visit(parseTree).(ast.Prog)
-
-	fmt.Printf("progAst: %v\n", ast)
+	if i.debug {
+		fmt.Printf("progAst: %v\n", ast)
+	}
 
 	err := i.Visit(ast)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("stack: %s\n", i.QueueString())
-	fmt.Printf("aliases: %s\n", i.baseScope.String())
+	if i.debug {
+		fmt.Printf("stack: %s\n", i.StackString())
+		fmt.Printf("aliases: %s\n", i.baseScope.String())
+	}
 	return nil
 }
 
@@ -81,7 +93,7 @@ func (i *Interpreter) Exit() {
 	}
 }
 
-func (i Interpreter) QueueString() string {
+func (i Interpreter) StackString() string {
 	ss := []string{}
 	for _, e := range i.stack.Elements() {
 		ss = append(ss, e.Repr())
