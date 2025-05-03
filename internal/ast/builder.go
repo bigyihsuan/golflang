@@ -9,10 +9,10 @@ import (
 	"github.com/antlr4-go/antlr/v4"
 )
 
-// var _ par.GolflangVisitor = (*Builder)(nil)
+var _ par.GolflangVisitor = (*Builder)(nil)
 
 type Builder struct {
-	// par.BaseGolflangVisitor
+	par.BaseGolflangVisitor
 	parser *par.GolflangParser
 }
 
@@ -65,8 +65,6 @@ func (b *Builder) VisitExpr(expr *par.ExprContext) any {
 	switch expr := expr.GetChild(0).(type) {
 	case *par.LiteralContext:
 		return b.VisitLiteral(expr)
-	case *par.IdentContext:
-		return b.VisitIdent(expr)
 	case *par.LambdaContext:
 		return b.VisitLambda(expr)
 	case *par.CallContext:
@@ -79,8 +77,10 @@ func (b *Builder) VisitExpr(expr *par.ExprContext) any {
 func (b *Builder) VisitCall(call *par.CallContext) any {
 	name := b.VisitIdent(call.GetName().(*par.IdentContext)).(Ident)
 	args := []Expr{}
-	if call.GetArgs() != nil {
-		args = b.VisitExprList(call.GetArgs().(*par.ExprListContext)).([]Expr)
+
+	callArgs := call.GetArgs()
+	if callArgs != nil {
+		args = b.VisitExprList(callArgs.(*par.ExprListContext)).([]Expr)
 	}
 
 	return Call{
@@ -203,4 +203,19 @@ func (b *Builder) bool(c par.ILiteralPrimitiveContext) obj.Bool {
 		panic(err)
 	}
 	return obj.Bool(v)
+}
+
+// VisitChildren implements par.GolflangVisitor.
+func (b *Builder) VisitChildren(node antlr.RuleNode) interface{} {
+	return b.BaseGolflangVisitor.VisitChildren(node)
+}
+
+// VisitErrorNode implements par.GolflangVisitor.
+func (b *Builder) VisitErrorNode(node antlr.ErrorNode) interface{} {
+	return b.BaseGolflangVisitor.VisitErrorNode(node)
+}
+
+// VisitTerminal implements par.GolflangVisitor.
+func (b *Builder) VisitTerminal(node antlr.TerminalNode) interface{} {
+	return b.BaseGolflangVisitor.VisitTerminal(node)
 }

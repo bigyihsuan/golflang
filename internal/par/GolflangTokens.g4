@@ -1,7 +1,7 @@
 lexer grammar GolflangTokens;
 
 fragment DIGITS:	[0-9]+;
-WHITESPACE:			[\t ]+						-> skip;
+WHITESPACE:			[\t \r\n]+					-> skip;
 NEWLINE:			[\r\n]+						-> skip;
 COMMENT:			'//' .*? (NEWLINE | EOF)	-> skip;
 

@@ -5,10 +5,10 @@ import GolflangTokens;
 prog:	stmt*;
 stmt:	(alias | expr) SEMICOLON;
 alias:	name=ident ASSIGN value=expr;
-expr:	call | lambda | ident | literal;
+expr:	call | lambda | literal;
 
-call:		name=ident LPAREN args=exprList? RPAREN; // TODO: lambda as name
-exprList:	expr (COMMA expr)*;
+call:		name=ident args=exprList?;
+exprList:	expr (WHITESPACE expr)*;
 lambda:		BACKSLASH args=identList ARROW body=expr;
 identList:	ident (COMMA ident)*;
 ident:		IDENT;
