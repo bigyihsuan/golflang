@@ -20,67 +20,67 @@ func NewBuilder(parser *par.GolflangParser) *Builder {
 	return &Builder{parser: parser}
 }
 
-func (g Builder) unknown(kind string, tree antlr.ParseTree) error {
-	return fmt.Errorf("%T: unknown %s %T: %s", g, kind, tree, tree.ToStringTree(g.parser.RuleNames, g.parser))
+func (b Builder) unknown(kind string, tree antlr.ParseTree) error {
+	return fmt.Errorf("%T: unknown %s %T: %s", b, kind, tree, tree.ToStringTree(b.parser.RuleNames, b.parser))
 }
 
-func (g *Builder) Visit(tree antlr.ParseTree) any {
+func (b *Builder) Visit(tree antlr.ParseTree) any {
 	switch t := tree.(type) {
 	case *par.ProgContext:
-		return g.VisitProg(t).(Prog)
+		return b.VisitProg(t).(Prog)
 	default:
-		panic(g.unknown("ParseTree", t))
+		panic(b.unknown("ParseTree", t))
 	}
 }
 
-func (g *Builder) VisitProg(ctx *par.ProgContext) any {
+func (b *Builder) VisitProg(ctx *par.ProgContext) any {
 	stmts := []Stmt{}
 	for _, stmt := range ctx.AllStmt() {
-		stmts = append(stmts, g.VisitStmt(stmt.(*par.StmtContext)).(Stmt))
+		stmts = append(stmts, b.VisitStmt(stmt.(*par.StmtContext)).(Stmt))
 	}
 	return Prog{stmts}
 }
 
-func (g *Builder) VisitStmt(stmt *par.StmtContext) any {
+func (b *Builder) VisitStmt(stmt *par.StmtContext) any {
 	switch child := stmt.GetChild(0).(type) {
 	case *par.AliasContext:
-		return g.VisitAlias(child)
+		return b.VisitAlias(child)
 	case *par.ExprContext:
-		return g.VisitExpr(child)
+		return b.VisitExpr(child)
 	default:
-		panic(g.unknown("StmtContext", child.(antlr.ParseTree)))
+		panic(b.unknown("StmtContext", child.(antlr.ParseTree)))
 	}
 }
 
-func (g *Builder) VisitAlias(alias *par.AliasContext) any {
-	ident := g.VisitIdent(alias.GetName().(*par.IdentContext)).(Ident)
-	expr := g.VisitExpr(alias.Expr().(*par.ExprContext)).(Expr)
+func (b *Builder) VisitAlias(alias *par.AliasContext) any {
+	ident := b.VisitIdent(alias.GetName().(*par.IdentContext)).(Ident)
+	expr := b.VisitExpr(alias.Expr().(*par.ExprContext)).(Expr)
 	return Alias{
 		Name:  ident,
 		Value: expr,
 	}
 }
 
-func (g *Builder) VisitExpr(expr *par.ExprContext) any {
+func (b *Builder) VisitExpr(expr *par.ExprContext) any {
 	switch expr := expr.GetChild(0).(type) {
 	case *par.LiteralContext:
-		return g.VisitLiteral(expr)
+		return b.VisitLiteral(expr)
 	case *par.IdentContext:
-		return g.VisitIdent(expr)
+		return b.VisitIdent(expr)
 	case *par.LambdaContext:
-		return g.VisitLambda(expr)
+		return b.VisitLambda(expr)
 	case *par.CallContext:
-		return g.VisitCall(expr)
+		return b.VisitCall(expr)
 	default:
-		panic(g.unknown("ExprContext", expr.(antlr.ParseTree)))
+		panic(b.unknown("ExprContext", expr.(antlr.ParseTree)))
 	}
 }
 
-func (g *Builder) VisitCall(call *par.CallContext) any {
-	name := g.VisitIdent(call.GetName().(*par.IdentContext)).(Ident)
+func (b *Builder) VisitCall(call *par.CallContext) any {
+	name := b.VisitIdent(call.GetName().(*par.IdentContext)).(Ident)
 	args := []Expr{}
 	if call.GetArgs() != nil {
-		args = g.VisitExprList(call.GetArgs().(*par.ExprListContext)).([]Expr)
+		args = b.VisitExprList(call.GetArgs().(*par.ExprListContext)).([]Expr)
 	}
 
 	return Call{
@@ -89,94 +89,94 @@ func (g *Builder) VisitCall(call *par.CallContext) any {
 	}
 }
 
-func (g *Builder) VisitExprList(exprs *par.ExprListContext) any {
+func (b *Builder) VisitExprList(exprs *par.ExprListContext) any {
 	es := []Expr{}
 	for _, expr := range exprs.AllExpr() {
-		es = append(es, g.VisitExpr(expr.(*par.ExprContext)).(Expr))
+		es = append(es, b.VisitExpr(expr.(*par.ExprContext)).(Expr))
 	}
 	return es
 }
 
-func (g *Builder) VisitLambda(lambda *par.LambdaContext) any {
-	args := g.VisitIdentList(lambda.GetArgs().(*par.IdentListContext)).(IdentList)
-	body := g.VisitExpr(lambda.GetBody().(*par.ExprContext)).(Expr)
+func (b *Builder) VisitLambda(lambda *par.LambdaContext) any {
+	args := b.VisitIdentList(lambda.GetArgs().(*par.IdentListContext)).(IdentList)
+	body := b.VisitExpr(lambda.GetBody().(*par.ExprContext)).(Expr)
 	return Lambda{
 		Args: args,
 		Body: body,
 	}
 }
 
-func (g *Builder) VisitIdentList(idents *par.IdentListContext) any {
+func (b *Builder) VisitIdentList(idents *par.IdentListContext) any {
 	is := IdentList{}
 	for _, ident := range idents.AllIdent() {
-		is = append(is, g.VisitIdent(ident.(*par.IdentContext)).(Ident))
+		is = append(is, b.VisitIdent(ident.(*par.IdentContext)).(Ident))
 	}
 	return is
 }
 
-func (g *Builder) VisitIdent(ident *par.IdentContext) any {
+func (b *Builder) VisitIdent(ident *par.IdentContext) any {
 	return Ident(obj.Ident(ident.GetText()))
 }
 
-func (g *Builder) VisitLiteral(literal *par.LiteralContext) any {
+func (b *Builder) VisitLiteral(literal *par.LiteralContext) any {
 	switch child := literal.GetChild(0).(type) {
 	case *par.LiteralPrimitiveContext:
-		return g.VisitLiteralPrimitive(child)
+		return b.VisitLiteralPrimitive(child)
 	case *par.LiteralListContext:
-		return g.VisitLiteralList(child)
+		return b.VisitLiteralList(child)
 	case *par.LiteralMapContext:
-		return g.VisitLiteralMap(child)
+		return b.VisitLiteralMap(child)
 	default:
-		panic(g.unknown("LiteralContext", child.(antlr.ParseTree)))
+		panic(b.unknown("LiteralContext", child.(antlr.ParseTree)))
 	}
 }
 
-func (g *Builder) VisitLiteralList(ctx *par.LiteralListContext) any {
+func (b *Builder) VisitLiteralList(ctx *par.LiteralListContext) any {
 	l := []Expr{}
 	for _, expr := range ctx.AllExpr() {
-		l = append(l, g.VisitExpr(expr.(*par.ExprContext)).(Expr))
+		l = append(l, b.VisitExpr(expr.(*par.ExprContext)).(Expr))
 	}
 	return LiteralList{Value: l}
 }
 
-func (g *Builder) VisitLiteralMap(ctx *par.LiteralMapContext) any {
+func (b *Builder) VisitLiteralMap(ctx *par.LiteralMapContext) any {
 	m := []LiteralMapEntry{}
 	for _, entry := range ctx.AllLiteralMapEntry() {
-		m = append(m, g.VisitLiteralMapEntry(entry.(*par.LiteralMapEntryContext)).(LiteralMapEntry))
+		m = append(m, b.VisitLiteralMapEntry(entry.(*par.LiteralMapEntryContext)).(LiteralMapEntry))
 	}
 	return LiteralMap{Value: m}
 }
 
 // VisitLiteralMapEntry implements par.GolflangVisitor.
-func (g *Builder) VisitLiteralMapEntry(ctx *par.LiteralMapEntryContext) any {
-	k := g.VisitExpr(ctx.GetKey().(*par.ExprContext)).(Expr)
-	v := g.VisitExpr(ctx.GetValue().(*par.ExprContext)).(Expr)
+func (b *Builder) VisitLiteralMapEntry(ctx *par.LiteralMapEntryContext) any {
+	k := b.VisitExpr(ctx.GetKey().(*par.ExprContext)).(Expr)
+	v := b.VisitExpr(ctx.GetValue().(*par.ExprContext)).(Expr)
 	return LiteralMapEntry{K: k, V: v}
 }
 
 // VisitLiteralPrimitive implements par.GolflangVisitor.
-func (g *Builder) VisitLiteralPrimitive(ctx *par.LiteralPrimitiveContext) any {
-	return LiteralPrimitive{Value: g.primitiveLiteral(ctx)}
+func (b *Builder) VisitLiteralPrimitive(ctx *par.LiteralPrimitiveContext) any {
+	return LiteralPrimitive{Value: b.primitiveLiteral(ctx)}
 }
 
-func (g *Builder) primitiveLiteral(c par.ILiteralPrimitiveContext) obj.Obj {
+func (b *Builder) primitiveLiteral(c par.ILiteralPrimitiveContext) obj.Obj {
 	switch {
 	case c.INT() != nil:
-		return g.int(c)
+		return b.int(c)
 	case c.DEC() != nil:
-		return g.dec(c)
+		return b.dec(c)
 	case c.STR() != nil:
-		return g.str(c)
+		return b.str(c)
 	case c.TRUE() != nil:
-		return g.bool(c)
+		return b.bool(c)
 	case c.FALSE() != nil:
-		return g.bool(c)
+		return b.bool(c)
 	default:
-		panic(fmt.Errorf("%T: unknown primitiveLiteral: %s", g, c.ToStringTree(g.parser.RuleNames, g.parser)))
+		panic(fmt.Errorf("%T: unknown primitiveLiteral: %s", b, c.ToStringTree(b.parser.RuleNames, b.parser)))
 	}
 }
 
-func (g *Builder) int(c par.ILiteralPrimitiveContext) obj.Int {
+func (b *Builder) int(c par.ILiteralPrimitiveContext) obj.Int {
 	i, err := strconv.ParseInt(c.GetText(), 10, 64)
 	if err != nil {
 		panic(err)
@@ -184,7 +184,7 @@ func (g *Builder) int(c par.ILiteralPrimitiveContext) obj.Int {
 	return obj.Int(i)
 }
 
-func (g *Builder) dec(c par.ILiteralPrimitiveContext) obj.Dec {
+func (b *Builder) dec(c par.ILiteralPrimitiveContext) obj.Dec {
 	f, err := strconv.ParseFloat(c.GetText(), 64)
 	if err != nil {
 		panic(err)
@@ -192,12 +192,12 @@ func (g *Builder) dec(c par.ILiteralPrimitiveContext) obj.Dec {
 	return obj.Dec(f)
 }
 
-func (g *Builder) str(c par.ILiteralPrimitiveContext) obj.Str {
+func (b *Builder) str(c par.ILiteralPrimitiveContext) obj.Str {
 	v := c.GetText()
 	return obj.NewStr(v)
 }
 
-func (g *Builder) bool(c par.ILiteralPrimitiveContext) obj.Bool {
+func (b *Builder) bool(c par.ILiteralPrimitiveContext) obj.Bool {
 	v, err := strconv.ParseBool(c.GetText())
 	if err != nil {
 		panic(err)

@@ -53,43 +53,43 @@ func New(filename string) (*Interpreter, error) {
 	return interpreter, nil
 }
 
-func (g *Interpreter) Run() error {
-	defer g.Exit()
-	parseTree := g.parser.Prog()
-	fmt.Println(parseTree.ToStringTree(g.parser.RuleNames, g.parser))
+func (i *Interpreter) Run() error {
+	defer i.Exit()
+	parseTree := i.parser.Prog()
+	fmt.Println(parseTree.ToStringTree(i.parser.RuleNames, i.parser))
 
-	ast := g.astBuilder.Visit(parseTree).(ast.Prog)
+	ast := i.astBuilder.Visit(parseTree).(ast.Prog)
 
 	fmt.Printf("progAst: %v\n", ast)
 
-	err := g.Visit(ast)
+	err := i.Visit(ast)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("stack: %s\n", g.QueueString())
-	fmt.Printf("aliases: %s\n", g.baseScope.String())
+	fmt.Printf("stack: %s\n", i.QueueString())
+	fmt.Printf("aliases: %s\n", i.baseScope.String())
 	return nil
 }
 
-func (g *Interpreter) Exit() {
+func (i *Interpreter) Exit() {
 	fmt.Println()
 	fmt.Println("=== EXIT ===")
-	for g.stack.Len() > 0 {
-		ele, _ := g.stack.Pop()
+	for i.stack.Len() > 0 {
+		ele, _ := i.stack.Pop()
 		fmt.Println(ele)
 	}
 }
 
-func (g Interpreter) QueueString() string {
+func (i Interpreter) QueueString() string {
 	ss := []string{}
-	for _, e := range g.stack.Elements() {
+	for _, e := range i.stack.Elements() {
 		ss = append(ss, e.Repr())
 	}
 	return fmt.Sprintf("<%s>", strings.Join(ss, ", "))
 }
 
-func (g *Interpreter) EvalObj(o obj.Obj) (obj.Obj, error) {
+func (i *Interpreter) EvalObj(o obj.Obj) (obj.Obj, error) {
 	switch o.Kind() {
 	case obj.ObjKindNone:
 		return o, nil
@@ -106,25 +106,25 @@ func (g *Interpreter) EvalObj(o obj.Obj) (obj.Obj, error) {
 	case obj.ObjKindStr:
 		return o, nil
 	case obj.ObjKindIdent:
-		return g.currentScope.GetAlias(o.(obj.Ident))
+		return i.currentScope.GetAlias(o.(obj.Ident))
 	case obj.ObjKindLambda:
-		return g.EvalLambda(o.(Lambda))
+		return i.EvalLambda(o.(Lambda))
 	default:
 		panic(fmt.Errorf("unimplemented obj.ObjKind %s", o.Kind()))
 	}
 }
 
-func (g *Interpreter) EvalLambda(lambda Lambda) (obj.Obj, error) {
+func (i *Interpreter) EvalLambda(lambda Lambda) (obj.Obj, error) {
 	// set up a new scope for this lambda
-	lambdaScope := scope.New(g.currentScope)
-	g.currentScope = &lambdaScope
+	lambdaScope := scope.New(i.currentScope)
+	i.currentScope = &lambdaScope
 	defer func() {
 		// destroy the lambda scope, and move back to the outer scope
-		g.currentScope = g.currentScope.Parent
+		i.currentScope = i.currentScope.Parent
 	}()
 
 	// assign values to arguments
-	values, ok := g.stack.PopN(len(lambda.Args))
+	values, ok := i.stack.PopN(len(lambda.Args))
 	if !ok {
 		panic(ErrNotEnoughStackValues{
 			Want: len(lambda.Args),
@@ -132,21 +132,21 @@ func (g *Interpreter) EvalLambda(lambda Lambda) (obj.Obj, error) {
 		})
 	}
 
-	for i, arg := range lambda.Args {
-		v, err := g.EvalObj(values[i])
+	for idx, arg := range lambda.Args {
+		v, err := i.EvalObj(values[idx])
 		if err != nil {
 			return nil, err
 		}
-		g.currentScope.SetAlias(arg, v)
+		i.currentScope.SetAlias(arg, v)
 	}
 
 	// execute the lambda body
-	err := g.VisitExprStmt(lambda.Body)
+	err := i.VisitExprStmt(lambda.Body)
 	if err != nil {
 		return nil, err
 	}
 	// get the return value
-	v, ok := g.stack.Pop()
+	v, ok := i.stack.Pop()
 	if !ok {
 		return v, ErrNotEnoughStackValues{Want: 1, Need: 1}
 	}

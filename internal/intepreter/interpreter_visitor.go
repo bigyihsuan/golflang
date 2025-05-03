@@ -8,20 +8,20 @@ import (
 	"fmt"
 )
 
-func (g *Interpreter) Visit(node ast.Node) error {
+func (i *Interpreter) Visit(node ast.Node) error {
 	switch node := node.(type) {
 	case ast.Prog:
-		return g.VisitProg(node)
+		return i.VisitProg(node)
 	case ast.Stmt:
-		return g.VisitStmt(node)
+		return i.VisitStmt(node)
 	default:
 		panic(fmt.Errorf("unknown Node %T: %s", node, node.String()))
 	}
 }
 
-func (g *Interpreter) VisitProg(prog ast.Prog) error {
+func (i *Interpreter) VisitProg(prog ast.Prog) error {
 	for _, stmt := range prog.Stmts {
-		err := g.VisitStmt(stmt)
+		err := i.VisitStmt(stmt)
 		if err != nil {
 			return err
 		}
@@ -29,77 +29,77 @@ func (g *Interpreter) VisitProg(prog ast.Prog) error {
 	return nil
 }
 
-func (g *Interpreter) VisitStmt(stmt ast.Stmt) error {
+func (i *Interpreter) VisitStmt(stmt ast.Stmt) error {
 	switch stmt := stmt.(type) {
 	case ast.Alias:
-		return g.VisitAlias(stmt)
+		return i.VisitAlias(stmt)
 	case ast.Expr:
-		return g.VisitExprStmt(stmt)
+		return i.VisitExprStmt(stmt)
 	default:
-		panic(fmt.Errorf("%T: unimplemented Stmt %T: %s", g, stmt, stmt.String()))
+		panic(fmt.Errorf("%T: unimplemented Stmt %T: %s", i, stmt, stmt.String()))
 	}
 }
 
-func (g *Interpreter) VisitAlias(alias ast.Alias) error {
-	name := g.VisitIdent(alias.Name)
-	value, err := g.VisitExpr(alias.Value)
+func (i *Interpreter) VisitAlias(alias ast.Alias) error {
+	name := i.VisitIdent(alias.Name)
+	value, err := i.VisitExpr(alias.Value)
 	if err != nil {
 		return err
 	}
-	g.currentScope.SetAlias(name, value)
+	i.currentScope.SetAlias(name, value)
 	return nil
 }
 
-func (g *Interpreter) VisitExprStmt(expr ast.Expr) error {
-	value, err := g.VisitExpr(expr)
+func (i *Interpreter) VisitExprStmt(expr ast.Expr) error {
+	value, err := i.VisitExpr(expr)
 	if err != nil {
 		return err
 	}
-	v, err := g.EvalObj(value)
+	v, err := i.EvalObj(value)
 	if err != nil {
 		return err
 	}
 	if v.Kind() != obj.ObjKindNone {
-		g.stack.Push(v)
+		i.stack.Push(v)
 	}
 	return nil
 }
 
-func (g *Interpreter) VisitExpr(expr ast.Expr) (obj.Obj, error) {
+func (i *Interpreter) VisitExpr(expr ast.Expr) (obj.Obj, error) {
 	switch expr := expr.(type) {
 	case ast.Lit:
-		return g.VisitLit(expr)
+		return i.VisitLit(expr)
 	case ast.Ident:
-		return g.VisitIdent(expr), nil
+		return i.VisitIdent(expr), nil
 	case ast.Lambda:
-		return g.VisitLambda(expr), nil
+		return i.VisitLambda(expr), nil
 	case ast.Call:
-		return g.VisitCall(expr)
+		return i.VisitCall(expr)
 	default:
-		panic(fmt.Errorf("%T: unimplemented Expr %T: %s", g, expr, expr.String()))
+		panic(fmt.Errorf("%T: unimplemented Expr %T: %s", i, expr, expr.String()))
 	}
 }
 
-func (g *Interpreter) VisitCall(expr ast.Call) (obj.Obj, error) {
+func (i *Interpreter) VisitCall(expr ast.Call) (obj.Obj, error) {
 	// set up by pushing arguments to the stack
 	for arg := range util.Reversed(expr.Args) {
-		g.Visit(arg)
+		i.Visit(arg)
 	}
 
-	name := g.VisitIdent(expr.Name)
+	name := i.VisitIdent(expr.Name)
 	// check for program-defined funcs first
-	if fn, err := g.currentScope.GetAlias(name); err == nil {
-		return g.EvalObj(fn)
+	if fn, err := i.currentScope.GetAlias(name); err == nil {
+		return i.EvalObj(fn)
 	}
 	// check for builtin
-	f, ok := g.builtins.Get(name)
+	f, ok := i.builtins.Get(name)
 	if !ok {
 		return nil, fmt.Errorf("calling function: %w", scope.ErrUnknownAlias{Name: name.String()})
 	}
-	return f(g)
+	return f(i)
 }
 
-func (g *Interpreter) VisitLambda(expr ast.Lambda) Lambda {
+func (i *Interpreter) VisitLambda(expr ast.Lambda) Lambda {
 	args := util.SliceMap(expr.Args, func(i ast.Ident) obj.Ident { return obj.Ident(i) })
 	body := expr.Body
 	return Lambda{
@@ -108,14 +108,14 @@ func (g *Interpreter) VisitLambda(expr ast.Lambda) Lambda {
 	}
 }
 
-func (g *Interpreter) VisitLit(lit ast.Lit) (obj.Obj, error) {
+func (i *Interpreter) VisitLit(lit ast.Lit) (obj.Obj, error) {
 	switch lit := lit.(type) {
 	case ast.LiteralPrimitive:
 		return lit.Value, nil
 	case ast.LiteralList:
 		values := []obj.Obj{}
 		for _, e := range lit.Value {
-			v, err := g.VisitExpr(e)
+			v, err := i.VisitExpr(e)
 			if err != nil {
 				return nil, fmt.Errorf("building list: %w", err)
 			}
@@ -125,11 +125,11 @@ func (g *Interpreter) VisitLit(lit ast.Lit) (obj.Obj, error) {
 	case ast.LiteralMap:
 		values := []obj.MapEntry{}
 		for _, entry := range lit.Value {
-			k, err := g.VisitExpr(entry.K)
+			k, err := i.VisitExpr(entry.K)
 			if err != nil {
 				return nil, fmt.Errorf("building map key: %w", err)
 			}
-			v, err := g.VisitExpr(entry.V)
+			v, err := i.VisitExpr(entry.V)
 			if err != nil {
 				return nil, fmt.Errorf("building map value: %w", err)
 			}
@@ -137,10 +137,10 @@ func (g *Interpreter) VisitLit(lit ast.Lit) (obj.Obj, error) {
 		}
 		return obj.MapFromEntries(values...), nil
 	default:
-		panic(fmt.Errorf("%T: unimplemented Lit %T: %s", g, lit, lit.String()))
+		panic(fmt.Errorf("%T: unimplemented Lit %T: %s", i, lit, lit.String()))
 	}
 }
 
-func (g *Interpreter) VisitIdent(ident ast.Ident) obj.Ident {
+func (i *Interpreter) VisitIdent(ident ast.Ident) obj.Ident {
 	return obj.Ident(ident)
 }
