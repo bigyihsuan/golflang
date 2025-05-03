@@ -2,8 +2,12 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
 
 	interpreter "bigyihsuan/golflang/internal/intepreter"
+
+	"github.com/fatih/color"
 )
 
 var (
@@ -15,10 +19,12 @@ func main() {
 
 	interpreter, err := interpreter.New(*filename)
 	if err != nil {
-		panic(err)
+		fmt.Println(color.HiRedString(err.Error()))
+		os.Exit(-1)
 	}
 	err = interpreter.Run()
 	if err != nil {
-		panic(err)
+		fmt.Println(color.HiRedString(err.Error()))
+		os.Exit(-1)
 	}
 }

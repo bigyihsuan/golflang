@@ -73,6 +73,8 @@ func (g *Interpreter) Run() error {
 }
 
 func (g *Interpreter) Exit() {
+	fmt.Println()
+	fmt.Println("=== EXIT ===")
 	for g.stack.Len() > 0 {
 		ele, _ := g.stack.Pop()
 		fmt.Println(ele)
