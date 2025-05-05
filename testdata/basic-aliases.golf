@@ -4,5 +4,5 @@ c :=a;
 d := "789";
 e := [a,b,d];
 f := {a:b, c:d};
-
-f; c; b;
+f;
+println;

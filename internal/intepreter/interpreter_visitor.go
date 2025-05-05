@@ -3,7 +3,7 @@ package interpreter
 import (
 	"bigyihsuan/golflang/internal/ast"
 	"bigyihsuan/golflang/internal/obj"
-	"bigyihsuan/golflang/internal/scope"
+	"bigyihsuan/golflang/internal/stack"
 	"bigyihsuan/golflang/internal/util"
 	"fmt"
 )
@@ -23,7 +23,7 @@ func (i *Interpreter) VisitProg(prog ast.Prog) error {
 	for _, stmt := range prog.Stmts {
 		err := i.VisitStmt(stmt)
 		if err != nil {
-			return err
+			return fmt.Errorf("prog: %w", err)
 		}
 	}
 	return nil
@@ -33,114 +33,159 @@ func (i *Interpreter) VisitStmt(stmt ast.Stmt) error {
 	switch stmt := stmt.(type) {
 	case ast.Alias:
 		return i.VisitAlias(stmt)
-	case ast.Expr:
+	case ast.ExprStmt:
 		return i.VisitExprStmt(stmt)
 	default:
-		panic(fmt.Errorf("%T: unimplemented Stmt %T: %s", i, stmt, stmt.String()))
+		return fmt.Errorf("stmt: unknown Stmt %T: %s", stmt, stmt.String())
 	}
 }
 
 func (i *Interpreter) VisitAlias(alias ast.Alias) error {
-	name := i.VisitIdent(alias.Name)
-	value, err := i.VisitExpr(alias.Value)
+	name, err := i.VisitIdent(alias.Name)
 	if err != nil {
-		return err
+		return fmt.Errorf("alias name: %w", err)
 	}
+	value := NewAliasValue(alias.Value)
 	i.currentScope.SetAlias(name, value)
 	return nil
 }
 
-func (i *Interpreter) VisitExprStmt(expr ast.Expr) error {
-	value, err := i.VisitExpr(expr)
+func (i *Interpreter) VisitExprStmt(exprStmt ast.ExprStmt) error {
+	_, err := i.EvalExprList(exprStmt.ExprList)
 	if err != nil {
-		return err
+		return fmt.Errorf("exprStmt: %w", err)
 	}
-	v, err := i.EvalObj(value)
-	if err != nil {
-		return err
-	}
-	if v.Kind() != obj.ObjKindNone {
-		i.stack.Push(v)
-	}
+	// i.pushValue(value)
 	return nil
 }
 
-func (i *Interpreter) VisitExpr(expr ast.Expr) (obj.Obj, error) {
+func (i *Interpreter) EvalExprList(exprList ast.ExprList) (obj.Obj, error) {
+	var lastValue obj.Obj
+	for e := range util.Reversed(exprList) {
+		value, err := i.EvalExpr(e)
+		if err != nil {
+			return value, fmt.Errorf("exprlist: %w", err)
+		}
+		i.pushValue(value)
+		lastValue = value
+	}
+	return lastValue, nil
+}
+
+func (i *Interpreter) EvalExprListNoPush(exprList ast.ExprList) (obj.Obj, error) {
+	var lastValue obj.Obj
+	for e := range util.Reversed(exprList) {
+		value, err := i.EvalExpr(e)
+		if err != nil {
+			return value, fmt.Errorf("exprlist: %w", err)
+		}
+		lastValue = value
+	}
+	return lastValue, nil
+}
+
+func (i *Interpreter) EvalExpr(expr ast.Expr) (obj.Obj, error) {
 	switch expr := expr.(type) {
-	case ast.Lit:
-		return i.VisitLit(expr)
 	case ast.Ident:
-		return i.VisitIdent(expr), nil
+		return i.EvalIdent(expr)
 	case ast.Lambda:
-		return i.VisitLambda(expr), nil
-	case ast.Call:
-		return i.VisitCall(expr)
+		return i.EvalLambda(expr)
+	case ast.Lit:
+		return i.EvalLit(expr)
 	default:
-		panic(fmt.Errorf("%T: unimplemented Expr %T: %s", i, expr, expr.String()))
+		return nil, fmt.Errorf("expr: unknown Expr %T %s", expr, expr.String())
 	}
 }
 
-func (i *Interpreter) VisitCall(expr ast.Call) (obj.Obj, error) {
-	// set up by pushing arguments to the stack
-	for arg := range util.Reversed(expr.Args) {
-		i.Visit(arg)
-	}
-
-	name := i.VisitIdent(expr.Name)
-	// check for program-defined funcs first
-	if fn, err := i.currentScope.GetAlias(name); err == nil {
-		return i.EvalObj(fn)
-	}
-	// check for builtin
-	f, ok := i.builtins.Get(name)
-	if !ok {
-		return nil, fmt.Errorf("calling function: %w", scope.ErrUnknownAlias{Name: name.String()})
-	}
-	return f(i)
-}
-
-func (i *Interpreter) VisitLambda(expr ast.Lambda) Lambda {
-	args := util.SliceMap(expr.Args, func(i ast.Ident) obj.Ident { return obj.Ident(i) })
-	body := expr.Body
+func (i *Interpreter) VisitLambda(expr ast.Lambda) (obj.Obj, error) {
 	return Lambda{
-		Args: args,
-		Body: body,
+		Args: expr.Args,
+		Body: expr.Body,
+	}, nil
+}
+
+func (i *Interpreter) VisitIdent(name ast.Ident) (obj.Ident, error) {
+	return obj.Ident(string(name)), nil
+}
+
+func (i *Interpreter) EvalIdent(ident ast.Ident) (obj.Obj, error) {
+	value, err := i.getIdent(obj.Ident(ident))
+	if err != nil {
+		return value, fmt.Errorf("eval ident: %w", err)
+	}
+	switch value := value.(type) {
+	case BuiltinFunc:
+		return value(i)
+	case AliasValue: // lazy evaluation of aliases
+		return i.EvalExprListNoPush(value.ExprList)
+	default:
+		return value, nil
+		// return nil, fmt.Errorf("eval ident: unknown value %T %s for Ident %s", value, value.String(), ident)
 	}
 }
 
-func (i *Interpreter) VisitLit(lit ast.Lit) (obj.Obj, error) {
+func (i *Interpreter) EvalLambda(expr ast.Lambda) (obj.Obj, error) {
+	// set up lambda scope
+	lambdaScope := i.currentScope.Child()
+	i.currentScope = &lambdaScope
+	defer func() {
+		i.currentScope = i.currentScope.Parent
+	}()
+
+	// set up arg variables
+	for _, arg := range expr.Args {
+		argObj, err := i.VisitIdent(arg)
+		if err != nil {
+			return nil, fmt.Errorf("lambda arg: %w", err)
+		}
+		argVal, ok := i.stack.Pop()
+		if !ok {
+			return nil, fmt.Errorf("lambda arg: %w", stack.ErrPoppedEmptyStack{})
+		}
+		i.currentScope.SetAlias(argObj, argVal)
+	}
+
+	// run lambda body
+	return i.EvalExprListNoPush(expr.Body)
+}
+
+func (i *Interpreter) EvalLit(lit ast.Lit) (obj.Obj, error) {
 	switch lit := lit.(type) {
 	case ast.LiteralPrimitive:
 		return lit.Value, nil
 	case ast.LiteralList:
-		values := []obj.Obj{}
-		for _, e := range lit.Value {
-			v, err := i.VisitExpr(e)
-			if err != nil {
-				return nil, fmt.Errorf("building list: %w", err)
-			}
-			values = append(values, v)
-		}
-		return obj.NewList(values...), nil
+		return i.EvalLiteralList(lit)
 	case ast.LiteralMap:
-		values := []obj.MapEntry{}
-		for _, entry := range lit.Value {
-			k, err := i.VisitExpr(entry.K)
-			if err != nil {
-				return nil, fmt.Errorf("building map key: %w", err)
-			}
-			v, err := i.VisitExpr(entry.V)
-			if err != nil {
-				return nil, fmt.Errorf("building map value: %w", err)
-			}
-			values = append(values, obj.MapEntry{K: k, V: v})
-		}
-		return obj.MapFromEntries(values...), nil
+		return i.EvalLiteralMap(lit)
 	default:
-		panic(fmt.Errorf("%T: unimplemented Lit %T: %s", i, lit, lit.String()))
+		return nil, fmt.Errorf("lit: unknown Lit %T %s", lit, lit.String())
 	}
 }
 
-func (i *Interpreter) VisitIdent(ident ast.Ident) obj.Ident {
-	return obj.Ident(ident)
+func (i *Interpreter) EvalLiteralList(lit ast.LiteralList) (obj.Obj, error) {
+	list := obj.ZeroList()
+	for _, e := range lit.Value {
+		v, err := i.EvalExpr(e)
+		if err != nil {
+			return list, fmt.Errorf("list: %w", err)
+		}
+		list = append(list, v)
+	}
+	return list, nil
+}
+
+func (i *Interpreter) EvalLiteralMap(lit ast.LiteralMap) (obj.Obj, error) {
+	mapObj := obj.ZeroMap()
+	for _, e := range lit.Value {
+		k, err := i.EvalExpr(e.K)
+		if err != nil {
+			return mapObj, fmt.Errorf("map key: %w", err)
+		}
+		v, err := i.EvalExpr(e.V)
+		if err != nil {
+			return mapObj, fmt.Errorf("map value: %w", err)
+		}
+		mapObj.Set(k, v)
+	}
+	return mapObj, nil
 }

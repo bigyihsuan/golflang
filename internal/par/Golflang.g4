@@ -2,19 +2,41 @@ grammar Golflang;
 
 import GolflangTokens;
 
-prog:	stmt*;
-stmt:	(alias | expr) SEMICOLON;
-alias:	name=ident ASSIGN value=expr;
-expr:	call | lambda | literal;
+prog: stmt*;
+stmt: (alias | exprStmt) SEMICOLON;
 
-call:		name=ident args=exprList?;
-exprList:	expr (WHITESPACE expr)*;
-lambda:		BACKSLASH args=identList ARROW body=expr;
-identList:	ident (COMMA ident)*;
-ident:		IDENT;
+alias: name=ident ASSIGN value=exprList;
+exprStmt: exprList;
 
-literal:			literalList | literalMap | literalPrimitive;
-literalList:		LBRACKET expr? (COMMA expr)* COMMA? RBRACKET;
-literalMap:			LBRACE literalMapEntry? (COMMA literalMapEntry)* COMMA? RBRACE;
-literalMapEntry:	key=expr COLON value=expr;
-literalPrimitive:	INT | DEC | STR | TRUE | FALSE;
+exprList: expr+;
+expr: ident | operator | lambda | literal;
+
+lambda: BACKSLASH args=identList ARROW body=exprList;
+identList: ident (COMMA ident)*;
+
+literal: literalList | literalMap | literalPrimitive;
+literalList: LBRACKET expr? (COMMA expr)* COMMA? RBRACKET;
+literalMap: LBRACE literalMapEntry? (COMMA literalMapEntry)* COMMA? RBRACE;
+literalMapEntry: key=expr COLON value=expr;
+literalPrimitive: INT | DEC | STR | TRUE | FALSE;
+
+ident: IDENT;
+operator:
+	PLUS
+	| MINUS
+	| STAR
+	| SLASH
+	| DOUBLESTAR
+	| UNDERSCORE
+	| GT
+	| LT
+	| EQ
+	| GE
+	| LE
+	| NE
+	| DOUBLELT
+	| DOUBLEGTL
+	| DOUBLEGTA
+	| AMPERSAND
+	| PIPE
+	| CARET;

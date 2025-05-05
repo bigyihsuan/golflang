@@ -23,6 +23,10 @@ func New(parent *Scope) Scope {
 	}
 }
 
+func (s Scope) Child() Scope {
+	return New(&s)
+}
+
 func (s *Scope) SetAlias(name obj.Ident, value obj.Obj) {
 	s.aliases[name] = value
 }

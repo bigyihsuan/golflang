@@ -1,15 +1,16 @@
 package ast
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Lambda struct {
 	Args IdentList
-	Body Expr
+	Body ExprList
 }
 
 func (l Lambda) node() {}
 func (l Lambda) expr() {}
-
 func (l Lambda) String() string {
 	args := l.Args.String()
 	body := l.Body.String()

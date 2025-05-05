@@ -1,10 +1,10 @@
 a := 123;
 b := "xyz";
 f := \first,second => second;
-println f   a      b;
+println f a b;
 a;
 println f b;
-
-// expected output:
-// xyz
-// 123
+b; a;
+println f;
+a; b; f;
+println;

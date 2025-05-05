@@ -1,8 +1,6 @@
 //go:generate enumer -type=ObjKind
 package obj
 
-import "fmt"
-
 // ObjKind helps determine what kind of object it is
 type ObjKind uint
 
@@ -16,6 +14,8 @@ const (
 	ObjKindMap
 	ObjKindIdent
 	ObjKindLambda
+	ObjKindAliasValue
+	ObjKindBuiltinFunc
 )
 
 // Obj is an interface for all values in golflang.
@@ -41,41 +41,3 @@ var _ Obj = ZeroStr()
 var _ Obj = ZeroList()
 var _ Obj = ZeroMap()
 var _ Obj = Ident("")
-
-type None struct{}
-
-// Bool implements Obj.
-func (n None) Bool() bool {
-	return false
-}
-
-// Equal implements Obj.
-func (n None) Equal(o Obj) bool {
-	return false
-}
-
-// Hash implements Obj.
-func (n None) Hash() Hash {
-	return Hash(fmt.Sprintf("%#v", n))
-}
-
-// Kind implements Obj.
-func (n None) Kind() ObjKind {
-	return ObjKindNone
-}
-
-// Repr implements Obj.
-func (n None) Repr() string {
-	return "none"
-}
-
-// String implements Obj.
-func (n None) String() string {
-	return "none"
-}
-
-var none = None{}
-
-func ZeroNone() None {
-	return none
-}

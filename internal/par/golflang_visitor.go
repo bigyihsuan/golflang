@@ -16,23 +16,20 @@ type GolflangVisitor interface {
 	// Visit a parse tree produced by GolflangParser#alias.
 	VisitAlias(ctx *AliasContext) interface{}
 
-	// Visit a parse tree produced by GolflangParser#expr.
-	VisitExpr(ctx *ExprContext) interface{}
-
-	// Visit a parse tree produced by GolflangParser#call.
-	VisitCall(ctx *CallContext) interface{}
+	// Visit a parse tree produced by GolflangParser#exprStmt.
+	VisitExprStmt(ctx *ExprStmtContext) interface{}
 
 	// Visit a parse tree produced by GolflangParser#exprList.
 	VisitExprList(ctx *ExprListContext) interface{}
+
+	// Visit a parse tree produced by GolflangParser#expr.
+	VisitExpr(ctx *ExprContext) interface{}
 
 	// Visit a parse tree produced by GolflangParser#lambda.
 	VisitLambda(ctx *LambdaContext) interface{}
 
 	// Visit a parse tree produced by GolflangParser#identList.
 	VisitIdentList(ctx *IdentListContext) interface{}
-
-	// Visit a parse tree produced by GolflangParser#ident.
-	VisitIdent(ctx *IdentContext) interface{}
 
 	// Visit a parse tree produced by GolflangParser#literal.
 	VisitLiteral(ctx *LiteralContext) interface{}
@@ -48,4 +45,10 @@ type GolflangVisitor interface {
 
 	// Visit a parse tree produced by GolflangParser#literalPrimitive.
 	VisitLiteralPrimitive(ctx *LiteralPrimitiveContext) interface{}
+
+	// Visit a parse tree produced by GolflangParser#ident.
+	VisitIdent(ctx *IdentContext) interface{}
+
+	// Visit a parse tree produced by GolflangParser#operator.
+	VisitOperator(ctx *OperatorContext) interface{}
 }

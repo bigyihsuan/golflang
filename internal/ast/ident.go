@@ -1,19 +1,18 @@
 package ast
 
 import (
-	"bigyihsuan/golflang/internal/obj"
 	"bigyihsuan/golflang/internal/util"
 	"fmt"
 	"strings"
 )
 
-type Ident obj.Ident
+type Ident string
 
 func (i Ident) expr() {}
 func (i Ident) node() {}
 func (i Ident) stmt() {}
 
-func (i Ident) String() string { return obj.Ident(i).Repr() }
+func (i Ident) String() string { return fmt.Sprintf("ident(%s)", string(i)) }
 
 type IdentList []Ident
 

@@ -1,0 +1,7 @@
+add := +;
+println add 1 2;
+4; 5;
+println add;
+6; 7;
+add;
+println;

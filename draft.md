@@ -38,10 +38,10 @@ cmp := \a,b => if < a b then -1 else if > a b then 1 else 0 ;
 
 <https://codegolf.stackexchange.com/questions/58615/1-2-fizz-4-buzz>
 
-```ruby
-# comprehensions
+```h
+// comprehensions
 fizzbuzz := \n => for range 1 til n then yield if % n 15 then "fizzbuzz" else if % n 3 then "fizz" else if % n 5 then "buzz" else string n ;
-# functional
+// functional
 fizzbuzz := \n => map range 1 til n \k => if % n 15 then "fizzbuzz" else if % n 3 then "fizz" else if % n 5 then "buzz" else string n ;
 ```
 
@@ -106,10 +106,37 @@ dynamic, loose typing
   - [ ] chunkN: 2-adic, collection and chunk size. returns a list containing chunks of given size. remainder elements are placed into the last chunk.
   - [x] chunkSame: 1-adic, collection. returns a list of elements where each element is a collection of identical consecutive elements.
 - [ ] enumerate
+
+### operators
+
+most of these are massively overloaded.
+all ops require their arguments to be the same type.
+
 - [ ] cmp ops: `<`, `<=`, `>`, `>=`, `==`, `!=`
 - [ ] arithmetic (prefer float): `+`, `-`, `*`, `/`, `%`, `**` (exp), `_` (unary negation)
 - [ ] bitwise (int only): `<<`, `l>>` (logical), `a>>` (arithmetic), `&`, `|`, `^` (bitwise not)
 - [ ] logical: `and`, `or`, `not`
+
+|operator|arity|int|dec|str|bool|list|map|
+|-|-|-|-|-|-|-|-|
+|`+`|2|add|add|concat||concat|concat|
+|`-`|2|sub|sub|diff|||delkey|
+|`*`|2|mul|mul|||||
+|`/`|2|div|div|||||
+|`**`|2|exp|exp|cart prod||cart prod||
+|`_`|1|neg|neg|||pop (pops last item; item placed above list)||
+|`>`|2|gt|gt|gt||||
+|`<`|2|lt|lt|lt||||
+|`=`|2|eq|eq|eq|eq|eq|eq|
+|`>=`|2|ge|ge|ge||||
+|`<=`|2|le|le|le||||
+|`!=`|2|ne|ne|ne|ne|ne|ne|
+|`<<`|2|lshift||||||
+|`l>>`|2|rshift logical||||||
+|`a>>`|2|rshift arith||||||
+|`&`|2|bitand||||||
+|`\|`|2|bitor||||||
+|`^`|1|bitnot||||||
 
 # spec
 

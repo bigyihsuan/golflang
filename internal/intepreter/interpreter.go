@@ -6,6 +6,7 @@ import (
 	"bigyihsuan/golflang/internal/par"
 	"bigyihsuan/golflang/internal/scope"
 	"bigyihsuan/golflang/internal/stack"
+	"bigyihsuan/golflang/internal/util"
 	"errors"
 	"fmt"
 	"strings"
@@ -21,7 +22,7 @@ type Interpreter struct {
 	baseScope    scope.Scope  // the base scope for the whole program
 	currentScope *scope.Scope // the current scope
 	builtins
-	debug, dumpStack bool
+	verbose, dumpStack bool
 }
 
 type AliasName string
@@ -38,7 +39,7 @@ func newInterpreter(b builder) (*Interpreter, error) {
 
 	tokenStream := antlr.NewCommonTokenStream(lexer, 0)
 	parser := par.NewGolflangParser(tokenStream)
-	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(false))
+	// parser.AddErrorListener(antlr.NewDiagnosticErrorListener(false))
 
 	astBuilder := ast.NewBuilder(parser)
 
@@ -48,7 +49,7 @@ func newInterpreter(b builder) (*Interpreter, error) {
 		parser:     parser,
 		astBuilder: astBuilder,
 		builtins:   initBuiltins(),
-		debug:      b.debug,
+		verbose:    b.debug,
 		dumpStack:  b.dumpStack,
 	}
 	interpreter.baseScope = scope.NewBase()
@@ -63,12 +64,13 @@ func (i *Interpreter) Run() error {
 
 	parseTree := i.parser.Prog()
 
-	if i.debug {
-		fmt.Println(parseTree.ToStringTree(i.parser.RuleNames, i.parser))
+	if i.verbose {
+		// fmt.Println(parseTree.ToStringTree(i.parser.RuleNames, i.parser))
+		fmt.Println(util.NewTreePrettifier().ToPrettyTree(parseTree, i.parser.RuleNames, i.parser))
 	}
 
 	ast := i.astBuilder.Visit(parseTree).(ast.Prog)
-	if i.debug {
+	if i.verbose {
 		fmt.Printf("progAst: %v\n", ast)
 	}
 
@@ -77,7 +79,7 @@ func (i *Interpreter) Run() error {
 		return err
 	}
 
-	if i.debug {
+	if i.verbose {
 		fmt.Printf("stack: %s\n", i.StackString())
 		fmt.Printf("aliases: %s\n", i.baseScope.String())
 	}
@@ -87,7 +89,7 @@ func (i *Interpreter) Run() error {
 func (i *Interpreter) Exit() {
 	fmt.Println()
 	fmt.Println("=== EXIT ===")
-	for i.stack.Len() > 0 {
+	for i.stack.Len() != 0 {
 		ele, _ := i.stack.Pop()
 		fmt.Println(ele)
 	}
@@ -101,66 +103,28 @@ func (i Interpreter) StackString() string {
 	return fmt.Sprintf("<%s>", strings.Join(ss, ", "))
 }
 
-func (i *Interpreter) EvalObj(o obj.Obj) (obj.Obj, error) {
-	switch o.Kind() {
-	case obj.ObjKindNone:
-		return o, nil
-	case obj.ObjKindBool:
-		return o, nil
-	case obj.ObjKindDec:
-		return o, nil
-	case obj.ObjKindInt:
-		return o, nil
-	case obj.ObjKindList:
-		return o, nil
-	case obj.ObjKindMap:
-		return o, nil
-	case obj.ObjKindStr:
-		return o, nil
-	case obj.ObjKindIdent:
-		return i.currentScope.GetAlias(o.(obj.Ident))
-	case obj.ObjKindLambda:
-		return i.EvalLambda(o.(Lambda))
-	default:
-		panic(fmt.Errorf("unimplemented obj.ObjKind %s", o.Kind()))
+func (i *Interpreter) getArgs(n int) (args []obj.Obj, err error) {
+	args, ok := i.stack.PopN(n)
+	if !ok {
+		return args, stack.ErrNotEnoughStackValues{Want: n, Need: n - len(args)}
+	}
+	return args, nil
+}
+
+func (i *Interpreter) getIdent(ident obj.Ident) (obj.Obj, error) {
+	// check aliases first
+	if value, err := i.currentScope.GetAlias(ident); err == nil {
+		return value, nil
+	} else if builtinFunc, ok := i.builtins.Get(ident); ok {
+		return builtinFunc, nil
+	} else {
+		return nil, scope.ErrUnknownAlias{}
 	}
 }
 
-func (i *Interpreter) EvalLambda(lambda Lambda) (obj.Obj, error) {
-	// set up a new scope for this lambda
-	lambdaScope := scope.New(i.currentScope)
-	i.currentScope = &lambdaScope
-	defer func() {
-		// destroy the lambda scope, and move back to the outer scope
-		i.currentScope = i.currentScope.Parent
-	}()
-
-	// assign values to arguments
-	values, ok := i.stack.PopN(len(lambda.Args))
-	if !ok {
-		panic(ErrNotEnoughStackValues{
-			Want: len(lambda.Args),
-			Need: len(lambda.Args) - len(values),
-		})
+func (i *Interpreter) pushValue(value obj.Obj) {
+	if value.Kind() == obj.ObjKindNone {
+		return
 	}
-
-	for idx, arg := range lambda.Args {
-		v, err := i.EvalObj(values[idx])
-		if err != nil {
-			return nil, err
-		}
-		i.currentScope.SetAlias(arg, v)
-	}
-
-	// execute the lambda body
-	err := i.VisitExprStmt(lambda.Body)
-	if err != nil {
-		return nil, err
-	}
-	// get the return value
-	v, ok := i.stack.Pop()
-	if !ok {
-		return v, ErrNotEnoughStackValues{Want: 1, Need: 1}
-	}
-	return v, nil
+	i.stack.Push(value)
 }

@@ -38,23 +38,23 @@ func (s *BaseGolflangListener) EnterAlias(ctx *AliasContext) {}
 // ExitAlias is called when production alias is exited.
 func (s *BaseGolflangListener) ExitAlias(ctx *AliasContext) {}
 
-// EnterExpr is called when production expr is entered.
-func (s *BaseGolflangListener) EnterExpr(ctx *ExprContext) {}
+// EnterExprStmt is called when production exprStmt is entered.
+func (s *BaseGolflangListener) EnterExprStmt(ctx *ExprStmtContext) {}
 
-// ExitExpr is called when production expr is exited.
-func (s *BaseGolflangListener) ExitExpr(ctx *ExprContext) {}
-
-// EnterCall is called when production call is entered.
-func (s *BaseGolflangListener) EnterCall(ctx *CallContext) {}
-
-// ExitCall is called when production call is exited.
-func (s *BaseGolflangListener) ExitCall(ctx *CallContext) {}
+// ExitExprStmt is called when production exprStmt is exited.
+func (s *BaseGolflangListener) ExitExprStmt(ctx *ExprStmtContext) {}
 
 // EnterExprList is called when production exprList is entered.
 func (s *BaseGolflangListener) EnterExprList(ctx *ExprListContext) {}
 
 // ExitExprList is called when production exprList is exited.
 func (s *BaseGolflangListener) ExitExprList(ctx *ExprListContext) {}
+
+// EnterExpr is called when production expr is entered.
+func (s *BaseGolflangListener) EnterExpr(ctx *ExprContext) {}
+
+// ExitExpr is called when production expr is exited.
+func (s *BaseGolflangListener) ExitExpr(ctx *ExprContext) {}
 
 // EnterLambda is called when production lambda is entered.
 func (s *BaseGolflangListener) EnterLambda(ctx *LambdaContext) {}
@@ -67,12 +67,6 @@ func (s *BaseGolflangListener) EnterIdentList(ctx *IdentListContext) {}
 
 // ExitIdentList is called when production identList is exited.
 func (s *BaseGolflangListener) ExitIdentList(ctx *IdentListContext) {}
-
-// EnterIdent is called when production ident is entered.
-func (s *BaseGolflangListener) EnterIdent(ctx *IdentContext) {}
-
-// ExitIdent is called when production ident is exited.
-func (s *BaseGolflangListener) ExitIdent(ctx *IdentContext) {}
 
 // EnterLiteral is called when production literal is entered.
 func (s *BaseGolflangListener) EnterLiteral(ctx *LiteralContext) {}
@@ -103,3 +97,15 @@ func (s *BaseGolflangListener) EnterLiteralPrimitive(ctx *LiteralPrimitiveContex
 
 // ExitLiteralPrimitive is called when production literalPrimitive is exited.
 func (s *BaseGolflangListener) ExitLiteralPrimitive(ctx *LiteralPrimitiveContext) {}
+
+// EnterIdent is called when production ident is entered.
+func (s *BaseGolflangListener) EnterIdent(ctx *IdentContext) {}
+
+// ExitIdent is called when production ident is exited.
+func (s *BaseGolflangListener) ExitIdent(ctx *IdentContext) {}
+
+// EnterOperator is called when production operator is entered.
+func (s *BaseGolflangListener) EnterOperator(ctx *OperatorContext) {}
+
+// ExitOperator is called when production operator is exited.
+func (s *BaseGolflangListener) ExitOperator(ctx *OperatorContext) {}

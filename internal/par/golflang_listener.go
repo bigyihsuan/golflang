@@ -16,23 +16,20 @@ type GolflangListener interface {
 	// EnterAlias is called when entering the alias production.
 	EnterAlias(c *AliasContext)
 
-	// EnterExpr is called when entering the expr production.
-	EnterExpr(c *ExprContext)
-
-	// EnterCall is called when entering the call production.
-	EnterCall(c *CallContext)
+	// EnterExprStmt is called when entering the exprStmt production.
+	EnterExprStmt(c *ExprStmtContext)
 
 	// EnterExprList is called when entering the exprList production.
 	EnterExprList(c *ExprListContext)
+
+	// EnterExpr is called when entering the expr production.
+	EnterExpr(c *ExprContext)
 
 	// EnterLambda is called when entering the lambda production.
 	EnterLambda(c *LambdaContext)
 
 	// EnterIdentList is called when entering the identList production.
 	EnterIdentList(c *IdentListContext)
-
-	// EnterIdent is called when entering the ident production.
-	EnterIdent(c *IdentContext)
 
 	// EnterLiteral is called when entering the literal production.
 	EnterLiteral(c *LiteralContext)
@@ -49,6 +46,12 @@ type GolflangListener interface {
 	// EnterLiteralPrimitive is called when entering the literalPrimitive production.
 	EnterLiteralPrimitive(c *LiteralPrimitiveContext)
 
+	// EnterIdent is called when entering the ident production.
+	EnterIdent(c *IdentContext)
+
+	// EnterOperator is called when entering the operator production.
+	EnterOperator(c *OperatorContext)
+
 	// ExitProg is called when exiting the prog production.
 	ExitProg(c *ProgContext)
 
@@ -58,23 +61,20 @@ type GolflangListener interface {
 	// ExitAlias is called when exiting the alias production.
 	ExitAlias(c *AliasContext)
 
-	// ExitExpr is called when exiting the expr production.
-	ExitExpr(c *ExprContext)
-
-	// ExitCall is called when exiting the call production.
-	ExitCall(c *CallContext)
+	// ExitExprStmt is called when exiting the exprStmt production.
+	ExitExprStmt(c *ExprStmtContext)
 
 	// ExitExprList is called when exiting the exprList production.
 	ExitExprList(c *ExprListContext)
+
+	// ExitExpr is called when exiting the expr production.
+	ExitExpr(c *ExprContext)
 
 	// ExitLambda is called when exiting the lambda production.
 	ExitLambda(c *LambdaContext)
 
 	// ExitIdentList is called when exiting the identList production.
 	ExitIdentList(c *IdentListContext)
-
-	// ExitIdent is called when exiting the ident production.
-	ExitIdent(c *IdentContext)
 
 	// ExitLiteral is called when exiting the literal production.
 	ExitLiteral(c *LiteralContext)
@@ -90,4 +90,10 @@ type GolflangListener interface {
 
 	// ExitLiteralPrimitive is called when exiting the literalPrimitive production.
 	ExitLiteralPrimitive(c *LiteralPrimitiveContext)
+
+	// ExitIdent is called when exiting the ident production.
+	ExitIdent(c *IdentContext)
+
+	// ExitOperator is called when exiting the operator production.
+	ExitOperator(c *OperatorContext)
 }

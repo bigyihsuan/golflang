@@ -45,8 +45,8 @@ func (b *Builder) VisitStmt(stmt *par.StmtContext) any {
 	switch child := stmt.GetChild(0).(type) {
 	case *par.AliasContext:
 		return b.VisitAlias(child)
-	case *par.ExprContext:
-		return b.VisitExpr(child)
+	case *par.ExprStmtContext:
+		return b.VisitExprStmt(child)
 	default:
 		panic(b.unknown("StmtContext", child.(antlr.ParseTree)))
 	}
@@ -54,52 +54,50 @@ func (b *Builder) VisitStmt(stmt *par.StmtContext) any {
 
 func (b *Builder) VisitAlias(alias *par.AliasContext) any {
 	ident := b.VisitIdent(alias.GetName().(*par.IdentContext)).(Ident)
-	expr := b.VisitExpr(alias.Expr().(*par.ExprContext)).(Expr)
+	value := b.VisitExprList(alias.GetValue().(*par.ExprListContext)).(ExprList)
 	return Alias{
 		Name:  ident,
-		Value: expr,
+		Value: value,
 	}
+}
+
+func (b *Builder) VisitExprStmt(exprStmt *par.ExprStmtContext) any {
+	exprList := b.VisitExprList(exprStmt.ExprList().(*par.ExprListContext)).(ExprList)
+	return ExprStmt{
+		ExprList: exprList,
+	}
+}
+
+func (b *Builder) VisitExprList(exprList *par.ExprListContext) any {
+	es := ExprList{}
+	for _, e := range exprList.AllExpr() {
+		es = append(es, b.VisitExpr(e.(*par.ExprContext)).(Expr))
+	}
+	return es
 }
 
 func (b *Builder) VisitExpr(expr *par.ExprContext) any {
 	switch expr := expr.GetChild(0).(type) {
-	case *par.LiteralContext:
-		return b.VisitLiteral(expr)
 	case *par.LambdaContext:
 		return b.VisitLambda(expr)
-	case *par.CallContext:
-		return b.VisitCall(expr)
+	case *par.LiteralContext:
+		return b.VisitLiteral(expr)
+	case *par.IdentContext:
+		return b.VisitIdent(expr)
+	case *par.OperatorContext:
+		return b.VisitOperator(expr)
 	default:
 		panic(b.unknown("ExprContext", expr.(antlr.ParseTree)))
 	}
 }
 
-func (b *Builder) VisitCall(call *par.CallContext) any {
-	name := b.VisitIdent(call.GetName().(*par.IdentContext)).(Ident)
-	args := []Expr{}
-
-	callArgs := call.GetArgs()
-	if callArgs != nil {
-		args = b.VisitExprList(callArgs.(*par.ExprListContext)).([]Expr)
-	}
-
-	return Call{
-		Name: name,
-		Args: args,
-	}
-}
-
-func (b *Builder) VisitExprList(exprs *par.ExprListContext) any {
-	es := []Expr{}
-	for _, expr := range exprs.AllExpr() {
-		es = append(es, b.VisitExpr(expr.(*par.ExprContext)).(Expr))
-	}
-	return es
+func (b *Builder) VisitOperator(operator *par.OperatorContext) any {
+	return Ident(operator.GetText())
 }
 
 func (b *Builder) VisitLambda(lambda *par.LambdaContext) any {
 	args := b.VisitIdentList(lambda.GetArgs().(*par.IdentListContext)).(IdentList)
-	body := b.VisitExpr(lambda.GetBody().(*par.ExprContext)).(Expr)
+	body := b.VisitExprList(lambda.GetBody().(*par.ExprListContext)).(ExprList)
 	return Lambda{
 		Args: args,
 		Body: body,
@@ -115,7 +113,7 @@ func (b *Builder) VisitIdentList(idents *par.IdentListContext) any {
 }
 
 func (b *Builder) VisitIdent(ident *par.IdentContext) any {
-	return Ident(obj.Ident(ident.GetText()))
+	return Ident(ident.GetText())
 }
 
 func (b *Builder) VisitLiteral(literal *par.LiteralContext) any {

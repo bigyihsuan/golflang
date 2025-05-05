@@ -11,13 +11,13 @@ import (
 var _ obj.Obj = (*Lambda)(nil)
 
 type Lambda struct {
-	Args []obj.Ident
-	Body ast.Expr
+	Args []ast.Ident
+	Body ast.ExprList
 }
 
 // Bool implements Obj.
 func (l Lambda) Bool() bool {
-	return true
+	return false
 }
 
 // Equal implements Obj.
@@ -37,12 +37,12 @@ func (l Lambda) Kind() obj.ObjKind {
 
 // Repr implements Obj.
 func (l Lambda) Repr() string {
-	a := strings.Join(util.SliceMap(l.Args, func(i obj.Ident) string { return i.Repr() }), ",")
+	a := strings.Join(util.SliceMap(l.Args, func(i ast.Ident) string { return i.String() }), ",")
 	return fmt.Sprintf("\\%s => %s", a, l.Body.String())
 }
 
 // String implements Obj.
 func (l Lambda) String() string {
-	a := strings.Join(util.SliceMap(l.Args, func(i obj.Ident) string { return i.String() }), ",")
+	a := strings.Join(util.SliceMap(l.Args, func(i ast.Ident) string { return i.String() }), ",")
 	return fmt.Sprintf("\\%s => %s", a, l.Body.String())
 }

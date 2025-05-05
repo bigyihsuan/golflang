@@ -1,11 +1,12 @@
 package interpreter
 
-import "fmt"
+import (
+	"bigyihsuan/golflang/internal/obj"
+	"fmt"
+)
 
-type ErrNotEnoughStackValues struct {
-	Want, Need int
-}
+type ErrMismatchedKinds struct{ L, R obj.Obj }
 
-func (e ErrNotEnoughStackValues) Error() string {
-	return fmt.Sprintf("not enough items on the stack: want %d, need %d more", e.Want, e.Need)
+func (e ErrMismatchedKinds) Error() string {
+	return fmt.Sprintf("mismatched kinds: %s (%s) and %s (%s)", e.L.Repr(), e.L.Kind(), e.R.Repr(), e.R.Kind())
 }

@@ -19,15 +19,15 @@ func (v *BaseGolflangVisitor) VisitAlias(ctx *AliasContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
-func (v *BaseGolflangVisitor) VisitExpr(ctx *ExprContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolflangVisitor) VisitCall(ctx *CallContext) interface{} {
+func (v *BaseGolflangVisitor) VisitExprStmt(ctx *ExprStmtContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
 func (v *BaseGolflangVisitor) VisitExprList(ctx *ExprListContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseGolflangVisitor) VisitExpr(ctx *ExprContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -36,10 +36,6 @@ func (v *BaseGolflangVisitor) VisitLambda(ctx *LambdaContext) interface{} {
 }
 
 func (v *BaseGolflangVisitor) VisitIdentList(ctx *IdentListContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolflangVisitor) VisitIdent(ctx *IdentContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -60,5 +56,13 @@ func (v *BaseGolflangVisitor) VisitLiteralMapEntry(ctx *LiteralMapEntryContext) 
 }
 
 func (v *BaseGolflangVisitor) VisitLiteralPrimitive(ctx *LiteralPrimitiveContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseGolflangVisitor) VisitIdent(ctx *IdentContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BaseGolflangVisitor) VisitOperator(ctx *OperatorContext) interface{} {
 	return v.VisitChildren(ctx)
 }

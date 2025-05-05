@@ -4,7 +4,7 @@ import "fmt"
 
 type Alias struct {
 	Name  Ident
-	Value Expr
+	Value ExprList
 }
 
 func (a Alias) node() {}

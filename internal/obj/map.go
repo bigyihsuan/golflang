@@ -2,6 +2,7 @@ package obj
 
 import (
 	"fmt"
+	"iter"
 	"maps"
 	"slices"
 	"strings"
@@ -100,4 +101,43 @@ func (m Map) Get(k Obj) (v Obj, ok bool) {
 		return e.V, ok
 	}
 	return nil, false
+}
+
+func (m Map) Keys() iter.Seq[Obj] {
+	return func(yield func(Obj) bool) {
+		for _, kv := range m.m {
+			if !yield(kv.K) {
+				return
+			}
+		}
+	}
+}
+func (m Map) Values() iter.Seq[Obj] {
+	return func(yield func(Obj) bool) {
+		for _, kv := range m.m {
+			if !yield(kv.V) {
+				return
+			}
+		}
+	}
+}
+
+func (m Map) Entries() iter.Seq[MapEntry] {
+	return func(yield func(MapEntry) bool) {
+		for _, kv := range m.m {
+			if !yield(kv) {
+				return
+			}
+		}
+	}
+}
+
+func (m Map) Pairs() iter.Seq2[Obj, Obj] {
+	return func(yield func(Obj, Obj) bool) {
+		for _, kv := range m.m {
+			if !yield(kv.K, kv.V) {
+				return
+			}
+		}
+	}
 }
