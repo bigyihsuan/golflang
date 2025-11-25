@@ -6,7 +6,7 @@ import (
 )
 
 func Plus(i *Interpreter) (obj.Obj, error) {
-	args, err := i.getArgs(2)
+	args, err := i.getArgs(2, "Plus")
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func Plus(i *Interpreter) (obj.Obj, error) {
 }
 
 func Minus(i *Interpreter) (obj.Obj, error) {
-	args, err := i.getArgs(2)
+	args, err := i.getArgs(2, "Minus")
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func Minus(i *Interpreter) (obj.Obj, error) {
 }
 
 func Underscore(i *Interpreter) (obj.Obj, error) {
-	args, err := i.getArgs(1)
+	args, err := i.getArgs(1, "Underscore")
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func Underscore(i *Interpreter) (obj.Obj, error) {
 }
 
 func GreaterThan(i *Interpreter) (obj.Obj, error) {
-	args, err := i.getArgs(2)
+	args, err := i.getArgs(2, "GreaterThan")
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func GreaterThan(i *Interpreter) (obj.Obj, error) {
 }
 
 func LessThan(i *Interpreter) (obj.Obj, error) {
-	args, err := i.getArgs(2)
+	args, err := i.getArgs(2, "LessThan")
 	if err != nil {
 		return nil, err
 	}

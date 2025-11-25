@@ -131,7 +131,7 @@ func (i *Interpreter) EvalIdent(ident ast.Ident) (obj.Obj, error) {
 	case BuiltinFunc:
 		return value(i)
 	case AliasValue: // lazy evaluation of aliases
-		return i.EvalExprListNoPush(value.ExprList)
+		return i.EvalExprList(value.ExprList)
 	default:
 		return value, nil
 		// return nil, fmt.Errorf("eval ident: unknown value %T %s for Ident %s", value, value.String(), ident)
@@ -160,7 +160,7 @@ func (i *Interpreter) EvalLambda(expr ast.Lambda) (obj.Obj, error) {
 	}
 
 	// run lambda body
-	return i.EvalExprListNoPush(expr.Body)
+	return i.EvalExprList(expr.Body)
 }
 
 func (i *Interpreter) EvalLit(lit ast.Lit) (obj.Obj, error) {

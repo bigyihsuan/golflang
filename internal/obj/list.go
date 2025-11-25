@@ -3,6 +3,7 @@ package obj
 import (
 	"bigyihsuan/golflang/internal/util"
 	"fmt"
+	"iter"
 	"slices"
 	"strings"
 )
@@ -15,6 +16,10 @@ func ZeroList() List {
 
 func NewList(values ...Obj) List {
 	return List(values)
+}
+
+func NewListFromIter(seq iter.Seq[Obj]) List {
+	return List(slices.Collect(seq))
 }
 
 // Bool implements Obj.

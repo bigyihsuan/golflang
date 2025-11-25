@@ -10,14 +10,19 @@ type builtins map[string]BuiltinFunc
 
 func initBuiltins() builtins {
 	return builtins{
-		"pop":     Pop,
-		"print":   Print,
-		"println": Println,
-		"+":       Plus,
-		"-":       Minus,
-		"_":       Underscore,
-		"<":       GreaterThan,
-		">":       LessThan,
+		"pop":       Pop,
+		"print":     Print,
+		"println":   Println,
+		"+":         Plus,
+		"-":         Minus,
+		"_":         Underscore,
+		"<":         GreaterThan,
+		">":         LessThan,
+		"nChunks":   NChunks,
+		"chunkN":    ChunkN,
+		"chunkSame": ChunkSame,
+		"join":      Join,
+		"zip":       Zip,
 	}
 }
 

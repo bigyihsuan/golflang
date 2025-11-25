@@ -1,11 +1,10 @@
 package main
 
 import (
+	interpreter "bigyihsuan/golflang/internal/intepreter"
 	"flag"
 	"fmt"
 	"os"
-
-	interpreter "bigyihsuan/golflang/internal/intepreter"
 
 	"github.com/fatih/color"
 )

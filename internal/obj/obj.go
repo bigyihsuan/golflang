@@ -1,4 +1,4 @@
-//go:generate enumer -type=ObjKind
+//go:generate enumer -type=ObjKind -trimprefix ObjKind
 package obj
 
 // ObjKind helps determine what kind of object it is

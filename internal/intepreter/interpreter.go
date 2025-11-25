@@ -61,6 +61,12 @@ func (i *Interpreter) Run() error {
 	if i.dumpStack {
 		defer i.Exit()
 	}
+	if i.verbose {
+		defer func() {
+			fmt.Printf("stack: %s\n", i.StackString())
+			fmt.Printf("aliases: %s\n", i.baseScope.String())
+		}()
+	}
 
 	parseTree := i.parser.Prog()
 
@@ -79,16 +85,10 @@ func (i *Interpreter) Run() error {
 		return err
 	}
 
-	if i.verbose {
-		fmt.Printf("stack: %s\n", i.StackString())
-		fmt.Printf("aliases: %s\n", i.baseScope.String())
-	}
 	return nil
 }
 
 func (i *Interpreter) Exit() {
-	fmt.Println()
-	fmt.Println("=== EXIT ===")
 	for i.stack.Len() != 0 {
 		ele, _ := i.stack.Pop()
 		fmt.Println(ele)
@@ -103,10 +103,10 @@ func (i Interpreter) StackString() string {
 	return fmt.Sprintf("<%s>", strings.Join(ss, ", "))
 }
 
-func (i *Interpreter) getArgs(n int) (args []obj.Obj, err error) {
+func (i *Interpreter) getArgs(n int, caller string) (args []obj.Obj, err error) {
 	args, ok := i.stack.PopN(n)
 	if !ok {
-		return args, stack.ErrNotEnoughStackValues{Want: n, Need: n - len(args)}
+		return args, fmt.Errorf("%s: %w", caller, stack.ErrNotEnoughStackValues{Want: n, Need: n - len(args)})
 	}
 	return args, nil
 }
@@ -127,4 +127,7 @@ func (i *Interpreter) pushValue(value obj.Obj) {
 		return
 	}
 	i.stack.Push(value)
+	if i.dumpStack {
+		fmt.Println(i.StackString())
+	}
 }
