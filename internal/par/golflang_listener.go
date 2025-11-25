@@ -31,6 +31,9 @@ type GolflangListener interface {
 	// EnterIdentList is called when entering the identList production.
 	EnterIdentList(c *IdentListContext)
 
+	// EnterIfThenElse is called when entering the ifThenElse production.
+	EnterIfThenElse(c *IfThenElseContext)
+
 	// EnterLiteral is called when entering the literal production.
 	EnterLiteral(c *LiteralContext)
 
@@ -75,6 +78,9 @@ type GolflangListener interface {
 
 	// ExitIdentList is called when exiting the identList production.
 	ExitIdentList(c *IdentListContext)
+
+	// ExitIfThenElse is called when exiting the ifThenElse production.
+	ExitIfThenElse(c *IfThenElseContext)
 
 	// ExitLiteral is called when exiting the literal production.
 	ExitLiteral(c *LiteralContext)

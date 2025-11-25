@@ -9,10 +9,12 @@ alias: name=ident ASSIGN value=exprList;
 exprStmt: exprList;
 
 exprList: expr+;
-expr: ident | operator | lambda | literal;
+expr: ifThenElse | ident | operator | lambda | literal;
 
 lambda: BACKSLASH args=identList ARROW body=exprList;
 identList: ident (COMMA ident)*;
+
+ifThenElse: IF cond=exprList THEN then=exprList ELSE else=exprList;
 
 literal: literalList | literalMap | literalPrimitive;
 literalList: LBRACKET expr? (COMMA expr)* COMMA? RBRACKET;

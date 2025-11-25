@@ -86,6 +86,8 @@ func (i *Interpreter) EvalExprListNoPush(exprList ast.ExprList) (obj.Obj, error)
 
 func (i *Interpreter) EvalExpr(expr ast.Expr) (obj.Obj, error) {
 	switch expr := expr.(type) {
+	case ast.IfThenElse:
+		return i.EvalIfThenElse(expr)
 	case ast.Ident:
 		return i.EvalIdent(expr)
 	case ast.Lambda:
@@ -94,6 +96,18 @@ func (i *Interpreter) EvalExpr(expr ast.Expr) (obj.Obj, error) {
 		return i.EvalLit(expr)
 	default:
 		return nil, fmt.Errorf("expr: unknown Expr %T %s", expr, expr.String())
+	}
+}
+
+func (i *Interpreter) EvalIfThenElse(expr ast.IfThenElse) (obj.Obj, error) {
+	condObj, err := i.EvalExprList(expr.Cond)
+	if err != nil {
+		return condObj, fmt.Errorf("ifThenElse: %w", err)
+	}
+	if condObj.Bool() {
+		return i.EvalExprList(expr.Then)
+	} else {
+		return i.EvalExprList(expr.Else)
 	}
 }
 

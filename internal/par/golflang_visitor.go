@@ -31,6 +31,9 @@ type GolflangVisitor interface {
 	// Visit a parse tree produced by GolflangParser#identList.
 	VisitIdentList(ctx *IdentListContext) interface{}
 
+	// Visit a parse tree produced by GolflangParser#ifThenElse.
+	VisitIfThenElse(ctx *IfThenElseContext) interface{}
+
 	// Visit a parse tree produced by GolflangParser#literal.
 	VisitLiteral(ctx *LiteralContext) interface{}
 

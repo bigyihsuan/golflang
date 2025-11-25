@@ -1,0 +1,6 @@
+// https://codegolf.stackexchange.com/questions/259255/implement-the-three-way-comparison-operator-on-numbers
+cmp := \a,b => if < a b then _1 else if > a b then 1 else 0 ;
+println cmp _1 2;
+println cmp 2 _1;
+println cmp 2 2;
+println cmp _1 _1;

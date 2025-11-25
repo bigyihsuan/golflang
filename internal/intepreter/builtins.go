@@ -14,6 +14,10 @@ func initBuiltins() builtins {
 		"print":   Print,
 		"println": Println,
 		"+":       Plus,
+		"-":       Minus,
+		"_":       Underscore,
+		"<":       GreaterThan,
+		">":       LessThan,
 	}
 }
 

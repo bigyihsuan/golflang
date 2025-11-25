@@ -39,6 +39,10 @@ func (v *BaseGolflangVisitor) VisitIdentList(ctx *IdentListContext) interface{} 
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseGolflangVisitor) VisitIfThenElse(ctx *IfThenElseContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseGolflangVisitor) VisitLiteral(ctx *LiteralContext) interface{} {
 	return v.VisitChildren(ctx)
 }

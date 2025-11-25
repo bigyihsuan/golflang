@@ -118,7 +118,7 @@ func (i *Interpreter) getIdent(ident obj.Ident) (obj.Obj, error) {
 	} else if builtinFunc, ok := i.builtins.Get(ident); ok {
 		return builtinFunc, nil
 	} else {
-		return nil, scope.ErrUnknownAlias{}
+		return nil, scope.ErrUnknownAlias{Name: ident.String()}
 	}
 }
 

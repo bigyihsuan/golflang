@@ -68,6 +68,12 @@ func (s *BaseGolflangListener) EnterIdentList(ctx *IdentListContext) {}
 // ExitIdentList is called when production identList is exited.
 func (s *BaseGolflangListener) ExitIdentList(ctx *IdentListContext) {}
 
+// EnterIfThenElse is called when production ifThenElse is entered.
+func (s *BaseGolflangListener) EnterIfThenElse(ctx *IfThenElseContext) {}
+
+// ExitIfThenElse is called when production ifThenElse is exited.
+func (s *BaseGolflangListener) ExitIfThenElse(ctx *IfThenElseContext) {}
+
 // EnterLiteral is called when production literal is entered.
 func (s *BaseGolflangListener) EnterLiteral(ctx *LiteralContext) {}
 

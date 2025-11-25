@@ -47,4 +47,9 @@ AMPERSAND: '&';
 PIPE: '|';
 CARET: '^';
 
+// KEYWORDS
+IF: 'if';
+THEN: 'then';
+ELSE: 'else';
+
 IDENT: [A-Za-z][A-Za-z0-9]*;

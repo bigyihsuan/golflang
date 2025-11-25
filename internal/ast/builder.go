@@ -78,6 +78,8 @@ func (b *Builder) VisitExprList(exprList *par.ExprListContext) any {
 
 func (b *Builder) VisitExpr(expr *par.ExprContext) any {
 	switch expr := expr.GetChild(0).(type) {
+	case *par.IfThenElseContext:
+		return b.VisitIfThenElse(expr)
 	case *par.LambdaContext:
 		return b.VisitLambda(expr)
 	case *par.LiteralContext:
@@ -93,6 +95,18 @@ func (b *Builder) VisitExpr(expr *par.ExprContext) any {
 
 func (b *Builder) VisitOperator(operator *par.OperatorContext) any {
 	return Ident(operator.GetText())
+}
+
+func (b *Builder) VisitIfThenElse(ift *par.IfThenElseContext) any {
+	cond := b.VisitExprList(ift.GetCond().(*par.ExprListContext)).(ExprList)
+	then := b.VisitExprList(ift.GetThen().(*par.ExprListContext)).(ExprList)
+	else_ := b.VisitExprList(ift.GetElse_().(*par.ExprListContext)).(ExprList)
+
+	return IfThenElse{
+		Cond: cond,
+		Then: then,
+		Else: else_,
+	}
 }
 
 func (b *Builder) VisitLambda(lambda *par.LambdaContext) any {
